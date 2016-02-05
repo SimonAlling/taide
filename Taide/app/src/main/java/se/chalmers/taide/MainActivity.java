@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +25,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+
+        final EditText codeEditor = (EditText)findViewById(R.id.editText);
+        codeEditor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(codeEditor.getText().length() == 0) {
+                    String sampleCode = "public class Main{\n\n\t\tpublic static void main(String[] args){\n\t\t\t\tSystem.out.println(\"Hello world!\");\n\t\t}\n\n}";
+                    codeEditor.setText(sampleCode);
+                    codeEditor.setSelection(101);    //Set focus after Syso statement
+                }
             }
         });
     }
