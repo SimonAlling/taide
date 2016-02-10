@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="java_syntax_default_colors">
+        <item>@color/cyan</item>
+        <item>@color/pink</item>
+        <item>@color/lightGreen</item>
+        <item>@color/orange</item>
+        <item>@color/pink</item>
+        <item>@color/lightYellow</item>
+    </array>
+</resources>
