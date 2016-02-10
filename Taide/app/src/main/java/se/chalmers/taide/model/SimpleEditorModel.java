@@ -24,6 +24,7 @@ public class SimpleEditorModel implements EditorModel{
         this.textFilters = new LinkedList<>();
         SimpleHighlighter sh = new SimpleHighlighter(this.language);
         textFilters.add(sh);
+        textFilters.add(new SimpleAutoIndenter());
         //Setup text view
         setTextView(text);
         //Highlight immediately
