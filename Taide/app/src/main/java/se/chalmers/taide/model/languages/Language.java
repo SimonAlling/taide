@@ -10,4 +10,7 @@ public interface Language {
     String getName();
 
     List<SyntaxBlock> getSyntaxBlocks(String sourceCode);
+    String getIndentationPrefix(String source, int start, String line);
+    String getIndentationSuffix(String source, int start, String line);
+
 }

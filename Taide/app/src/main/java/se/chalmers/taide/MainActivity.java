@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         codeEditor = (EditText)findViewById(R.id.editText);
-        final String sampleCode = "public class Main{\n\n\t\tpublic static void main(String[] args){\n\t\t\t\tSystem.out.println(\"Hello world!\");\n\t\t}\n\n}";
+        final String sampleCode = "public class Main{\n\n\tpublic static void main(String[] args){\n\t\tSystem.out.println(\"Hello world!\");\n\t}\n\n}";
         codeEditor.setText(sampleCode);
         codeEditor.setOnClickListener(new View.OnClickListener() {
             @Override
