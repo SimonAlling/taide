@@ -1,5 +1,6 @@
 package se.chalmers.taide;
 
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,8 +19,11 @@ import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.model.languages.SyntaxBlock;
+import se.chalmers.taide.util.Clipboard;
 
 public class MainActivity extends AppCompatActivity {
+
+    private EditText codeEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        final EditText codeEditor = (EditText)findViewById(R.id.editText);
+        codeEditor = (EditText)findViewById(R.id.editText);
         final String sampleCode = "public class Main{\n\n\t\tpublic static void main(String[] args){\n\t\t\t\tSystem.out.println(\"Hello world!\");\n\t\t}\n\n}";
         codeEditor.setText(sampleCode);
         codeEditor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(codeEditor.getText().length() == 0) {
+                if (codeEditor.getText().length() == 0) {
                     codeEditor.setText(sampleCode);
                     codeEditor.setSelection(101);    //Set focus after Syso statement
                 }
@@ -62,15 +66,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        final MenuItem pasteMenu = menu.findItem(R.id.action_paste);
+        pasteMenu.setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_settings:  break;
+            case R.id.action_copy:      Clipboard.copyToClipboard(getApplicationContext(), codeEditor);break;
+            case R.id.action_cut:       Clipboard.cutToClipboard(getApplicationContext(), codeEditor);break;
+            case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor);break;
         }
 
         return super.onOptionsItemSelected(item);

@@ -2,4 +2,7 @@
     <string name="app_name">Taide</string>
     <string name="action_settings">Settings</string>
     <string name="insert_sample_descriptor">Click to paste HelloWorld sample</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_paste">Paste</string>
 </resources>
