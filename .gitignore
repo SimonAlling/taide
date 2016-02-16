@@ -23,7 +23,8 @@ local.properties
 proguard/
 
 # Intellij files
-Taide/.idea/
+Taide/.idea/workspace.xml
+Taide/.idea/libraries
 
 # Log Files
 *.log
