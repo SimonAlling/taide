@@ -20,7 +20,7 @@ public class SimpleHighlighter extends AbstractTextFilter{
      * @param lang The language to use
      */
     protected SimpleHighlighter(Language lang){
-        super(" ", "\n", "(");
+        super(" ", "\n", "(", ")", "\"");
         this.setLanguage(lang);
     }
 

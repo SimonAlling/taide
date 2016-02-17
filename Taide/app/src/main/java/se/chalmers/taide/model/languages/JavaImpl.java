@@ -67,13 +67,16 @@ public class JavaImpl extends SimpleLanguage{
                 keyWordCheck:
                 for (int j = 0; j < keyWords.length; j++) {
                     for (int k = 0; k < keyWords[j].length; k++) {
-                        // Check for match and that the supposed syntactic block is not part of a longer word:
-                        if (sourceCode.startsWith(keyWords[j][k], i) && !isWordCharacter(sourceCode.charAt(i + keyWords[j][k].length()))) {
-                            //Found match! Save it.
-                            res.add(new SimpleSyntaxBlock(i, i + keyWords[j][k].length(), colors[j]));
-                            //Ignore the chars involved in the current word (no use parsing them)
-                            i += keyWords[j][k].length();
-                            break keyWordCheck;
+                        if (sourceCode.startsWith(keyWords[j][k], i)) {
+                            //Found match! Check that it actually is a correct match.
+                            int lastIndex = i+keyWords[j][k].length();
+                            if(lastIndex == sourceCode.length() || (!Character.isLetter(sourceCode.charAt(lastIndex)) && !Character.isDigit(sourceCode.charAt(lastIndex)))) {
+                                //Keyword confirmed.
+                                res.add(new SimpleSyntaxBlock(i, i + keyWords[j][k].length(), colors[j]));
+                                //Ignore the chars involved in the current word (no use parsing them)
+                                i += keyWords[j][k].length();
+                                break keyWordCheck;
+                            }
                         }
                     }
                 }
@@ -140,7 +143,7 @@ public class JavaImpl extends SimpleLanguage{
 
         return suffix;
     }
-
+    
     /**
      * Check whether the char at the given index is inside a
      * comment or not.
