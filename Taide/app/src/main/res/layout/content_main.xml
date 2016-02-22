@@ -22,5 +22,7 @@
         android:textColorHint="@android:color/white"
         android:hint="@string/insert_sample_descriptor"
         android:textAlignment="viewStart"
-        android:gravity="start" />
+        android:gravity="start"
+        android:focusableInTouchMode="true"
+        android:fontFamily="monospace" />
 </RelativeLayout>
