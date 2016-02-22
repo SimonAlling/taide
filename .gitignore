@@ -25,6 +25,7 @@ proguard/
 # Intellij files
 Taide/.idea/workspace.xml
 Taide/.idea/libraries
+Taide/.idea/*
 
 # Log Files
 *.log
