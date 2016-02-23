@@ -24,5 +24,6 @@
         android:textAlignment="viewStart"
         android:gravity="start"
         android:focusableInTouchMode="true"
-        android:fontFamily="monospace" />
+        android:fontFamily="monospace"
+        android:inputType="textNoSuggestions|textMultiLine" />
 </RelativeLayout>
