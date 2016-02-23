@@ -25,5 +25,8 @@
         android:gravity="start"
         android:focusableInTouchMode="true"
         android:fontFamily="monospace"
-        android:inputType="textNoSuggestions|textMultiLine" />
+        android:inputType="textNoSuggestions|textMultiLine"
+        android:isScrollContainer="true"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar" />
 </RelativeLayout>
