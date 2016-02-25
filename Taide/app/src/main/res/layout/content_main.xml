@@ -28,5 +28,7 @@
         android:inputType="textNoSuggestions|textMultiLine"
         android:isScrollContainer="true"
         android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbarSize="4dp"
         android:scrollbarThumbVertical="@drawable/scrollbar" />
 </RelativeLayout>
