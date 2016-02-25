@@ -16,6 +16,11 @@ import se.chalmers.taide.util.TabUtil;
  */
 public class JavaImpl extends SimpleLanguage{
 
+    // No guarantees; practically only a demo example:
+    private static boolean isWordCharacter(Character c) {
+        return c.toString().matches("\\w");
+    }
+
     /* Java keywords */
     private static final String[][] keyWords = {new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte", "String"},
                                                 new String[]{"abstract", "static", "volatile", "native", "public", "private", "protected", "synchronized", "transient", "final", "strictfp"},
@@ -62,7 +67,8 @@ public class JavaImpl extends SimpleLanguage{
                 keyWordCheck:
                 for (int j = 0; j < keyWords.length; j++) {
                     for (int k = 0; k < keyWords[j].length; k++) {
-                        if (sourceCode.startsWith(keyWords[j][k], i)) {
+                        // Check for match and that the supposed syntactic block is not part of a longer word:
+                        if (sourceCode.startsWith(keyWords[j][k], i) && !isWordCharacter(sourceCode.charAt(i + keyWords[j][k].length()))) {
                             //Found match! Save it.
                             res.add(new SimpleSyntaxBlock(i, i + keyWords[j][k].length(), colors[j]));
                             //Ignore the chars involved in the current word (no use parsing them)
