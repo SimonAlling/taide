@@ -36,4 +36,34 @@ public interface EditorModel {
      */
     void setTextView(EditText view);
 
+    /**
+     * Performs undo on the text field (according to the recorded history).
+     * If no history is found, nothing is done.
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    boolean undo();
+
+    /**
+     * Retrieves a string describing what undo() will undo. E.g.
+     * "Added 'public void'" or something similar. Returns null if no
+     * history to undo is found.
+     * @return A string containing what calling undo() will perform. null if no history is found.
+     */
+    String peekUndo();
+
+    /**
+     * Performs redo on the text field (according to the recorded history).
+     * If no history is found, nothing is done.
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    boolean redo();
+
+    /**
+     * Retrieves a string describing what redo() will redo. E.g.
+     * "Added 'public void'" or something similar. Returns null if no
+     * history to redo is found.
+     * @return A string containing what calling redo() will perform. null if no history is found.
+     */
+    String peekRedo();
+
 }

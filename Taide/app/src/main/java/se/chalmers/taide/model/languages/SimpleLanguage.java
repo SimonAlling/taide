@@ -60,4 +60,9 @@ public abstract class SimpleLanguage implements Language {
         //Return empty by default
         return "";
     }
+
+    @Override
+    public boolean equals(Object obj){
+        return obj != null && obj.getClass() == this.getClass() && this.getName().equals(((Language)obj).getName());
+    }
 }

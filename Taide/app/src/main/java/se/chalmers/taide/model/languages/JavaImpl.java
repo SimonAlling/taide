@@ -143,7 +143,7 @@ public class JavaImpl extends SimpleLanguage{
 
         return suffix;
     }
-    
+
     /**
      * Check whether the char at the given index is inside a
      * comment or not.

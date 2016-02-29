@@ -7,7 +7,7 @@ package se.chalmers.taide.util;
  */
 public class TabUtil {
 
-    // true doesn't work; \t looks just like a single space:
+    // Normal tab length of android is two spaces. This looks shitty.
     private static boolean useTabs = false;
     private static int nbrOfSpaces = 4;
 

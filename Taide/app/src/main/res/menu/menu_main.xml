@@ -22,4 +22,14 @@
         android:orderInCategory="50"
         android:title="@string/action_paste"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_undo"
+        android:orderInCategory="50"
+        android:title="@string/action_undo"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_redo"
+        android:orderInCategory="50"
+        android:title="@string/action_redo"
+        app:showAsAction="ifRoom" />
 </menu>

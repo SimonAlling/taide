@@ -1,10 +1,18 @@
 package se.chalmers.taide.model;
 
+import android.app.Activity;
+import android.util.Log;
 import android.widget.EditText;
+
+import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import se.chalmers.taide.model.history.HistoryHandlerFactory;
+import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.model.languages.LanguageFactory;
 
@@ -18,6 +26,7 @@ import se.chalmers.taide.model.languages.LanguageFactory;
  */
 public class SimpleEditorModel implements EditorModel{
 
+    private TextHistoryHandler historyHandler;
     private Language language;
     private EditText editText;
 
@@ -29,10 +38,10 @@ public class SimpleEditorModel implements EditorModel{
      * @param language The language to use
      */
     protected SimpleEditorModel(EditText text, String language){
-        this.language = LanguageFactory.getLanguage(language, text.getContext());
+        this.textFilters = new LinkedList<>();
+        setLanguage(LanguageFactory.getLanguage(language, text.getContext()));
 
         //Init filters
-        this.textFilters = new LinkedList<>();
         SimpleHighlighter sh = new SimpleHighlighter(this.language);
         textFilters.add(sh);
         textFilters.add(new SimpleAutoIndenter(this.language));
@@ -57,7 +66,7 @@ public class SimpleEditorModel implements EditorModel{
      */
     @Override
     public void setLanguage(Language lang) {
-        if(lang != null){
+        if(lang != null && !lang.equals(this.language)){
             this.language = lang;
             for(TextFilter tf : textFilters){
                 tf.setLanguage(lang);
@@ -83,6 +92,9 @@ public class SimpleEditorModel implements EditorModel{
     public void setTextView(EditText view) {
         if(view != null){
             if(this.editText != null){
+                if(historyHandler != null){
+                    historyHandler.registerInputField(null);        //Reset history handler
+                }
                 for(TextFilter tf : textFilters){
                     tf.detach();
                 }
@@ -90,9 +102,50 @@ public class SimpleEditorModel implements EditorModel{
 
             //Replace.
             this.editText = view;
+            this.historyHandler = HistoryHandlerFactory.createTextHistoryHandler(editText);
             for(TextFilter tf : textFilters){
                 tf.attach(view);
             }
         }
+    }
+
+    /**
+     * Performs undo on the text field (according to the recorded history).
+     * If no history is found, nothing is done.
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    @Override
+    public boolean undo(){
+        return historyHandler.undoAction();
+    }
+
+    /**
+     * Retrieves a string describing what undo() will undo. E.g.
+     * "Added 'public void'" or something similar. Returns null if no
+     * history to undo is found.
+     * @return A string containing what calling undo() will perform. null if no history is found.
+     */
+    @Override
+    public String peekUndo(){
+        return historyHandler.peekUndoAction();
+    }
+
+    /**
+     * Performs redo on the text field (according to the recorded history).
+     * If no history is found, nothing is done.
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    public boolean redo(){
+        return historyHandler.redoAction();
+    }
+
+    /**
+     * Retrieves a string describing what redo() will redo. E.g.
+     * "Added 'public void'" or something similar. Returns null if no
+     * history to redo is found.
+     * @return A string containing what calling redo() will perform. null if no history is found.
+     */
+    public String peekRedo(){
+        return historyHandler.peekRedoAction();
     }
 }

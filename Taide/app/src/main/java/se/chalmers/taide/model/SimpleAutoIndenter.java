@@ -34,7 +34,7 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
         int start = codeView.getSelectionStart();
 
         //Only apply if last character entered was new line character
-        if(source.charAt(start-1) == '\n') {
+        if(start > 0 && source.charAt(start-1) == '\n') {
             //Calculate changes
             int index = Math.max(0, source.lastIndexOf('\n', Math.max(0, start - 2)));
             String lastLine = source.substring(index + 1, start-1);
