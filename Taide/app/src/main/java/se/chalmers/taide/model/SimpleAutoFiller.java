@@ -1,7 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.widget.EditText;
-
 import java.util.List;
 
 import se.chalmers.taide.model.languages.Language;
@@ -43,7 +41,7 @@ public class SimpleAutoFiller extends AbstractTextFilter{
      */
     @Override
     protected void applyFilterEffect(String trigger) {
-        EditText textView = getTextView();
+        TextSource textView = getTextView();
         for(AutoFill f : autoFills){
             //If it was this auto fill that triggered it, apply it.
             if(f.getTrigger().equals(trigger)){

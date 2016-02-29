@@ -1,6 +1,6 @@
 package se.chalmers.taide.model.history;
 
-import android.widget.EditText;
+import se.chalmers.taide.model.TextSource;
 
 /**
  * Created by Matz on 2016-02-17.
@@ -9,7 +9,7 @@ public class HistoryHandlerFactory {
 
     private static FileHistoryHandler fileHistoryHandler;
 
-    public static TextHistoryHandler createTextHistoryHandler(EditText editor){
+    public static TextHistoryHandler createTextHistoryHandler(TextSource editor){
         TextHistoryHandler thh = new TimeTextHistoryHandler();
         thh.registerInputField(editor);
 

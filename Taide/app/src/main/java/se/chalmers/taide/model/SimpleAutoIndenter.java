@@ -1,7 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.widget.EditText;
-
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -30,7 +28,7 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
      */
     protected void applyFilterEffect(String trigger){
         //Retrieve variables
-        EditText codeView = getTextView();
+        TextSource codeView = getTextView();
         String source = codeView.getText().toString();
         int start = codeView.getSelectionStart();
 

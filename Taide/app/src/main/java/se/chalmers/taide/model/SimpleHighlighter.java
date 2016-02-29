@@ -4,8 +4,6 @@ import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.model.languages.SyntaxBlock;
@@ -33,7 +31,7 @@ public class SimpleHighlighter extends AbstractTextFilter{
      */
     protected void applyFilterEffect(String trigger){
         //Retrieve data
-        EditText codeView = getTextView();
+        TextSource codeView = getTextView();
         Language language = getLanguage();
 
         if(codeView != null && language != null) {
@@ -49,7 +47,7 @@ public class SimpleHighlighter extends AbstractTextFilter{
                     code.setSpan(new StyleSpan(Typeface.ITALIC), sb.getStartIndex(), sb.getEndIndex(), 0);
                 }
             }
-            codeView.setText(code, TextView.BufferType.SPANNABLE);
+            codeView.setSpannable(code);
 
             //Reset text marker
             codeView.setSelection(start);

@@ -1,22 +1,20 @@
 package se.chalmers.taide.model.history;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import se.chalmers.taide.R;
+import se.chalmers.taide.model.TextSource;
 
 /**
  * Created by Matz on 2016-02-17.
  */
-public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, TextWatcher{
+public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, TextSource.TextSourceListener{
 
-    private EditText inputField;
+    private TextSource inputField;
     private List<List<TextAction>> actions;
     private int currentIndex = -1;
 
@@ -31,19 +29,19 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
      * @param input The text view to observe
      */
     @Override
-    public void registerInputField(EditText input) {
-        EditText oldInput = this.inputField;
-        if(inputField != null){
-            //Reset old field
-            inputField.removeTextChangedListener(this);
-        }
+    public void registerInputField(TextSource input) {
+        if(input != this.inputField) {
+            //Remove last text source
+            if (this.inputField != null) {
+                //Reset old field
+                this.inputField.removeListener(this);
+            }
 
-        //Enable new text field
-        inputField = input;
-        //actions.clear();
-        currentIndex = -1;
-        if(inputField != oldInput) {            //FIXME only for test!
-            inputField.addTextChangedListener(this);
+            //Enable new text source
+            this.inputField = input;
+            actions.clear();
+            currentIndex = -1;
+            inputField.addListener(this);
         }
     }
 
@@ -209,11 +207,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
     }
 
     @Override
-    public abstract void onTextChanged(CharSequence s, int start, int before, int count);
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-    @Override
-    public void afterTextChanged(Editable s) {}
+    public abstract void onTextChanged(String s, int start, int before, int count);
 
     protected enum Action{
         ADD, REMOVE;

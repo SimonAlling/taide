@@ -1,7 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.widget.EditText;
-
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -24,17 +22,11 @@ public interface EditorModel {
     void setLanguage(Language lang);
 
     /**
-     * Retrieve the currently attached text view to this model
-     * @return The currently attached text view
-     */
-    EditText getCurrentTextView();
-
-    /**
      * Set the text view to be used for this model. If any other text
      * view is attached, this will be detached without any warning.
-     * @param view The view to set as the attached one.
+     * @param textSource The text source to set as the attached one.
      */
-    void setTextView(EditText view);
+    void setTextSource(TextSource textSource);
 
     /**
      * Performs undo on the text field (according to the recorded history).

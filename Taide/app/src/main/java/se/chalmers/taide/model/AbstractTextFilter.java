@@ -1,9 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
-
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -11,10 +7,10 @@ import se.chalmers.taide.model.languages.Language;
  *
  * Implements the basic functionality for a text filter.
  */
-public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
+public abstract class AbstractTextFilter implements TextFilter, TextSource.TextSourceListener{
 
     private Language language;
-    private EditText editText;
+    private TextSource textSource;
     private String[] triggerTexts;
 
     protected AbstractTextFilter(String... triggerTexts){
@@ -31,8 +27,8 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
      * Retrieve the text view that has been attached to this filter.
      * @return The currently attached text view
      */
-    protected EditText getTextView(){
-        return editText;
+    protected TextSource getTextView(){
+        return textSource;
     }
 
     /**
@@ -48,26 +44,28 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
      * Attaches the given text view to this filter. Note that only one text
      * view can be attached to each instance at a time. To reuse the same filter,
      * detach before attaching the new text view.
-     * @param editText The text view to attach
+     * @param textSource The text view to attach
      * @throws IllegalStateException If a text view is already attached to this filter.
      */
-    public void attach(EditText editText) throws IllegalStateException{
-        if(this.editText != null){
-            throw new IllegalStateException("Cannot attach to new EditText, an attachment is already in use");
+    @Override
+    public void attach(TextSource textSource) throws IllegalStateException{
+        if(this.textSource != null){
+            throw new IllegalStateException("Cannot attach to new TextSource, an attachment is already in use");
         }
 
-        this.editText = editText;
-        this.editText.addTextChangedListener(this);
+        this.textSource = textSource;
+        this.textSource.addListener(this);
     }
 
     /**
      * Detach the current text view from this filter. If no text view is
      * attached, this call will do nothing.
      */
+    @Override
     public void detach(){
-        if(this.editText != null) {
-            this.editText.removeTextChangedListener(this);
-            this.editText = null;
+        if(this.textSource != null) {
+            this.textSource.removeListener(this);
+            this.textSource = null;
         }
     }
 
@@ -99,10 +97,10 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
      * @param count The new length of the data (starting at start)
      */
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onTextChanged(String s, int start, int before, int count) {
         //Update filter if correct input received
         if(count>=before) {
-            String input = s.toString().substring(0, start + count);
+            String input = s.substring(0, start + count);
             for (String triggerText : triggerTexts) {
                 if (input.endsWith(triggerText)) {
                     applyFilterEffect(triggerText);
@@ -110,11 +108,5 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
             }
         }
     }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void afterTextChanged(Editable s) {}
 
 }

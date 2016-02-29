@@ -1,7 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.widget.EditText;
-
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -17,7 +15,7 @@ public interface TextFilter {
      * view changes, the filter will detect this and update itself.
      * @param text The text view to attach
      */
-    void attach(EditText text);
+    void attach(TextSource text);
 
     /**
      * Detaches the current text view. If no text view is attached, it will behave

@@ -1,12 +1,13 @@
 package se.chalmers.taide.model.history;
 
 import android.util.Log;
-import android.widget.EditText;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import se.chalmers.taide.model.TextSource;
 
 /**
  * Created by Matz on 2016-02-17.
@@ -27,7 +28,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
     }
 
     @Override
-    public void registerInputField(EditText input){
+    public void registerInputField(TextSource input){
         super.registerInputField(input);
         currentInputContent = (input==null?"":input.getText().toString());
     }
@@ -74,9 +75,9 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
 
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onTextChanged(String s, int start, int before, int count) {
         //Log.d("HistoryHandler", "CALL: [start=" + start + ", before=" + before + ", count=" + count + "], state is " + currentTextAction);
-        if(s.toString().equals(currentInputContent)){
+        if(s.equals(currentInputContent)){
             Log.d("HistoryHandler", "No change in data - skipping history check.");
             return;
         }
@@ -85,14 +86,14 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
         timer.purge();
         timer = new Timer("TextHistoryHandler");
         if(!hasPendingTask) {
-            if (Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.toString().substring(start, start+before))) {  //Text replaced. (not only letter written)
+            if (Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before))) {  //Text replaced. (not only letter written)
                 if(before > 0 && count > 0){
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start),
-                                 new TextAction(Action.ADD, s.toString().substring(start, start+count), start));
+                                 new TextAction(Action.ADD, s.substring(start, start+count), start));
                 }else if(before > 0){
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start));
                 }else{
-                    insertAction(new TextAction(Action.ADD, s.toString().substring(start, start+count), start));
+                    insertAction(new TextAction(Action.ADD, s.substring(start, start+count), start));
                 }
                 hasPendingTask = false;
             } else {
@@ -100,7 +101,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                 this.currentTextAction = (before < count ? Action.ADD : Action.REMOVE);
                 if (currentTextAction == Action.ADD) {
                     currentTextPos += before;
-                    this.currentTextInput = s.subSequence(currentTextPos, start + count).toString();
+                    this.currentTextInput = s.substring(currentTextPos, start + count);
                 } else {
                     currentTextPos += count;
                     this.currentTextInput = currentInputContent.substring(currentTextPos, start+before);
@@ -109,12 +110,12 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                 hasPendingTask = true;
             }
         }else{
-            if(Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.toString().substring(start, start+before))){
+            if(Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before))){
                 if(currentTextAction == Action.ADD && count>before && (start == currentTextPos || start+before == currentTextPos+currentTextInput.length())){
                     if(start+before == currentTextPos+currentTextInput.length() && before>0){
-                        currentTextInput = currentTextInput.substring(0, currentTextInput.length()-before)+s.subSequence(start, start+count).toString();
+                        currentTextInput = currentTextInput.substring(0, currentTextInput.length()-before)+s.substring(start, start+count);
                     }else{
-                        currentTextInput += s.subSequence(start, start+count).toString();
+                        currentTextInput += s.substring(start, start+count);
                     }
                     timer.schedule(getCountdownTask(), countdownTime);
                     hasPendingTask = true;
@@ -131,7 +132,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                         insertCurrentData();
                         onTextChanged(s, start, before, count);
                     }else{
-                        currentTextInput += s.subSequence(start+before, start+count).toString();
+                        currentTextInput += s.substring(start+before, start+count);
                         timer.schedule(getCountdownTask(), countdownTime);
                         hasPendingTask = true;
                     }

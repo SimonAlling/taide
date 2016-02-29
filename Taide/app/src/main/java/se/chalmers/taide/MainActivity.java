@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Bind code editor to the model. Use java as language
-        model = ModelFactory.createEditorModel(codeEditor, LanguageFactory.JAVA);
+        model = ModelFactory.createEditorModel(ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
     }
 

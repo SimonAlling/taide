@@ -1,6 +1,6 @@
 package se.chalmers.taide.model.languages;
 
-import android.content.Context;
+import android.content.res.Resources;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,9 +30,9 @@ public class JavaImpl extends SimpleLanguage{
                                                 new String[]{"package", "class", "interface", "this", "super", "new"}};
     private int[] colors;
 
-    protected JavaImpl(Context context){
+    protected JavaImpl(Resources resources){
         //Init syntax highlightning colors.
-        colors = context.getResources().getIntArray(R.array.java_syntax_default_colors);
+        colors = resources.getIntArray(R.array.java_syntax_default_colors);
     }
 
     /**

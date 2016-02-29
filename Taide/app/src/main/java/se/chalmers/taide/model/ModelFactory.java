@@ -14,12 +14,12 @@ public class ModelFactory {
     /**
      * Creates a EditorModel with the given language and binds it to the
      * given text view
-     * @param text The text view to attach
+     * @param textSource The text source to attach
      * @param lang The name of the language to use (see LanguageFactory constants)
      * @return A valid EditorModel object with correct properties.
      */
-    public static EditorModel createEditorModel(EditText text, String lang){
-        return new SimpleEditorModel(text, lang);
+    public static EditorModel createEditorModel(TextSource textSource, String lang){
+        return new SimpleEditorModel(textSource, lang);
     }
 
     /**
@@ -31,6 +31,10 @@ public class ModelFactory {
      */
     public static AutoFill createAutoFill(String trigger, String prefix, String suffix){
         return new SimpleAutoFill(trigger, prefix, suffix);
+    }
+
+    public static TextSource editTextToTextSource(EditText editText){
+        return new EditTextSource(editText);
     }
 
 }
