@@ -1,7 +1,5 @@
 package se.chalmers.taide.model.history;
 
-import android.widget.EditText;
-
 /**
  * Created by Matz on 2016-02-17.
  */

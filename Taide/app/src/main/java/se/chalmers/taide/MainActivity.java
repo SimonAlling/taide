@@ -1,6 +1,5 @@
 package se.chalmers.taide;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,14 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
-import se.chalmers.taide.model.SimpleEditorModel;
-import se.chalmers.taide.model.history.AbstractTextHistoryHandler;
-import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.util.Clipboard;
 import se.chalmers.taide.util.TabUtil;
@@ -88,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu){
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
         menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
-        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo()!=null);
+        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
         return true;
     }
 

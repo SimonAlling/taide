@@ -1,15 +1,9 @@
 package se.chalmers.taide.model;
 
-import android.app.Activity;
-import android.util.Log;
 import android.widget.EditText;
-
-import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
@@ -42,10 +36,10 @@ public class SimpleEditorModel implements EditorModel{
         setLanguage(LanguageFactory.getLanguage(language, text.getContext()));
 
         //Init filters
-        SimpleHighlighter sh = new SimpleHighlighter(this.language);
-        textFilters.add(sh);
         textFilters.add(new SimpleAutoIndenter(this.language));
         textFilters.add(new SimpleAutoFiller(this.language));
+        SimpleHighlighter sh = new SimpleHighlighter(this.language);
+        textFilters.add(sh);
 
         //Setup text view and apply highlight immediately
         setTextView(text);

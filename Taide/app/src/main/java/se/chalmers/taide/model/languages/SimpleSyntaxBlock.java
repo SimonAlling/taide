@@ -9,11 +9,18 @@ public class SimpleSyntaxBlock implements SyntaxBlock {
 
     private int startIndex, endIndex;
     private int color;
+    private boolean bold, italic;
 
     protected SimpleSyntaxBlock(int startIndex, int endIndex, int color){
+        this(startIndex, endIndex, color, false, false);
+    }
+
+    protected SimpleSyntaxBlock(int startIndex, int endIndex, int color, boolean bold, boolean italic){
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.color = color;
+        this.bold = bold;
+        this.italic = italic;
     }
 
     /**
@@ -38,6 +45,22 @@ public class SimpleSyntaxBlock implements SyntaxBlock {
      */
     public int getMarkupColor(){
         return color;
+    }
+
+    /**
+     * Checks whether the block should be formatted bold.
+     * @return <code>true</code> if the block is bold, <code>false</code> otherwise
+     */
+    public boolean isBold(){
+        return bold;
+    }
+
+    /**
+     * Checks whether the block should be formatted italic.
+     * @return <code>true</code> if the block is italic, <code>false</code> otherwise
+     */
+    public boolean isItalic(){
+        return italic;
     }
 
     @Override

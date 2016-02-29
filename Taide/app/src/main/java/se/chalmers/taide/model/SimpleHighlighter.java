@@ -1,7 +1,9 @@
 package se.chalmers.taide.model;
 
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -40,6 +42,12 @@ public class SimpleHighlighter extends AbstractTextFilter{
             SpannableString code = new SpannableString(codeView.getText().toString());
             for (SyntaxBlock sb : language.getSyntaxBlocks(codeView.getText().toString())) {
                 code.setSpan(new ForegroundColorSpan(sb.getMarkupColor()), sb.getStartIndex(), sb.getEndIndex(), 0);
+                if(sb.isBold()){
+                    code.setSpan(new StyleSpan(Typeface.BOLD), sb.getStartIndex(), sb.getEndIndex(), 0);
+                }
+                if(sb.isItalic()){
+                    code.setSpan(new StyleSpan(Typeface.ITALIC), sb.getStartIndex(), sb.getEndIndex(), 0);
+                }
             }
             codeView.setText(code, TextView.BufferType.SPANNABLE);
 

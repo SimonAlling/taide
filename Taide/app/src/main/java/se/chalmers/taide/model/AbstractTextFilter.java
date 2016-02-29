@@ -106,7 +106,6 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
             for (String triggerText : triggerTexts) {
                 if (input.endsWith(triggerText)) {
                     applyFilterEffect(triggerText);
-                    break;
                 }
             }
         }

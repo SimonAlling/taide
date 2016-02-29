@@ -51,20 +51,41 @@ public class JavaImpl extends SimpleLanguage{
     public List<SyntaxBlock> getSyntaxBlocks(String sourceCode){
         //Very basic and intuitive search-through. NOTE: Totally ineffective, just temporary.
         int inQuotes = -1;
-        List<SyntaxBlock> res = new LinkedList<SyntaxBlock>();
+        int inComment = -1;
+        boolean longComment = false;
+        List<SyntaxBlock> res = new LinkedList<>();
         for(int i = 0; i<sourceCode.length(); i++){
+            if(inComment > 0){
+                if(longComment && sourceCode.charAt(i) == '*' && sourceCode.length()>i+1 && sourceCode.charAt(i+1) == '/'){
+                    res.add(new SimpleSyntaxBlock(inComment, i + 2, colors[colors.length - 1], false, true));
+                    inComment = -1;
+                    i += 2;
+                }else if(!longComment && sourceCode.charAt(i) == '\n'){
+                    res.add(new SimpleSyntaxBlock(inComment, i + 1, colors[colors.length - 1], false, true));
+                    inComment = -1;
+                    i += 1;
+                }
+            }
+
+            //Check for comment
+            if(inQuotes < 0 && sourceCode.charAt(i) == '/' && sourceCode.length()>i+1){
+                if(sourceCode.charAt(i+1) == '*' || sourceCode.charAt(i+1) == '/'){
+                    inComment = i;
+                    longComment = sourceCode.charAt(i+1) == '*';
+                }
+            }
             //Check for quotes
-            if(sourceCode.charAt(i) == '\"' && (i == 0 || sourceCode.charAt(i-1) != '\\')){
-                if(inQuotes >= 0){
-                    res.add(new SimpleSyntaxBlock(inQuotes, i+1, colors[colors.length-1]));
+            if (inComment < 0 && sourceCode.charAt(i) == '\"' && (i == 0 || sourceCode.charAt(i - 1) != '\\')) {
+                if (inQuotes >= 0) {
+                    res.add(new SimpleSyntaxBlock(inQuotes, i + 1, colors[colors.length - 2]));
                     inQuotes = -1;
-                }else{
+                } else {
                     inQuotes = i;
                 }
             }
 
             //Check for keywords. Note that they cannot happen if preceded by a letter or digit.
-            if(i == 0 || (!Character.isLetter(sourceCode.charAt(i-1)) && !Character.isDigit(sourceCode.charAt(i-1)))){
+            if (inQuotes < 0 && inComment < 0 && (i == 0 || (!Character.isLetter(sourceCode.charAt(i - 1)) && !Character.isDigit(sourceCode.charAt(i - 1))))){
                 keyWordCheck:
                 for (int j = 0; j < keyWords.length; j++) {
                     for (int k = 0; k < keyWords[j].length; k++) {
@@ -79,6 +100,13 @@ public class JavaImpl extends SimpleLanguage{
                     }
                 }
             }
+        }
+
+        //Add quotes and comments formatting manually if they do not end ever.
+        if(inComment > 0){
+            res.add(new SimpleSyntaxBlock(inComment, sourceCode.length(), colors[colors.length - 1], false, true));
+        }else if(inQuotes > 0){
+            res.add(new SimpleSyntaxBlock(inQuotes, sourceCode.length(), colors[colors.length - 2]));
         }
 
         return res;
@@ -170,6 +198,7 @@ public class JavaImpl extends SimpleLanguage{
     public List<AutoFill> getAutoFills(){
         List<AutoFill> autoFills = new LinkedList<>();
         autoFills.add(new SimpleAutoFill("(", "(", ")"));
+        autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
         autoFills.add(new SimpleAutoFill("syso ", "System.out.println(", ");"));
         return autoFills;
     }

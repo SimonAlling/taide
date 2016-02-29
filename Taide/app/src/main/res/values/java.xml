@@ -7,5 +7,6 @@
         <item>@color/orange</item>
         <item>@color/pink</item>
         <item>@color/lightYellow</item>
+        <item>@color/yellowGreen</item>
     </array>
 </resources>

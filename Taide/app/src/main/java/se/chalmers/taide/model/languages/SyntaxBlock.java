@@ -25,4 +25,16 @@ public interface SyntaxBlock {
      * @return The resource ID of the color that should be assigned to this block
      */
     int getMarkupColor();
+
+    /**
+     * Checks whether the block should be formatted bold.
+     * @return <code>true</code> if the block is bold, <code>false</code> otherwise
+     */
+    boolean isBold();
+
+    /**
+     * Checks whether the block should be formatted italic.
+     * @return <code>true</code> if the block is italic, <code>false</code> otherwise
+     */
+    boolean isItalic();
 }
