@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import se.chalmers.taide.R;
+import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.util.TabUtil;
 
 
@@ -148,16 +149,29 @@ public class JavaImpl extends SimpleLanguage{
      * @param index The source character offset to investigate
      * @return <code>true</code> if the character is inside a comment, <code>false</code> otherwise
      */
-    private boolean isInComment(String source, int index){
+    @Override
+    public boolean isInComment(String source, int index){
         int lineStart = Math.max(0, source.lastIndexOf("\n", index)+1);
         int lineEnd = source.indexOf("\n", lineStart);
-        String line = source.substring(lineStart, (lineEnd<0?source.length():lineEnd));
+        String line = source.substring(lineStart, (lineEnd < 0 ? source.length() : lineEnd));
         if(line.contains("//")){
             return true;
         }
 
         int longCommentStart = source.lastIndexOf("/*", index);
         return longCommentStart>=0 && source.lastIndexOf("*/", index) < longCommentStart;
+    }
+
+    /**
+     * Retrieves a list of all the autofills that should be applied
+     * @return A list of the language specific auto fills
+     */
+    @Override
+    public List<AutoFill> getAutoFills(){
+        List<AutoFill> autoFills = new LinkedList<>();
+        autoFills.add(new SimpleAutoFill("(", "(", ")"));
+        autoFills.add(new SimpleAutoFill("syso ", "System.out.println(", ");"));
+        return autoFills;
     }
 
     /**

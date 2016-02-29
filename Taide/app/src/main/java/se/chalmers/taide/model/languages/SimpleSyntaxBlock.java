@@ -5,7 +5,7 @@ package se.chalmers.taide.model.languages;
  *
  * Data container for a highlight syntax block.
  */
-public class SimpleSyntaxBlock implements SyntaxBlock{
+public class SimpleSyntaxBlock implements SyntaxBlock {
 
     private int startIndex, endIndex;
     private int color;

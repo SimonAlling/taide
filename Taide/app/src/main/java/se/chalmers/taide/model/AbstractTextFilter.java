@@ -23,8 +23,9 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
 
     /**
      * Perform the functionality of this specific filter.
+     * @param trigger The string that triggered the effect
      */
-    protected abstract void applyFilterEffect();
+    protected abstract void applyFilterEffect(String trigger);
 
     /**
      * Retrieve the text view that has been attached to this filter.
@@ -100,11 +101,13 @@ public abstract class AbstractTextFilter implements TextFilter, TextWatcher{
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         //Update filter if correct input received
-        String input = s.toString().substring(start, start + count);
-        for (String triggerText : triggerTexts){
-            if (input.equals(triggerText)) {
-                applyFilterEffect();
-                break;
+        if(count>=before) {
+            String input = s.toString().substring(0, start + count);
+            for (String triggerText : triggerTexts) {
+                if (input.endsWith(triggerText)) {
+                    applyFilterEffect(triggerText);
+                    break;
+                }
             }
         }
     }

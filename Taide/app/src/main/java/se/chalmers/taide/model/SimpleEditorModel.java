@@ -45,10 +45,11 @@ public class SimpleEditorModel implements EditorModel{
         SimpleHighlighter sh = new SimpleHighlighter(this.language);
         textFilters.add(sh);
         textFilters.add(new SimpleAutoIndenter(this.language));
+        textFilters.add(new SimpleAutoFiller(this.language));
 
         //Setup text view and apply highlight immediately
         setTextView(text);
-        sh.applyFilterEffect();
+        sh.applyFilterEffect("");
     }
 
     /**

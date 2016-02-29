@@ -2,6 +2,8 @@ package se.chalmers.taide.model;
 
 import android.widget.EditText;
 
+import se.chalmers.taide.model.languages.SimpleAutoFill;
+
 /**
  * Created by Matz on 2016-02-07.
  *
@@ -18,6 +20,17 @@ public class ModelFactory {
      */
     public static EditorModel createEditorModel(EditText text, String lang){
         return new SimpleEditorModel(text, lang);
+    }
+
+    /**
+     * Creates a auto fill object that can be fed into the model for cool customization
+     * @param trigger The text to trigger an event
+     * @param prefix The text to be positioned before the selection marker
+     * @param suffix The text to be positioned after the selection marker
+     * @return A valid auto fill object with the given properties.
+     */
+    public static AutoFill createAutoFill(String trigger, String prefix, String suffix){
+        return new SimpleAutoFill(trigger, prefix, suffix);
     }
 
 }

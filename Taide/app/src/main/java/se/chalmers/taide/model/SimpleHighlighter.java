@@ -27,8 +27,9 @@ public class SimpleHighlighter extends AbstractTextFilter{
     /**
      * Applies the actual effect on the text view.
      * NOTE: This requires a non-null language to work.
+     * @param trigger The string that triggered the effect
      */
-    protected void applyFilterEffect(){
+    protected void applyFilterEffect(String trigger){
         //Retrieve data
         EditText codeView = getTextView();
         Language language = getLanguage();

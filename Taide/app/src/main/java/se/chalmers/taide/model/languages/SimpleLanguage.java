@@ -3,6 +3,8 @@ package se.chalmers.taide.model.languages;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.taide.model.AutoFill;
+
 /**
  * Created by Matz on 2016-02-15.
  *
@@ -59,6 +61,15 @@ public abstract class SimpleLanguage implements Language {
     public String getIndentationSuffix(String source, int start, String line) {
         //Return empty by default
         return "";
+    }
+
+    /**
+     * Retrieves a list of all the auto fills that should be applied
+     * @return A list of the language specific auto fills
+     */
+    @Override
+    public List<AutoFill> getAutoFills(){
+        return new ArrayList<>();
     }
 
     @Override

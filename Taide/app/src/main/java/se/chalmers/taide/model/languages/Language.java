@@ -2,6 +2,8 @@ package se.chalmers.taide.model.languages;
 
 import java.util.List;
 
+import se.chalmers.taide.model.AutoFill;
+
 /**
  * Created by Matz on 2016-02-07.
  *
@@ -44,5 +46,20 @@ public interface Language {
      * @return The text to insert on the new line, after the line marker
      */
     String getIndentationSuffix(String source, int start, String line);
+
+    /**
+     * Check whether the char at the given index is inside a
+     * comment or not.
+     * @param source The source code
+     * @param index The source character offset to investigate
+     * @return <code>true</code> if the character is inside a comment, <code>false</code> otherwise
+     */
+    boolean isInComment(String source, int index);
+
+    /**
+     * Retrieves a list of all the autofills that should be applied
+     * @return A list of the language specific auto fills
+     */
+    List<AutoFill> getAutoFills();
 
 }

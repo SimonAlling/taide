@@ -26,8 +26,9 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
      * Applies the effect on the text view.
      * NOTE: This requires a non-null language to work. Note that no
      * check is made to make sure that the language is set.
+     * @param trigger The string that triggered the effect
      */
-    protected void applyFilterEffect(){
+    protected void applyFilterEffect(String trigger){
         //Retrieve variables
         EditText codeView = getTextView();
         String source = codeView.getText().toString();
