@@ -200,6 +200,7 @@ public class JavaImpl extends SimpleLanguage{
         autoFills.add(new SimpleAutoFill("(", "(", ")"));
         autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
         autoFills.add(new SimpleAutoFill("syso ", "System.out.println(", ");"));
+        autoFills.add(new SimpleAutoFill("{", "{", "}"));
         return autoFills;
     }
 
