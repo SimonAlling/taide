@@ -35,3 +35,13 @@ Taide/.idea/*
 
 # Android Studio captures folder
 captures/
+
+# Android Studio
+*.iml
+.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
+build/
+
+# Windows thumbnail db
+Thumbs.db

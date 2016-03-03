@@ -25,6 +25,8 @@ import se.chalmers.taide.util.TabUtil;
  * Main class for the Android app UI.
  */
 
+//Testing that git works as i wants will remove this later
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText codeEditor;
