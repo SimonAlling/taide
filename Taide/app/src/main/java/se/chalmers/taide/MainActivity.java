@@ -26,6 +26,7 @@ import se.chalmers.taide.util.TabUtil;
  */
 
 
+// massa problem har jag haft trot löst de men måste testa igen med git
 
 public class MainActivity extends AppCompatActivity {
 
