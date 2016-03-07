@@ -1,7 +1,5 @@
 package se.chalmers.taide.model.history;
 
-import android.util.Log;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -18,8 +16,9 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
     private Action currentTextAction = null;
     private int currentTextPos = -1;
     private String currentTextInput = "";
+
     private Timer timer;
-    private int countdownTime = 1000;
+    private static final int COUNTDOWN_TIME = 1000;
     private boolean hasPendingTask = false;
 
     protected TimeTextHistoryHandler(){
@@ -76,9 +75,8 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
 
     @Override
     public void onTextChanged(String s, int start, int before, int count) {
-        //Log.d("HistoryHandler", "CALL: [start=" + start + ", before=" + before + ", count=" + count + "], state is " + currentTextAction);
         if(s.equals(currentInputContent)){
-            Log.d("HistoryHandler", "No change in data - skipping history check.");
+            //Ignore change.
             return;
         }
 
@@ -86,7 +84,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
         timer.purge();
         timer = new Timer("TextHistoryHandler");
         if(!hasPendingTask) {
-            if (Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before))) {  //Text replaced. (not only letter written)
+            if (Math.abs(before-count) != 1 || (s.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {  //Text replaced. (not only letter written)
                 if(before > 0 && count > 0){
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start),
                                  new TextAction(Action.ADD, s.substring(start, start+count), start));
@@ -106,18 +104,24 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                     currentTextPos += count;
                     this.currentTextInput = currentInputContent.substring(currentTextPos, start+before);
                 }
-                timer.schedule(getCountdownTask(), countdownTime);
+                timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                 hasPendingTask = true;
             }
         }else{
-            if(Math.abs(before-count) != 1 || !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before))){
+            if(Math.abs(before-count) != 1 || (s.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))){
                 if(currentTextAction == Action.ADD && count>before && (start == currentTextPos || start+before == currentTextPos+currentTextInput.length())){
                     if(start+before == currentTextPos+currentTextInput.length() && before>0){
-                        currentTextInput = currentTextInput.substring(0, currentTextInput.length()-before)+s.substring(start, start+count);
+                        if(currentTextInput.length()>=before){
+                            currentTextInput = currentTextInput.substring(0, currentTextInput.length()-before)+s.substring(start, start+count);
+                        }else{
+                            insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before-currentTextInput.length()), start));
+                            currentTextPos = start;
+                            currentTextInput = s.substring(start, start+count);
+                        }
                     }else{
                         currentTextInput += s.substring(start, start+count);
                     }
-                    timer.schedule(getCountdownTask(), countdownTime);
+                    timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                     hasPendingTask = true;
                 }else {
                     //Save old state
@@ -133,7 +137,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                         onTextChanged(s, start, before, count);
                     }else{
                         currentTextInput += s.substring(start+before, start+count);
-                        timer.schedule(getCountdownTask(), countdownTime);
+                        timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                         hasPendingTask = true;
                     }
                 }else if(currentTextAction == Action.REMOVE){
@@ -144,7 +148,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                     }else{
                         currentTextPos -= 1;
                         currentTextInput = currentInputContent.charAt(start+count)+currentTextInput;
-                        timer.schedule(getCountdownTask(), countdownTime);
+                        timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                         hasPendingTask = true;
                     }
                 }else{
@@ -153,6 +157,6 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
             }
         }
 
-        currentInputContent = s.toString();
+        currentInputContent = s;
     }
 }

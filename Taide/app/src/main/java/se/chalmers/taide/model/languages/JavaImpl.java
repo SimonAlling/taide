@@ -7,6 +7,7 @@ import java.util.List;
 
 import se.chalmers.taide.R;
 import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.util.StringUtil;
 import se.chalmers.taide.util.TabUtil;
 
 
@@ -144,7 +145,7 @@ public class JavaImpl extends SimpleLanguage {
      * Retrieves the indentation text to insert on a newline character, but position
      * after the text input marker.
      * @param source The entire source code
-     * @param start The start index in the the source code of the line that was ended
+     * @param start The start index of the line that was ended (in the the source code string)
      * @param line The line that was ended
      * @return The text to insert on the new line, after the line marker
      */
@@ -156,6 +157,11 @@ public class JavaImpl extends SimpleLanguage {
             if (line.endsWith("{")) {
                 if (countOccurrences(source, "{") > countOccurrences(source, "}")) {
                     suffix += "\n" + super.getIndentationPrefix(source, start, line) + "}";
+                }else{
+                    Character nextChar = StringUtil.nextNonWSChar(source, start+line.length());
+                    if(nextChar != null && nextChar.charValue() == '}'){
+                        suffix += "\n" + super.getIndentationPrefix(source, start, line);
+                    }
                 }
             }
         } else {

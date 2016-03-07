@@ -21,11 +21,20 @@ public class EditTextSource implements TextSource {
     protected EditTextSource(EditText input) {
         this.input = input;
         this.input.addTextChangedListener(new TextWatcher() {
+            private String currentInputContent = "";
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.equals(currentInputContent)){
+                    //Log.d("AbstractTextFilter", "No text has changed, ignoring.");
+                    return;
+                }else{
+                    currentInputContent = s.toString();
+                }
+
                 String str = s.toString();
                 for (TextSourceListener listener : listeners) {
                     listener.onTextChanged(str, start, before, count);
