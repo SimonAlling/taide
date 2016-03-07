@@ -26,10 +26,10 @@ public class SimpleAutoFiller extends AbstractTextFilter{
      * Init the filter with a list of auto fills immediately.
      * @param autoFills The auto fills to use
      */
-    protected SimpleAutoFiller(List<AutoFill> autoFills){
+    protected SimpleAutoFiller(List<AutoFill> autoFills) {
         this.autoFills = autoFills;
         String[] triggers = new String[autoFills.size()];
-        for(int i = 0; i<autoFills.size(); i++){
+        for (int i = 0; i < autoFills.size(); i++){
             triggers[i] = autoFills.get(i).getTrigger();
         }
         setTriggerText(triggers);
@@ -42,15 +42,15 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     @Override
     protected void applyFilterEffect(String trigger) {
         TextSource textView = getTextView();
-        for(AutoFill f : autoFills){
-            //If it was this auto fill that triggered it, apply it.
-            if(f.getTrigger().equals(trigger)){
+        for (AutoFill f : autoFills) {
+            // If it was this auto fill that triggered it, apply it.
+            if (f.getTrigger().equals(trigger)) {
                 int pos = textView.getSelectionStart();
                 String prefix = f.getPrefix(textView.getText().toString(), pos);
                 String suffix = f.getSuffix(textView.getText().toString(), pos);
-                if(prefix.length()>0 || suffix.length()>0) {
+                if (prefix.length() > 0 || suffix.length() > 0) {
                     textView.getText().replace(pos - trigger.length(), pos, prefix + suffix);
-                    textView.setSelection(pos + prefix.length()-trigger.length());
+                    textView.setSelection(pos + prefix.length() - trigger.length());
                 }
             }
         }

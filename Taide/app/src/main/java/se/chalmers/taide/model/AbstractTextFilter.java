@@ -62,8 +62,8 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
      * attached, this call will do nothing.
      */
     @Override
-    public void detach(){
-        if(this.textSource != null) {
+    public void detach() {
+        if (this.textSource != null) {
             this.textSource.removeListener(this);
             this.textSource = null;
         }
@@ -98,8 +98,8 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
      */
     @Override
     public void onTextChanged(String s, int start, int before, int count) {
-        //Update filter if correct input received
-        if(count>=before) {
+        // Update filter if correct input received
+        if (count >= before) {
             String input = s.substring(0, start + count);
             for (String triggerText : triggerTexts) {
                 if (input.endsWith(triggerText)) {

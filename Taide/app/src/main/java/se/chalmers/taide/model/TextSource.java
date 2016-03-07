@@ -24,7 +24,7 @@ public interface TextSource {
 
 
 
-    interface TextSourceListener{
+    interface TextSourceListener {
         void onTextChanged(String s, int start, int before, int count);
     }
 }

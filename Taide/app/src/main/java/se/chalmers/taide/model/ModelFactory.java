@@ -18,7 +18,7 @@ public class ModelFactory {
      * @param lang The name of the language to use (see LanguageFactory constants)
      * @return A valid EditorModel object with correct properties.
      */
-    public static EditorModel createEditorModel(TextSource textSource, String lang){
+    public static EditorModel createEditorModel(TextSource textSource, String lang) {
         return new SimpleEditorModel(textSource, lang);
     }
 
@@ -29,11 +29,11 @@ public class ModelFactory {
      * @param suffix The text to be positioned after the selection marker
      * @return A valid auto fill object with the given properties.
      */
-    public static AutoFill createAutoFill(String trigger, String prefix, String suffix){
+    public static AutoFill createAutoFill(String trigger, String prefix, String suffix) {
         return new SimpleAutoFill(trigger, prefix, suffix);
     }
 
-    public static TextSource editTextToTextSource(EditText editText){
+    public static TextSource editTextToTextSource(EditText editText) {
         return new EditTextSource(editText);
     }
 

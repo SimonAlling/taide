@@ -13,13 +13,13 @@ import se.chalmers.taide.model.languages.SyntaxBlock;
  *
  * Filter to apply highlight colors to the text.
  */
-public class SimpleHighlighter extends AbstractTextFilter{
+public class SimpleHighlighter extends AbstractTextFilter {
 
     /**
      * Initiate object and setup triggers.
      * @param lang The language to use
      */
-    protected SimpleHighlighter(Language lang){
+    protected SimpleHighlighter(Language lang) {
         super(" ", "\n", "(", ")", "\"");
         this.setLanguage(lang);
     }
@@ -29,27 +29,27 @@ public class SimpleHighlighter extends AbstractTextFilter{
      * NOTE: This requires a non-null language to work.
      * @param trigger The string that triggered the effect
      */
-    protected void applyFilterEffect(String trigger){
+    protected void applyFilterEffect(String trigger) {
         //Retrieve data
         TextSource codeView = getTextView();
         Language language = getLanguage();
 
-        if(codeView != null && language != null) {
-            //Construct the markup based on Language.getSyntaxBlocks()
+        if (codeView != null && language != null) {
+            // Construct the markup based on Language.getSyntaxBlocks()
             int start = codeView.getSelectionStart();
             SpannableString code = new SpannableString(codeView.getText().toString());
             for (SyntaxBlock sb : language.getSyntaxBlocks(codeView.getText().toString())) {
                 code.setSpan(new ForegroundColorSpan(sb.getMarkupColor()), sb.getStartIndex(), sb.getEndIndex(), 0);
-                if(sb.isBold()){
+                if (sb.isBold()) {
                     code.setSpan(new StyleSpan(Typeface.BOLD), sb.getStartIndex(), sb.getEndIndex(), 0);
                 }
-                if(sb.isItalic()){
+                if (sb.isItalic()) {
                     code.setSpan(new StyleSpan(Typeface.ITALIC), sb.getStartIndex(), sb.getEndIndex(), 0);
                 }
             }
             codeView.setSpannable(code);
 
-            //Reset text marker
+            // Reset text marker
             codeView.setSelection(start);
         }
     }

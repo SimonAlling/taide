@@ -15,7 +15,7 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
      * Initiate obejct and setup triggers (new line character)
      * @param lang The language to use
      */
-    protected SimpleAutoIndenter(Language lang){
+    protected SimpleAutoIndenter(Language lang) {
         super("\n");
         setLanguage(lang);
     }
@@ -26,15 +26,15 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
      * check is made to make sure that the language is set.
      * @param trigger The string that triggered the effect
      */
-    protected void applyFilterEffect(String trigger){
-        //Retrieve variables
+    protected void applyFilterEffect(String trigger) {
+        // Retrieve variables
         TextSource codeView = getTextView();
         String source = codeView.getText().toString();
         int start = codeView.getSelectionStart();
 
-        //Only apply if last character entered was new line character
-        if(start > 0 && source.charAt(start-1) == '\n') {
-            //Calculate changes
+        // Only apply if last character entered was new line character
+        if (start > 0 && source.charAt(start-1) == '\n') {
+            // Calculate changes
             int index = Math.max(0, source.lastIndexOf('\n', Math.max(0, start - 2)));
             String lastLine = source.substring(index + 1, start-1);
             String prefix = getLanguage().getIndentationPrefix(source, index+1, lastLine);

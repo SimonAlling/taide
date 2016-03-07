@@ -16,7 +16,7 @@ import se.chalmers.taide.model.languages.LanguageFactory;
  *   - Syntax highlighting (SimpleHighlighter)
  *   - Auto indentation (SimpleAutoIndenter)
  */
-public class SimpleEditorModel implements EditorModel{
+public class SimpleEditorModel implements EditorModel {
 
     private TextHistoryHandler historyHandler;
     private Language language;
@@ -29,17 +29,17 @@ public class SimpleEditorModel implements EditorModel{
      * @param text The text view to attach
      * @param language The language to use
      */
-    protected SimpleEditorModel(TextSource text, String language){
+    protected SimpleEditorModel(TextSource text, String language) {
         this.textFilters = new LinkedList<>();
         setLanguage(LanguageFactory.getLanguage(language, text.getResources()));
 
-        //Init filters
+        // Init filters
         textFilters.add(new SimpleAutoIndenter(this.language));
         textFilters.add(new SimpleAutoFiller(this.language));
         SimpleHighlighter sh = new SimpleHighlighter(this.language);
         textFilters.add(sh);
 
-        //Setup text view and apply highlight immediately
+        // Setup text view and apply highlight immediately
         setTextSource(text);
         sh.applyFilterEffect("");
     }
@@ -59,9 +59,9 @@ public class SimpleEditorModel implements EditorModel{
      */
     @Override
     public void setLanguage(Language lang) {
-        if(lang != null && !lang.equals(this.language)){
+        if (lang != null && !lang.equals(this.language)) {
             this.language = lang;
-            for(TextFilter tf : textFilters){
+            for (TextFilter tf : textFilters) {
                 tf.setLanguage(lang);
             }
         }
@@ -74,20 +74,20 @@ public class SimpleEditorModel implements EditorModel{
      */
     @Override
     public void setTextSource(TextSource textSource) {
-        if(textSource != null){
-            if(this.textSource != null){
-                if(historyHandler != null){
-                    historyHandler.registerInputField(null);        //Reset history handler
+        if (textSource != null) {
+            if (this.textSource != null) {
+                if (historyHandler != null) {
+                    historyHandler.registerInputField(null); // Reset history handler
                 }
-                for(TextFilter tf : textFilters){
+                for (TextFilter tf : textFilters) {
                     tf.detach();
                 }
             }
 
-            //Replace.
+            // Replace
             this.textSource = textSource;
             this.historyHandler = HistoryHandlerFactory.createTextHistoryHandler(textSource);
-            for(TextFilter tf : textFilters){
+            for (TextFilter tf : textFilters) {
                 tf.attach(this.textSource);
             }
         }

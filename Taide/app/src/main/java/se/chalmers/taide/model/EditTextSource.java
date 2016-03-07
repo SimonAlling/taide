@@ -18,7 +18,7 @@ public class EditTextSource implements TextSource {
     private EditText input;
     private List<TextSourceListener> listeners;
 
-    protected EditTextSource(EditText input){
+    protected EditTextSource(EditText input) {
         this.input = input;
         this.input.addTextChangedListener(new TextWatcher() {
             @Override
@@ -27,7 +27,7 @@ public class EditTextSource implements TextSource {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String str = s.toString();
-                for(TextSourceListener listener : listeners){
+                for (TextSourceListener listener : listeners) {
                     listener.onTextChanged(str, start, before, count);
                 }
             }
@@ -70,7 +70,7 @@ public class EditTextSource implements TextSource {
 
     @Override
     public void addListener(TextSourceListener tsl) {
-        if(tsl != null){
+        if (tsl != null) {
             listeners.add(tsl);
         }
     }
