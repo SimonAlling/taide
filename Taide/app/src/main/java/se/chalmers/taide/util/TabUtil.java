@@ -18,8 +18,8 @@ public class TabUtil {
      * @param nbrOfTabs The number of "tabs" to generate
      * @return A representation of the given number of "tabs"
      */
-    public static String getTabs(int nbrOfTabs){
-        if(nbrOfTabs<=0){
+    public static String getTabs(int nbrOfTabs) {
+        if(nbrOfTabs <= 0){
             return "";
         }
 
@@ -66,7 +66,7 @@ public class TabUtil {
      * instead of tabs.
      * @param nbrOfSpaces The number of spaces to use. Must be > 0.
      */
-    public static void setNbrOfSpaces(int nbrOfSpaces){
+    public static void setNbrOfSpaces(int nbrOfSpaces) {
         TabUtil.nbrOfSpaces = Math.max(0, nbrOfSpaces);
     }
 
