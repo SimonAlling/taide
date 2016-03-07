@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //Retrieve the code editor text field
+        // Retrieve the code editor text field
         codeEditor = (EditText)findViewById(R.id.editText);
-        //Init sample code
-        final String sampleCode = "public class Main{\n\n"+ TabUtil.getTabs(1)+"public static void main(String[] args){\n"+ TabUtil.getTabs(2)+"System.out.println(\"Hello world!\");\n"+TabUtil.getTabs(1)+"}\n\n}";
+        // Init sample code
+        final String sampleCode = "public class Main{\n\n"+TabUtil.getTabs(1)+"public static void main(String[] args){\n"+TabUtil.getTabs(2)+"System.out.println(\"Hello world!\");\n"+TabUtil.getTabs(1)+"}\n\n}";
         codeEditor.setText(sampleCode);
         codeEditor.addTextChangedListener(new TextWatcher() {
             @Override
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        //Bind code editor to the model. Use java as language
+        // Bind code editor to the model. Use Java as language
         model = ModelFactory.createEditorModel(ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
     }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu){
+    public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
         menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
         menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
@@ -95,13 +95,13 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch(id){
+        switch (id) {
             case R.id.action_settings:  break;
-            case R.id.action_copy:      Clipboard.copyToClipboard(getApplicationContext(), codeEditor);break;
-            case R.id.action_cut:       Clipboard.cutToClipboard(getApplicationContext(), codeEditor);break;
-            case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor);break;
-            case R.id.action_undo:      model.undo();invalidateOptionsMenu();break;
-            case R.id.action_redo:      model.redo();invalidateOptionsMenu();break;
+            case R.id.action_copy:      Clipboard.copyToClipboard(getApplicationContext(), codeEditor); break;
+            case R.id.action_cut:       Clipboard.cutToClipboard(getApplicationContext(), codeEditor); break;
+            case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor); break;
+            case R.id.action_undo:      model.undo();invalidateOptionsMenu(); break;
+            case R.id.action_redo:      model.redo();invalidateOptionsMenu(); break;
         }
 
         return super.onOptionsItemSelected(item);
