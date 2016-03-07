@@ -40,7 +40,12 @@ public class SimpleAutoFill implements AutoFill {
      * @return The text that should be placed before the selection marker
      */
     public String getPrefix(String source, int index){
-        return prefix;
+        if(isChainReaction(source, index)){
+            //Already replaced. Stop to prevent chain reaction.
+            return "";
+        }else {
+            return prefix;
+        }
     }
 
     /**
@@ -50,6 +55,16 @@ public class SimpleAutoFill implements AutoFill {
      * @return The text that should be placed before the selection marker
      */
     public String getSuffix(String source, int index){
-        return suffix;
+        if(isChainReaction(source, index)){
+            //Already replaced. Stop to prevent chain reaction.
+            return "";
+        }else {
+            return suffix;
+        }
+    }
+
+    private boolean isChainReaction(String source, int index){
+        String concat = (prefix+suffix);
+         return index >= concat.length() && source.substring(index-concat.length(), index).equals(concat);
     }
 }
