@@ -199,7 +199,7 @@ public class JavaImpl extends SimpleLanguage {
         List<AutoFill> autoFills = new LinkedList<>();
         autoFills.add(new SimpleAutoFill("(", "(", ")"));
         autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
-        autoFills.add(new SimpleAutoFill("syso","System.out.println(\"","\")"));
+        autoFills.add(new SimpleAutoFill("syso","System.out.println(",");"));
         autoFills.add(new SimpleAutoFill("{", "{", "}"));
         return autoFills;
     }
