@@ -15,7 +15,7 @@ import se.chalmers.taide.util.TabUtil;
  *
  * Implementation for the Java programming language.
  */
-public class JavaImpl extends SimpleLanguage{
+public class JavaImpl extends SimpleLanguage {
 
     // No guarantees; practically only a demo example:
     private static boolean isWordCharacter(Character c) {
@@ -30,7 +30,7 @@ public class JavaImpl extends SimpleLanguage{
                                                 new String[]{"package", "class", "interface", "this", "super", "new"}};
     private int[] colors;
 
-    protected JavaImpl(Resources resources){
+    protected JavaImpl(Resources resources) {
         //Init syntax highlightning colors.
         colors = resources.getIntArray(R.array.java_syntax_default_colors);
     }
@@ -48,33 +48,33 @@ public class JavaImpl extends SimpleLanguage{
      * @param sourceCode The source code to parse
      * @return A list of SyntaxBlock where each block represents a highlight region
      */
-    public List<SyntaxBlock> getSyntaxBlocks(String sourceCode){
-        //Very basic and intuitive search-through. NOTE: Totally ineffective, just temporary.
+    public List<SyntaxBlock> getSyntaxBlocks(String sourceCode) {
+        // Very basic and intuitive search-through. NOTE: Totally ineffective, just temporary.
         int inQuotes = -1;
         int inComment = -1;
         boolean longComment = false;
         List<SyntaxBlock> res = new LinkedList<>();
-        for(int i = 0; i<sourceCode.length(); i++){
-            if(inComment > 0){
-                if(longComment && sourceCode.charAt(i) == '*' && sourceCode.length()>i+1 && sourceCode.charAt(i+1) == '/'){
+        for (int i = 0; i < sourceCode.length(); i++) {
+            if (inComment > 0) {
+                if (longComment && sourceCode.charAt(i) == '*' && sourceCode.length() > i+1 && sourceCode.charAt(i+1) == '/') {
                     res.add(new SimpleSyntaxBlock(inComment, i + 2, colors[colors.length - 1], false, true));
                     inComment = -1;
                     i += 2;
-                }else if(!longComment && sourceCode.charAt(i) == '\n'){
+                } else if (!longComment && sourceCode.charAt(i) == '\n') {
                     res.add(new SimpleSyntaxBlock(inComment, i + 1, colors[colors.length - 1], false, true));
                     inComment = -1;
                     i += 1;
                 }
             }
 
-            //Check for comment
-            if(inQuotes < 0 && sourceCode.charAt(i) == '/' && sourceCode.length()>i+1){
-                if(sourceCode.charAt(i+1) == '*' || sourceCode.charAt(i+1) == '/'){
+            // Check for comment
+            if (inQuotes < 0 && sourceCode.charAt(i) == '/' && sourceCode.length() > i+1) {
+                if (sourceCode.charAt(i+1) == '*' || sourceCode.charAt(i+1) == '/') {
                     inComment = i;
                     longComment = sourceCode.charAt(i+1) == '*';
                 }
             }
-            //Check for quotes
+            // Check for quotes
             if (inComment < 0 && sourceCode.charAt(i) == '\"' && (i == 0 || sourceCode.charAt(i - 1) != '\\')) {
                 if (inQuotes >= 0) {
                     res.add(new SimpleSyntaxBlock(inQuotes, i + 1, colors[colors.length - 2]));
@@ -84,16 +84,16 @@ public class JavaImpl extends SimpleLanguage{
                 }
             }
 
-            //Check for keywords. Note that they cannot happen if preceded by a letter or digit.
-            if (inQuotes < 0 && inComment < 0 && (i == 0 || (!Character.isLetter(sourceCode.charAt(i - 1)) && !Character.isDigit(sourceCode.charAt(i - 1))))){
+            // Check for keywords. Note that they cannot happen if preceded by a letter or digit.
+            if (inQuotes < 0 && inComment < 0 && (i == 0 || (!Character.isLetter(sourceCode.charAt(i - 1)) && !Character.isDigit(sourceCode.charAt(i - 1))))) {
                 keyWordCheck:
                 for (int j = 0; j < keyWords.length; j++) {
                     for (int k = 0; k < keyWords[j].length; k++) {
                         // Check for match and that the supposed syntactic block is not part of a longer word:
                         if (sourceCode.startsWith(keyWords[j][k], i) && !isWordCharacter(sourceCode.charAt(i + keyWords[j][k].length()))) {
-                            //Found match! Save it.
+                            // Found match! Save it.
                             res.add(new SimpleSyntaxBlock(i, i + keyWords[j][k].length(), colors[j]));
-                            //Ignore the chars involved in the current word (no use parsing them)
+                            // Ignore the chars involved in the current word (no use parsing them)
                             i += keyWords[j][k].length();
                             break keyWordCheck;
                         }
@@ -102,10 +102,10 @@ public class JavaImpl extends SimpleLanguage{
             }
         }
 
-        //Add quotes and comments formatting manually if they do not end ever.
-        if(inComment > 0){
+        // Add quotes and comments formatting manually if they do not end ever.
+        if (inComment > 0) {
             res.add(new SimpleSyntaxBlock(inComment, sourceCode.length(), colors[colors.length - 1], false, true));
-        }else if(inQuotes > 0){
+        } else if(inQuotes > 0) {
             res.add(new SimpleSyntaxBlock(inQuotes, sourceCode.length(), colors[colors.length - 2]));
         }
 
@@ -121,18 +121,18 @@ public class JavaImpl extends SimpleLanguage{
      * @return The text to insert at the beginning of the new line
      */
     @Override
-    public String getIndentationPrefix(String source, int start, String line){
+    public String getIndentationPrefix(String source, int start, String line) {
         String prefix = super.getIndentationPrefix(source, start, line);
-        if(!isInComment(source, start+line.length())) {
-            //Not in comment
+        if (!isInComment(source, start+line.length())) {
+            // Not in comment
             if (line.endsWith("{")) {
                 prefix += TabUtil.getTabs(1);
             }
-        }else{
-            //In comment
-            if (line.trim().startsWith("/*")){
+        } else {
+            // In comment
+            if (line.trim().startsWith("/*")) {
                 prefix += " * ";
-            }else if(line.trim().startsWith("*")){
+            } else if(line.trim().startsWith("*")) {
                 prefix += "* ";
             }
         }
@@ -149,19 +149,19 @@ public class JavaImpl extends SimpleLanguage{
      * @return The text to insert on the new line, after the line marker
      */
     @Override
-    public String getIndentationSuffix(String source, int start, String line){
+    public String getIndentationSuffix(String source, int start, String line) {
         String suffix = super.getIndentationSuffix(source, start, line);
-        if(!isInComment(source, start+line.length())){
-            //Not in comment
+        if (!isInComment(source, start+line.length())) {
+            // Not in comment
             if (line.endsWith("{")) {
-                if(countOccurrences(source, "{") > countOccurrences(source, "}")) {
+                if (countOccurrences(source, "{") > countOccurrences(source, "}")) {
                     suffix += "\n" + super.getIndentationPrefix(source, start, line) + "}";
                 }
             }
-        }else{
-            //In comment
-            if(line.trim().startsWith("/*")){
-                if(!line.contains("*/")) {
+        } else {
+            // In comment
+            if (line.trim().startsWith("/*")) {
+                if (!line.contains("*/")) {
                     suffix += "\n" + super.getIndentationPrefix(source, start, line) + "*/";
                 }
             }
@@ -182,12 +182,12 @@ public class JavaImpl extends SimpleLanguage{
         int lineStart = Math.max(0, source.lastIndexOf("\n", index)+1);
         int lineEnd = source.indexOf("\n", lineStart);
         String line = source.substring(lineStart, (lineEnd < 0 ? source.length() : lineEnd));
-        if(line.contains("//")){
+        if (line.contains("//")) {
             return true;
         }
 
         int longCommentStart = source.lastIndexOf("/*", index);
-        return longCommentStart>=0 && source.lastIndexOf("*/", index) < longCommentStart;
+        return longCommentStart >= 0 && source.lastIndexOf("*/", index) < longCommentStart;
     }
 
     /**
@@ -195,7 +195,7 @@ public class JavaImpl extends SimpleLanguage{
      * @return A list of the language specific auto fills
      */
     @Override
-    public List<AutoFill> getAutoFills(){
+    public List<AutoFill> getAutoFills() {
         List<AutoFill> autoFills = new LinkedList<>();
         autoFills.add(new SimpleAutoFill("(", "(", ")"));
         autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
@@ -210,10 +210,10 @@ public class JavaImpl extends SimpleLanguage{
      * @param needle The needle to search for
      * @return The number of occurrences of the needle outside comments.
      */
-    private int countOccurrences(String source, String needle){
+    private int countOccurrences(String source, String needle) {
         int index = 0, count = 0;
-        while((index = source.indexOf(needle, index)) > 0){
-            if(!isInComment(source, index)) {
+        while ((index = source.indexOf(needle, index)) > 0) {
+            if (!isInComment(source, index)) {
                 count++;
             }
             index++;

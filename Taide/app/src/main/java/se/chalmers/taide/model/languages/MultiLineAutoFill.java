@@ -25,7 +25,7 @@ public class MultiLineAutoFill implements AutoFill {
      * @param trigger The trigger to use
      * @param applyInComments If the auto fill should be used for comments as well.
      */
-    public MultiLineAutoFill(Language lang, String trigger, boolean applyInComments){
+    public MultiLineAutoFill(Language lang, String trigger, boolean applyInComments) {
         this.lang = lang;
         this.trigger = trigger;
         this.applyInComments = applyInComments;
@@ -73,33 +73,33 @@ public class MultiLineAutoFill implements AutoFill {
      * @param array The array of string with data to use
      * @return A single string formatted as the text above, based on the array contents
      */
-    private String getStringFromPartArray(String source, int index, String[] array){
-        if(!applyInComments && lang.isInComment(source, index)){
+    private String getStringFromPartArray(String source, int index, String[] array) {
+        if (!applyInComments && lang.isInComment(source, index)) {
             return "";
         }
 
         StringBuffer sourceBuffer = new StringBuffer(source);
         StringBuffer b = new StringBuffer();
-        for(int i = 0; i<array.length; i++){
-            if(array[i].equals(INDENT_TABS)){
-                //Determine text
+        for (int i = 0; i<array.length; i++) {
+            if (array[i].equals(INDENT_TABS)) {
+                // Determine text
                 String currentSource = sourceBuffer.toString();
                 int nextNewLine = currentSource.indexOf("\n", index);
                 String prevLine = currentSource.substring(Math.max(0, currentSource.lastIndexOf("\n", index - 2) + 1), nextNewLine < 0 ? currentSource.length() : nextNewLine-1);
                 String tab = lang.getIndentationPrefix(currentSource, index, prevLine);
 
-                //Add text
+                // Add text
                 b.append(tab);
                 sourceBuffer.insert(index, tab);
                 index += tab.length();
-            }else{
-                //Add text
+            } else {
+                // Add text
                 b.append(array[i]);
                 sourceBuffer.insert(index, array[i]);
                 index += array[i].length();
 
-                //Add newline (if not last item)
-                if(i<array.length-1){
+                // Add newline (if not last item)
+                if (i < array.length-1) {
                     b.append("\n");
                     sourceBuffer.insert(index, "\n");
                     index += 1;
@@ -119,7 +119,7 @@ public class MultiLineAutoFill implements AutoFill {
      * @param prefixes The prefix, separated per line
      * @return This object, to make it easier to chain calls.
      */
-    public MultiLineAutoFill setPrefix(String... prefixes){
+    public MultiLineAutoFill setPrefix(String... prefixes) {
         this.prefix = prefixes;
         return this;
     }
@@ -134,7 +134,7 @@ public class MultiLineAutoFill implements AutoFill {
      * @param suffixes The suffix, separated per line
      * @return This object, to make it easier to chain calls.
      */
-    public MultiLineAutoFill setSuffix(String... suffixes){
+    public MultiLineAutoFill setSuffix(String... suffixes) {
         this.suffix = suffixes;
         return this;
     }

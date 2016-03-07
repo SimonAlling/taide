@@ -11,11 +11,11 @@ public class SimpleSyntaxBlock implements SyntaxBlock {
     private int color;
     private boolean bold, italic;
 
-    protected SimpleSyntaxBlock(int startIndex, int endIndex, int color){
+    protected SimpleSyntaxBlock(int startIndex, int endIndex, int color) {
         this(startIndex, endIndex, color, false, false);
     }
 
-    protected SimpleSyntaxBlock(int startIndex, int endIndex, int color, boolean bold, boolean italic){
+    protected SimpleSyntaxBlock(int startIndex, int endIndex, int color, boolean bold, boolean italic) {
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.color = color;

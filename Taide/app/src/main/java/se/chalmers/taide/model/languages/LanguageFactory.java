@@ -18,7 +18,7 @@ public class LanguageFactory {
      * @param resources The current application context resources
      * @return A language instance of the default language
      */
-    public static Language getDefaultLanguage(Resources resources){
+    public static Language getDefaultLanguage(Resources resources) {
         return getLanguage(null, resources);
     }
 
@@ -29,15 +29,15 @@ public class LanguageFactory {
      * @return A language instance representing the given programming language
      * @throws IllegalArgumentException If the given name is invalid (does not exist)
      */
-    public static Language getLanguage(String name, Resources resouces) throws IllegalArgumentException{
-        if(name == null){
+    public static Language getLanguage(String name, Resources resouces) throws IllegalArgumentException {
+        if (name == null) {
             Log.d("LanguageFactory", "No language provided, defaulting to Java");
             name = DEFAULT_LANGUAGE;
         }
 
-        switch(name.toLowerCase()){
-            case JAVA:    return new JavaImpl(resouces);
-            default:      throw new IllegalArgumentException("No language with name '"+name+"' found.");
+        switch (name.toLowerCase()) {
+            case JAVA: return new JavaImpl(resouces);
+            default:   throw new IllegalArgumentException("No language with name '"+name+"' found.");
         }
     }
 

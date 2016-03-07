@@ -19,7 +19,7 @@ public class SimpleAutoFill implements AutoFill {
      * @param prefix The prefix (this cannot be changed)
      * @param suffix The suffix (this cannot be changed)
      */
-    public SimpleAutoFill(String trigger, String prefix, String suffix){
+    public SimpleAutoFill(String trigger, String prefix, String suffix) {
         this.trigger = trigger;
         this.prefix = prefix;
         this.suffix = suffix;
