@@ -29,6 +29,7 @@ public class SimpleAutoFill implements AutoFill {
      * Retrieves the trigger to which this auto fill should react
      * @return The trigger text that should fire an event
      */
+    @Override
     public String getTrigger(){
         return trigger;
     }
@@ -39,6 +40,7 @@ public class SimpleAutoFill implements AutoFill {
      * @param index The index of the selection marker
      * @return The text that should be placed before the selection marker
      */
+    @Override
     public String getPrefix(String source, int index){
         if(isChainReaction(source, index)){
             //Already replaced. Stop to prevent chain reaction.
@@ -54,6 +56,7 @@ public class SimpleAutoFill implements AutoFill {
      * @param index The index of the selection marker
      * @return The text that should be placed before the selection marker
      */
+    @Override
     public String getSuffix(String source, int index){
         if(isChainReaction(source, index)){
             //Already replaced. Stop to prevent chain reaction.
@@ -61,6 +64,18 @@ public class SimpleAutoFill implements AutoFill {
         }else {
             return suffix;
         }
+    }
+
+    /**
+     * Retrieves the number of extra chars (forward) that should be considered as well
+     * in the replacement algorithm.
+     * @param source The source code
+     * @param offset The offset of the current selection
+     * @return The number of extra chars to be considered in the replacement
+     */
+    @Override
+    public int selectionIncreaseCount(String source, int offset){
+        return 0;
     }
 
     private boolean isChainReaction(String source, int index){

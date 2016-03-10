@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,6 +17,7 @@ public class EditTextSource implements TextSource {
 
     private EditText input;
     private List<TextSourceListener> listeners;
+    private boolean applyingFilters = false;
 
     protected EditTextSource(EditText input) {
         this.input = input;
@@ -31,8 +31,8 @@ public class EditTextSource implements TextSource {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //Make sure that anything actually has changed
-                if(s.toString().equals(currentInputContent)){
-                    //Log.d("AbstractTextFilter", "No text has changed, ignoring.");
+                if(s.toString().equals(currentInputContent) || applyingFilters){
+                    //Ignore change. Do not chain filter changes.
                     return;
                 }else{
                     //Handle swap in/out of full document
@@ -58,10 +58,12 @@ public class EditTextSource implements TextSource {
                     currentInputContent = s.toString();
                 }
 
+                applyingFilters = true;
                 String str = s.toString();
                 for (TextSourceListener listener : listeners) {
                     listener.onTextChanged(str, start, before, count);
                 }
+                applyingFilters = false;
             }
 
             @Override

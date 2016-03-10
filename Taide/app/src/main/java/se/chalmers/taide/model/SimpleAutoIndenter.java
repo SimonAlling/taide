@@ -36,13 +36,13 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
         if (start > 0 && source.charAt(start-1) == '\n') {
             // Calculate changes
             int index = Math.max(0, source.lastIndexOf('\n', Math.max(0, start - 2)));
-            String lastLine = source.substring(index + 1, start-1);
+            String lastLine = source.substring(index + 1, start - 1);
             String prefix = getLanguage().getIndentationPrefix(source, index+1, lastLine);
             String suffix = getLanguage().getIndentationSuffix(source, index+1, lastLine);
 
             //Apply changes
             codeView.getText().replace(start, start, prefix+suffix);
-            codeView.setSelection(start+prefix.length());
+            codeView.setSelection(start + prefix.length());
         }
     }
 }

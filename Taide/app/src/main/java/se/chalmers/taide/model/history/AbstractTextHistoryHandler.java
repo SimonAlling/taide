@@ -3,7 +3,6 @@ package se.chalmers.taide.model.history;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import se.chalmers.taide.R;
@@ -126,7 +125,6 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
     }
 
     private boolean invertAction(TextAction action){
-        Log.d("HistoryHandler", "Wants to invert: "+action);
         if(inputField != null) {
             //Fix invert settings
             invertCounter++;
@@ -186,7 +184,6 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
     }
 
     protected void insertAction(TextAction... action){
-        Log.d("HistoryHandler", "INSERTING: "+actions.size()+" "+currentIndex+" (invertCounter = "+invertCounter+")");
         if(invertCounter==0) {
             //Clear old branches forward
             while (actions.size() > currentIndex + 1) {
@@ -194,7 +191,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
             }
 
             //Add new item
-            Log.d("HistoryHandler", "Adding actions: " + Arrays.toString(action));
+            //Log.d("HistoryHandler", "Adding actions: " + Arrays.toString(action));
             List<TextAction> actionList = new ArrayList<>();
             for (TextAction a : action) {
                 if(a.getAction() != null) {

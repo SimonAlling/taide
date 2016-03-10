@@ -63,6 +63,18 @@ public class MultiLineAutoFill implements AutoFill {
     }
 
     /**
+     * Retrieves the number of extra chars (forward) that should be considered as well
+     * in the replacement algorithm.
+     * @param source The source code
+     * @param offset The offset of the current selection
+     * @return The number of extra chars to be considered in the replacement
+     */
+    @Override
+    public int selectionIncreaseCount(String source, int offset){
+        return 0;
+    }
+
+    /**
      * Generates a single string from an array that is constructed in the way
      * that setPrefix() and setSuffix() demands. New line characters will be
      * generated between each string element, unless the string equals the global

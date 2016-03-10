@@ -1,7 +1,5 @@
 package se.chalmers.taide.model.history;
 
-import android.util.Log;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;

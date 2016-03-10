@@ -1,7 +1,5 @@
 package se.chalmers.taide.util;
 
-import android.util.Log;
-
 /**
  * Created by Matz on 2016-03-07.
  */
@@ -16,11 +14,9 @@ public class StringUtil {
      */
     public static Character nextNonWSChar(String source, int offset){
         while(offset>0 && source.length()>offset && (source.charAt(offset) == ' ' || source.charAt(offset) == '\t' || source.charAt(offset) == '\n')){
-            Log.d("StringUtil", "Traversing " + source.charAt(offset) + " @index " + offset);
             offset++;
         }
 
-        Log.d("StringUtil", "Result: "+(source.length()<=offset?"null":source.charAt(offset)));
         return (source.length()<=offset?null:source.charAt(offset));
     }
 }

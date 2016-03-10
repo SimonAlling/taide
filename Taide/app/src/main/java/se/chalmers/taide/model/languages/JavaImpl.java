@@ -207,6 +207,25 @@ public class JavaImpl extends SimpleLanguage {
         autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
         autoFills.add(new SimpleAutoFill("syso","System.out.println(",");"));
         autoFills.add(new SimpleAutoFill("{", "{", "}"));
+        autoFills.add(new IgnoreInputAutoFill(")", new IgnoreInputAutoFill.IgnoreDecider() {
+            @Override
+            public boolean shouldIgnoreChar(String source, int offset) {
+                //Ignore one ')' since the one is written now, might be overridden
+                return source.length() > offset && source.charAt(offset) == ')' && countOccurrences(source, ")")-1 == countOccurrences(source, "(");
+            }
+        }, new IgnoreInputAutoFill.ReplaceDecider(){
+            @Override
+            public String getReplacer(String source, int offset) {
+                return (source.length()>offset+1 && source.charAt(offset+1) == ';'? ");" : ")");
+            }
+        }));
+        autoFills.add(new IgnoreInputAutoFill("}", new IgnoreInputAutoFill.IgnoreDecider() {
+            @Override
+            public boolean shouldIgnoreChar(String source, int offset) {
+                //Ignore one '}' since the one is written now, might be overridden
+                return source.length() > offset && source.charAt(offset) == '}' && countOccurrences(source, "}")-1 == countOccurrences(source, "{");
+            }
+        }));
         return autoFills;
     }
 

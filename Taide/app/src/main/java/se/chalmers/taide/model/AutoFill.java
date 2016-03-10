@@ -24,7 +24,6 @@ public interface AutoFill {
      */
     String getPrefix(String source, int index);
 
-
     /**
      * Retrieves the text that should be placed after the selection marker
      * @param source The entire text that triggered this call
@@ -32,4 +31,13 @@ public interface AutoFill {
      * @return The text that should be placed after the selection marker
      */
     String getSuffix(String source, int index);
+
+    /**
+     * Retrieves the number of extra chars (forward) that should be considered as well
+     * in the replacement algorithm.
+     * @param source The source code
+     * @param offset The offset of the current selection
+     * @return The number of extra chars to be considered in the replacement
+     */
+    int selectionIncreaseCount(String source, int offset);
 }
