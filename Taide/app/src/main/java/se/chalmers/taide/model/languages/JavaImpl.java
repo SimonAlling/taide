@@ -126,7 +126,7 @@ public class JavaImpl extends SimpleLanguage {
         String prefix = super.getIndentationPrefix(source, start, line);
         if (!isInComment(source, start+line.length())) {
             // Not in comment
-            if (line.endsWith("{")) {
+            if (line.trim().endsWith("{")) {
                 prefix += TabUtil.getTabs(1);
             }
         } else {
@@ -154,7 +154,7 @@ public class JavaImpl extends SimpleLanguage {
         String suffix = super.getIndentationSuffix(source, start, line);
         if (!isInComment(source, start+line.length())) {
             // Not in comment
-            if (line.endsWith("{")) {
+            if (line.trim().endsWith("{")) {
                 if (countOccurrences(source, "{") > countOccurrences(source, "}")) {
                     suffix += "\n" + super.getIndentationPrefix(source, start, line) + "}";
                 }else{

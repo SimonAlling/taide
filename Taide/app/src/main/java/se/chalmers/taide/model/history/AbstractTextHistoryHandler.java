@@ -40,7 +40,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
             this.inputField = input;
             actions.clear();
             currentIndex = -1;
-            inputField.addListener(this);
+            inputField.addListener(this, true);
         }
     }
 
@@ -202,12 +202,6 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
             currentIndex = actions.size()-1;
         }else{
             invertCounter = Math.max(0, invertCounter-action.length);
-        }
-    }
-
-    protected void removeLastAction(){
-        if(actions.size()>0){
-            actions.remove(actions.size()-1);
         }
     }
 

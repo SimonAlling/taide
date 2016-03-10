@@ -20,6 +20,7 @@ public interface TextSource {
     Resources getResources();
 
     void addListener(TextSourceListener tsl);
+    void addListener(TextSourceListener tsl, boolean allowEventChaining);
     void removeListener(TextSourceListener tsl);
 
 

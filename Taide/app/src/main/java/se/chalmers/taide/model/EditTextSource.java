@@ -17,6 +17,7 @@ public class EditTextSource implements TextSource {
 
     private EditText input;
     private List<TextSourceListener> listeners;
+    private List<TextSourceListener> listenersAllowChains;
     private boolean applyingFilters = false;
 
     protected EditTextSource(EditText input) {
@@ -31,7 +32,7 @@ public class EditTextSource implements TextSource {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //Make sure that anything actually has changed
-                if(s.toString().equals(currentInputContent) || applyingFilters){
+                if(s.toString().equals(currentInputContent)){
                     //Ignore change. Do not chain filter changes.
                     return;
                 }else{
@@ -58,18 +59,27 @@ public class EditTextSource implements TextSource {
                     currentInputContent = s.toString();
                 }
 
-                applyingFilters = true;
                 String str = s.toString();
-                for (TextSourceListener listener : listeners) {
+                //Apply for all listeners that allow chaining
+                for(TextSourceListener listener : listenersAllowChains){
                     listener.onTextChanged(str, start, before, count);
                 }
-                applyingFilters = false;
+
+                //Don't apply to normal unless it's an immediate event (from the edittext itself)
+                if(!applyingFilters) {
+                    applyingFilters = true;
+                    for (TextSourceListener listener : listeners) {
+                        listener.onTextChanged(str, start, before, count);
+                    }
+                    applyingFilters = false;
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
         this.listeners = new LinkedList<>();
+        this.listenersAllowChains = new LinkedList<>();
     }
 
     @Override
@@ -107,13 +117,23 @@ public class EditTextSource implements TextSource {
 
     @Override
     public void addListener(TextSourceListener tsl) {
+        addListener(tsl, false);
+    }
+
+    @Override
+     public void addListener(TextSourceListener tsl, boolean allowEventChaining) {
         if (tsl != null) {
-            listeners.add(tsl);
+            if(allowEventChaining){
+                listenersAllowChains.add(tsl);
+            }else {
+                listeners.add(tsl);
+            }
         }
     }
 
     @Override
     public void removeListener(TextSourceListener tsl) {
         listeners.remove(tsl);
+        listenersAllowChains.remove(tsl);
     }
 }
