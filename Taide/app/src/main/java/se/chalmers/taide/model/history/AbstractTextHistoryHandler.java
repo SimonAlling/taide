@@ -197,12 +197,20 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
             Log.d("HistoryHandler", "Adding actions: " + Arrays.toString(action));
             List<TextAction> actionList = new ArrayList<>();
             for (TextAction a : action) {
-                actionList.add(a);
+                if(a.getAction() != null) {
+                    actionList.add(a);
+                }
             }
             this.actions.add(actionList);
             currentIndex = actions.size()-1;
         }else{
             invertCounter = Math.max(0, invertCounter-action.length);
+        }
+    }
+
+    protected void removeLastAction(){
+        if(actions.size()>0){
+            actions.remove(actions.size()-1);
         }
     }
 
@@ -246,7 +254,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
 
         @Override
         public String toString(){
-            return "TextAction[action="+action.name()+", text='"+text+"', pos="+position+"]";
+            return "TextAction[action="+(action==null?"null":action.name())+", text='"+text+"', pos="+position+"]";
         }
     }
 }

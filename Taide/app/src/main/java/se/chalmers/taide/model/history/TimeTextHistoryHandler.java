@@ -1,5 +1,7 @@
 package se.chalmers.taide.model.history;
 
+import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -59,7 +61,9 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
         return new TimerTask() {
             @Override
             public void run() {
-                insertCurrentData();
+                if(currentTextAction != null) {
+                    insertCurrentData();
+                }
             }
         };
     }
@@ -80,11 +84,12 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
             return;
         }
 
+        //Handle normal events.
         timer.cancel();
         timer.purge();
         timer = new Timer("TextHistoryHandler");
         if(!hasPendingTask) {
-            if (Math.abs(before-count) != 1 || (s.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {  //Text replaced. (not only letter written)
+            if (Math.abs(before-count) != 1 || (s.length()>start+before && currentInputContent.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {  //Text replaced. (not only letter written)
                 if(before > 0 && count > 0){
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start),
                                  new TextAction(Action.ADD, s.substring(start, start+count), start));
@@ -108,7 +113,7 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                 hasPendingTask = true;
             }
         }else{
-            if(Math.abs(before-count) != 1 || (s.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))){
+            if(Math.abs(before-count) != 1 || (s.length()>start+before && currentInputContent.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))){
                 if(currentTextAction == Action.ADD && count>before && (start == currentTextPos || start+before == currentTextPos+currentTextInput.length())){
                     if(start+before == currentTextPos+currentTextInput.length() && before>0){
                         if(currentTextInput.length()>=before){

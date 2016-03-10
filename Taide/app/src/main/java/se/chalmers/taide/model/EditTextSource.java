@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,16 +23,38 @@ public class EditTextSource implements TextSource {
         this.input = input;
         this.input.addTextChangedListener(new TextWatcher() {
             private String currentInputContent = "";
+            private String fullContent = null;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.equals(currentInputContent)){
+                //Make sure that anything actually has changed
+                if(s.toString().equals(currentInputContent)){
                     //Log.d("AbstractTextFilter", "No text has changed, ignoring.");
                     return;
                 }else{
+                    //Handle swap in/out of full document
+                    if(fullContent != null){
+                        if(start == 0 && before == 0 && count == fullContent.length()){
+                            currentInputContent = fullContent;
+                            fullContent = null;
+                            return;
+                        }else{
+                            //Send previous call.
+                            for (TextSourceListener listener : listeners) {
+                                listener.onTextChanged("", 0, fullContent.length(), 0);
+                            }
+                        }
+                        fullContent = null;
+                    }
+                    if(start == 0 && before == currentInputContent.length() && count == 0){
+                        fullContent = currentInputContent;
+                        currentInputContent = s.toString();
+                        return;
+                    }
+
                     currentInputContent = s.toString();
                 }
 
@@ -54,7 +77,10 @@ public class EditTextSource implements TextSource {
 
     @Override
     public void setSpannable(SpannableString str) {
+        int start = input.getSelectionStart(), end = input.getSelectionEnd();
+        input.getText().clear();
         input.setText(str, TextView.BufferType.SPANNABLE);
+        input.setSelection(start, end);
     }
 
     @Override
