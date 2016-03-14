@@ -12,6 +12,7 @@ public interface TextSource {
     Editable getText();
 
     void setSpannable(SpannableString str);
+    void setText(String text);
 
     int getSelectionStart();
     int getSelectionEnd();

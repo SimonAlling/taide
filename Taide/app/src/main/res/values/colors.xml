@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="defaultBackground">#262626</color>
+    <color name="disabledText">#bbb</color>
 
     <color name="pink">#f42661</color>
     <color name="cyan">#66d9df</color>

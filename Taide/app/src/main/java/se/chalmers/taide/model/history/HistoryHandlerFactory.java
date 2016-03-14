@@ -17,6 +17,6 @@ public class HistoryHandlerFactory {
     }
 
     public static FileHistoryHandler getDefaultFileHistoryHandler(){
-        throw new UnsupportedOperationException("File handling is not yet implemented.");
+        throw new UnsupportedOperationException("CodeFile handling is not yet implemented.");
     }
 }

@@ -1,8 +1,13 @@
 package se.chalmers.taide.model;
 
+import android.content.Context;
+
 import java.util.LinkedList;
 import java.util.List;
 
+import se.chalmers.taide.model.filesystem.CodeFile;
+import se.chalmers.taide.model.filesystem.FileSystem;
+import se.chalmers.taide.model.filesystem.FileSystemFactory;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
@@ -21,6 +26,9 @@ public class SimpleEditorModel implements EditorModel {
     private TextHistoryHandler historyHandler;
     private Language language;
     private TextSource textSource;
+    private FileSystem fileSystem;
+    private CodeFile currentFile;
+    private Context context;
 
     private List<TextFilter> textFilters;
 
@@ -29,8 +37,9 @@ public class SimpleEditorModel implements EditorModel {
      * @param text The text view to attach
      * @param language The language to use
      */
-    protected SimpleEditorModel(TextSource text, String language) {
+    protected SimpleEditorModel(Context context, TextSource text, String language) {
         this.textFilters = new LinkedList<>();
+        this.fileSystem = FileSystemFactory.getFileSystem(context);
         setLanguage(LanguageFactory.getLanguage(language, text.getResources()));
 
         // Init filters
@@ -93,6 +102,11 @@ public class SimpleEditorModel implements EditorModel {
         }
     }
 
+    @Override
+    public FileSystem getFileSystem(){
+        return fileSystem;
+    }
+
     /**
      * Performs undo on the text field (according to the recorded history).
      * If no history is found, nothing is done.
@@ -131,5 +145,32 @@ public class SimpleEditorModel implements EditorModel {
      */
     public String peekRedo(){
         return historyHandler.peekRedoAction();
+    }
+
+
+    /**
+     * Saves the current file and opens the given file in the current input source
+     * @param file The file to open
+     */
+    @Override
+    public void openFile(CodeFile file){
+        saveFile(currentFile);
+
+        if(file != null) {
+            this.currentFile = file;
+            String contents = file.getContents();
+            textSource.setText(contents);
+        }
+    }
+
+    /**
+     * Saves the current file to storage
+     * @param file The file to save
+     */
+    @Override
+    public void saveFile(CodeFile file){
+        if(file != null){
+            fileSystem.saveFile(file, textSource.getText().toString());
+        }
     }
 }

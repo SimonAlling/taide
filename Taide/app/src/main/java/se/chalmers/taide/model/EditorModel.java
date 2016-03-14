@@ -1,5 +1,7 @@
 package se.chalmers.taide.model;
 
+import se.chalmers.taide.model.filesystem.CodeFile;
+import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -27,6 +29,12 @@ public interface EditorModel {
      * @param textSource The text source to set as the attached one.
      */
     void setTextSource(TextSource textSource);
+
+    /**
+     * Retrieve the file system of this model
+     * @return The current file system.
+     */
+    FileSystem getFileSystem();
 
     /**
      * Performs undo on the text field (according to the recorded history).
@@ -57,5 +65,17 @@ public interface EditorModel {
      * @return A string containing what calling redo() will perform. null if no history is found.
      */
     String peekRedo();
+
+    /**
+     * Saves the current file and opens the given file in the current input source
+     * @param file The file to open
+     */
+    void openFile(CodeFile file);
+
+    /**
+     * Saves the current file to storage
+     * @param file The file to save
+     */
+    void saveFile(CodeFile file);
 
 }
