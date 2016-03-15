@@ -8,17 +8,18 @@ import java.util.List;
 public interface FileSystem {
 
     boolean newProject(String projectName);
-    void setProject(String projectName);
+    boolean setProject(String projectName);
     List<String> getExistingProjects();
 
     CodeFile getCurrentDir();
     List<CodeFile> getFilesInCurrentDir();
+    String getCurrentProject();
 
     CodeFile createFile(String name);
     CodeFile createDir(String name);
     void saveFile(CodeFile file, String contents);
 
-    List<CodeFile> stepUpOneLevel();
-    List<CodeFile> stepIntoDir(CodeFile dir);
+    boolean stepUpOneLevel();
+    boolean stepIntoDir(CodeFile dir);
     boolean canStepUpOneLevel();
 }

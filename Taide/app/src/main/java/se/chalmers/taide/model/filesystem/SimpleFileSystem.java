@@ -30,7 +30,6 @@ public class SimpleFileSystem implements FileSystem{
     @Override
     public boolean newProject(String projectName){
         if(getExistingProjects().contains(projectName)){
-            setProject(projectName);
             return true;
         }
 
@@ -46,7 +45,6 @@ public class SimpleFileSystem implements FileSystem{
                 Log.e("FileSystem", "Error! Could not create folders!");
                 return false;
             }else{
-                setProject(projectName);
                 return true;
             }
         }catch(IOException ioe){
@@ -57,18 +55,18 @@ public class SimpleFileSystem implements FileSystem{
     }
 
     @Override
-    public void setProject(String projectName) {
+    public boolean setProject(String projectName) {
         try {
             Scanner sc = new Scanner(getProjectFile(projectName));
             String path = sc.nextLine();
             baseDir = new File(path);
             currentDir = baseDir;
-            Log.d("FileSystem", "Setting currentDir: " + (currentDir == null ? "null" : currentDir.getPath()));
             sc.close();
+            return true;
         }catch(IOException ioe){
             Log.e("FileSystem", "Error loading file: "+ioe.getMessage());
             ioe.printStackTrace();
-            throw new IllegalArgumentException("Invalid project file");
+            return false;
         }
     }
 
@@ -110,6 +108,11 @@ public class SimpleFileSystem implements FileSystem{
     }
 
     @Override
+    public String getCurrentProject() {
+        return baseDir.getParentFile().getName();
+    }
+
+    @Override
     public CodeFile createFile(String name) {
         try {
             File f = new File(currentDir.getPath() + "/" + name);
@@ -135,19 +138,21 @@ public class SimpleFileSystem implements FileSystem{
     }
 
     @Override
-    public List<CodeFile> stepUpOneLevel() {
+    public boolean stepUpOneLevel() {
         if(canStepUpOneLevel()) {
             currentDir = currentDir.getParentFile();
+            return true;
         }
-        return getFilesInCurrentDir();
+        return false;
     }
 
     @Override
-    public List<CodeFile> stepIntoDir(CodeFile dir) {
+    public boolean stepIntoDir(CodeFile dir) {
         if(currentDir != null) {
             currentDir = new File(currentDir.getPath() + "/" + dir.getName() + "/");
+            return true;
         }
-        return getFilesInCurrentDir();
+        return false;
     }
 
     @Override

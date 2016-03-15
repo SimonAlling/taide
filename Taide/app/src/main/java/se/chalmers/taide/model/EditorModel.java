@@ -1,5 +1,7 @@
 package se.chalmers.taide.model;
 
+import java.util.List;
+
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.languages.Language;
@@ -31,10 +33,10 @@ public interface EditorModel {
     void setTextSource(TextSource textSource);
 
     /**
-     * Retrieve the file system of this model
-     * @return The current file system.
+     * Activates a text filter on the input manually
+     * @param filterName The name of the filter
      */
-    FileSystem getFileSystem();
+    void manuallyTriggerFilter(String filterName);
 
     /**
      * Performs undo on the text field (according to the recorded history).
@@ -77,5 +79,57 @@ public interface EditorModel {
      * @param file The file to save
      */
     void saveFile(CodeFile file);
+
+    /**
+     * Creates a file in the current folder
+     * @param name The name of the new file.
+     * @param isFolder <code>true</code> if the file should be a folder
+     * @return A reference to the created file.
+     */
+    CodeFile createFile(String name, boolean isFolder);
+
+    /**
+     * Steps into the given folder. If null is provided, steps up one level.
+     * @param dir The reference to the folder, or null to step up one level
+     * @return <code>true</code> on success, <code>false</code> otherwise
+     */
+    boolean gotoFolder(CodeFile dir);
+
+    /**
+     * Checks whether there is possible to move up one more level.
+     * @return <code>false</code> if this is the top level, <code>true</code> otherwise
+     */
+    boolean canStepUpOneFile();
+
+    /**
+     * Retrieve a list of all the files in the currect directory
+     * @return A list of the files in the current directory
+     */
+    List<CodeFile> getFilesInCurrentDir();
+
+    /**
+     * Retrieve a list of the names of all existing projects
+     * @return A list of the names of all existing projects
+     */
+    String[] getAvailableProjects();
+
+    /**
+     * Creates a project and sets it to the active one.
+     * @param name The name of the new project
+     */
+    boolean createProject(String name);
+
+    /**
+     * Sets the project to use.
+     * @param name The name of the project.
+     * @return <code>true</code> on success, <code>false</code> otherwise
+     */
+    boolean setProject(String name);
+
+    /**
+     * Retrieves the name of the active project.
+     * @return The name of the active project
+     */
+    String getActiveProject();
 
 }

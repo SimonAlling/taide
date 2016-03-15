@@ -7,6 +7,10 @@
     <color name="defaultBackground">#262626</color>
     <color name="disabledText">#bbb</color>
 
+    <color name="drawer_background">#ffffff</color>
+    <color name="drawer_font_color">#000000</color>
+    <color name="drawer_border_color">#dddddd</color>
+
     <color name="pink">#f42661</color>
     <color name="cyan">#66d9df</color>
     <color name="orange">#d26e21</color>

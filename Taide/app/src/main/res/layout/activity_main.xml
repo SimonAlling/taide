@@ -46,7 +46,7 @@
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:id="@+id/drawerPane"
-        android:background="@android:color/white"
+        android:background="@color/drawer_background"
         android:layout_gravity="start">
 
         <LinearLayout
@@ -54,10 +54,23 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
+            <TextView
+                android:id="@+id/projectName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="@dimen/listview_left_margin"
+                android:textSize="@dimen/default_font_size"
+                android:textColor="@color/drawer_font_color"
+                android:textStyle="bold"
+                android:text="Project Name" />
+
             <ListView
                 android:id="@+id/projectActionMenus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/drawer_listview_bg"
                 android:choiceMode="none"
                 android:entries="@array/filesystem_default_menuitems"
                 android:layout_marginBottom="10dp" />

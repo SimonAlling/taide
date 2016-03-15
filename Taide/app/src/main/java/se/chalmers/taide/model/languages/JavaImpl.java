@@ -230,6 +230,21 @@ public class JavaImpl extends SimpleLanguage {
     }
 
     /**
+     * Generates the default content a file should be filled with on creation.
+     * @param filename The name of the file
+     * @return Text content the new file should be filled with
+     */
+    @Override
+    public String getDefaultContent(String filename){
+        if(filename.endsWith(".java")){
+            String name = filename.substring(0, filename.indexOf("."));
+            return "public class "+name+"{\n"+TabUtil.getTabs(1)+"\n}";
+        }else{
+            return "";
+        }
+    }
+
+    /**
      * Counts the occurrences of a special needle that is not inside a comment.
      * @param source The entire source code
      * @param needle The needle to search for

@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         model = ModelFactory.createEditorModel(getApplicationContext(), ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
 
-        model.getFileSystem().newProject("TestProject");
+        model.createProject("TestProject");
         initDrawer();
     }
 
@@ -145,12 +146,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0){
-                    model.getFileSystem().stepUpOneLevel();
+                    model.gotoFolder(null);
                     updateDrawer();
                 }else {
-                    CodeFile cf = model.getFileSystem().getFilesInCurrentDir().get(position-1);
+                    CodeFile cf = model.getFilesInCurrentDir().get(position-1);
                     if (cf.isDirectory()) {
-                        model.getFileSystem().stepIntoDir(cf);
+                        model.gotoFolder(cf);
                         updateDrawer();
                     } else {
                         model.openFile(cf);
@@ -166,23 +167,23 @@ public class MainActivity extends AppCompatActivity {
                     case 0: showTextDialog(R.string.add_new_project_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
-                                    model.getFileSystem().newProject(textInput);
+                                    model.createProject(textInput);
                                     updateDrawer();
                                 }
                             });
                             break;
-                    case 1: showChoiceDialog(R.string.load_project_description, model.getFileSystem().getExistingProjects().toArray(new String[0]), new OnDialogActivation() {
-                                @Override
-                                public void onActivation(String textInput) {
-                                    model.getFileSystem().setProject(textInput);
-                                    updateDrawer();
-                                }
-                            });
+                    case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
+                        @Override
+                        public void onActivation(String textInput) {
+                            model.setProject(textInput);
+                            updateDrawer();
+                        }
+                    });
                             break;
                     case 2: showTextDialog(R.string.add_new_file_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
-                                    model.openFile(model.getFileSystem().createFile(textInput));
+                                    model.openFile(model.createFile(textInput, false));
                                     updateDrawer();
                                     closeDrawer();
                                 }
@@ -191,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     case 3: showTextDialog(R.string.add_new_folder_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
-                                    model.getFileSystem().createDir(textInput);
+                                    model.createFile(textInput, true);
                                     updateDrawer();
                                 }
                             });
@@ -207,9 +208,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDrawer(){
-        FileSystem fs = model.getFileSystem();
         ListView view = (ListView)findViewById(R.id.fileList);
-        view.setAdapter(new FileViewAdapter(getApplicationContext(), fs.getFilesInCurrentDir().toArray(new CodeFile[0]), model.getFileSystem().canStepUpOneLevel()));
+        view.setAdapter(new FileViewAdapter(getApplicationContext(), model.getFilesInCurrentDir().toArray(new CodeFile[0]), model.canStepUpOneFile()));
+        ((TextView)findViewById(R.id.projectName)).setText(model.getActiveProject());
     }
 
 
@@ -217,11 +218,10 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
         //builder.setMessage(messageResource);
-        Log.d("MainActivity", "Setting " + items.length + " items...");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(listener != null){
+                if (listener != null) {
                     listener.onActivation(items[which]);
                 }
             }
