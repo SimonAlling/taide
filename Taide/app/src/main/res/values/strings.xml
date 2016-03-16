@@ -10,10 +10,14 @@
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+
     <string name="add_new_project_description">Enter the name of the new project</string>
     <string name="load_project_description">Choose the project you wish to open</string>
     <string name="add_new_file_description">Enter the name of the new file</string>
     <string name="add_new_folder_description">Enter the name of the new folder</string>
+    <string name="rename_file">Rename</string>
+    <string name="rename_file_description">Enter the new name of the file</string>
+    <string name="remove_file_description">This will remove the file permanently. Proceed?</string>
 
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>

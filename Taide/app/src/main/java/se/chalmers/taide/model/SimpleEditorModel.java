@@ -1,6 +1,7 @@
 package se.chalmers.taide.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,9 +50,9 @@ public class SimpleEditorModel implements EditorModel {
         setLanguage(LanguageFactory.getLanguage(language, text.getResources()));
 
         // Init filters
-        textFilters.put(FILTER_KEY_HIGHLIGHT, new SimpleHighlighter(this.language));
         textFilters.put(FILTER_KEY_INDENTATION, new SimpleAutoIndenter(this.language));
         textFilters.put(FILTER_KEY_AUTOFILL, new SimpleAutoFiller(this.language));
+        textFilters.put(FILTER_KEY_HIGHLIGHT, new SimpleHighlighter(this.language));
 
         // Setup text view and apply highlight immediately
         setTextSource(text);
@@ -182,6 +183,7 @@ public class SimpleEditorModel implements EditorModel {
     @Override
     public void saveFile(CodeFile file){
         if(file != null){
+            Log.d("EditorModel", "Saving file [" + file.getName() + "] :: " + textSource.getText().length() + " chars");
             fileSystem.saveFile(file, textSource.getText().toString());
         }
     }
@@ -202,6 +204,41 @@ public class SimpleEditorModel implements EditorModel {
                 cf.saveContents(this.context, this.language.getDefaultContent(name));
             }
             return cf;
+        }
+    }
+
+    /**
+     * Renames the given file.
+     * @param file The file to rename
+     * @param newName The new name of the file
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    @Override
+    public boolean renameFile(CodeFile file, String newName){
+        //To make sure references are not lost when obejcts are recreated.
+        if(file.equals(currentFile)){
+            currentFile = file;
+        }
+
+        return file.rename(newName);
+    }
+
+    /**
+     * Deletes the given file
+     * @param file The file to remove
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    @Override
+    public boolean deleteFile(CodeFile file){
+        if(file.equals(currentFile)) {
+            if (file.remove()) {
+                currentFile = null;
+                textSource.setText("");
+                return true;
+            }
+            return false;
+        }else{
+            return file.remove();
         }
     }
 

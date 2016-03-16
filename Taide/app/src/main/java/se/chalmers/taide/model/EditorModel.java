@@ -89,6 +89,21 @@ public interface EditorModel {
     CodeFile createFile(String name, boolean isFolder);
 
     /**
+     * Renames the given file.
+     * @param file The file to rename
+     * @param newName The new name of the file
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    boolean renameFile(CodeFile file, String newName);
+
+    /**
+     * Deletes the given file
+     * @param file The file to remove
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
+    boolean deleteFile(CodeFile file);
+
+    /**
      * Steps into the given folder. If null is provided, steps up one level.
      * @param dir The reference to the folder, or null to step up one level
      * @return <code>true</code> on success, <code>false</code> otherwise

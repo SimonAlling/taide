@@ -52,6 +52,15 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         return rowView;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(position == 0){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
     private static CodeFile[] prepareArray(CodeFile[] array){
         CodeFile[] arr = new CodeFile[array.length+1];
         arr[0] = null;

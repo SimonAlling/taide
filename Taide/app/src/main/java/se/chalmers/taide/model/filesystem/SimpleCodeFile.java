@@ -63,12 +63,37 @@ public class SimpleCodeFile implements CodeFile {
 
     @Override
     public boolean rename(String newName) {
-        return source.renameTo(new File(newName));
+        File newSource = new File(source.getParentFile().getPath()+"/"+newName);
+        if(source.renameTo(newSource)) {
+            source = newSource;
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public boolean remove() {
-        return source.delete();
+        if(source.isDirectory()){
+            boolean success = true;
+            //Delete recursively down.
+            for(File f : source.listFiles()){
+                success = success && new SimpleCodeFile(f).remove();
+            }
+            if(success){
+                if(source.delete()){
+                    source = null;
+                    return true;
+                }
+            }
+        }else {
+            if (source.delete()) {
+                source = null;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

@@ -75,7 +75,7 @@
                 android:entries="@array/filesystem_default_menuitems"
                 android:layout_marginBottom="10dp" />
 
-            <ListView
+            <com.baoyz.swipemenulistview.SwipeMenuListView
                 android:id="@+id/fileList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

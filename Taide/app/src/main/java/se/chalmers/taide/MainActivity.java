@@ -3,7 +3,10 @@ package se.chalmers.taide;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +25,11 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
@@ -83,10 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind code editor to the model. Use Java as language
         model = ModelFactory.createEditorModel(getApplicationContext(), ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
+        model.createProject("TestProject");
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
 
-        model.createProject("TestProject");
         initDrawer();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -118,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor); break;
             case R.id.action_undo:      model.undo();invalidateOptionsMenu(); break;
             case R.id.action_redo:      model.redo();invalidateOptionsMenu(); break;
+            case android.R.id.home:     openDrawer();return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -200,11 +211,71 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                if(menu.getViewType() == 0) {
+                    SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
+                    openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
+                    openItem.setWidth((int) getResources().getDimension(R.dimen.drawer_action_button_width));
+                    openItem.setTitle(R.string.rename_file);
+                    openItem.setTitleSize(14);
+                    openItem.setTitleColor(Color.WHITE);
+                    menu.addMenuItem(openItem);
+
+                    SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
+                    deleteItem.setBackground(new ColorDrawable(getResources().getColor(R.color.drawer_action_delete)));
+                    deleteItem.setWidth((int) getResources().getDimension(R.dimen.drawer_action_button_width));
+                    deleteItem.setIcon(R.mipmap.ic_delete);
+                    menu.addMenuItem(deleteItem);
+                }
+            }
+        };
+        SwipeMenuListView fileList = (SwipeMenuListView) findViewById(R.id.fileList);
+        fileList.setMenuCreator(creator);
+        fileList.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);
+        fileList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                if (menu.getViewType() == 0) {
+                    final CodeFile cf = model.getFilesInCurrentDir().get(position-1);
+                    switch (index) {
+                        case 0: showTextDialog(R.string.rename_file_description, new OnDialogActivation() {
+                                    @Override
+                                    public void onActivation(String textInput) {
+                                        Log.d("MainActvity", "Rename went OK? "+model.renameFile(cf, textInput));
+                                        updateDrawer();
+                                    }
+                                });
+                                break;
+                        case 1: showTextDialog(R.string.remove_file_description, new OnDialogActivation() {
+                                    @Override
+                                    public void onActivation(String textInput) {
+                                        model.deleteFile(cf);
+                                        updateDrawer();
+                                    }
+                                }, false);
+                                break;
+                    }
+                    // false : close the menu; true : not close the menu
+                    return false;
+                }else{
+                    return false;
+                }
+            }
+        });
+
         updateDrawer();
     }
 
     private void closeDrawer(){
         ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
+    }
+
+    private void openDrawer(){
+        ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.LEFT);
     }
 
     private void updateDrawer(){
@@ -237,15 +308,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTextDialog(int messageResource, final OnDialogActivation listener){
+        showTextDialog(messageResource, listener, true);
+    }
+
+    private void showTextDialog(int messageResource, final OnDialogActivation listener, boolean showTextField){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
         builder.setMessage(messageResource);
-        builder.setView(getLayoutInflater().inflate(R.layout.dialog_input_text, null));
+        if(showTextField) {
+            builder.setView(getLayoutInflater().inflate(R.layout.dialog_input_text, null));
+        }
         builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == Dialog.BUTTON_POSITIVE && listener != null) {
-                    String input = ((EditText) currentDialog.findViewById(R.id.dialog_input_text)).getText().toString();
+                    EditText source = ((EditText) currentDialog.findViewById(R.id.dialog_input_text));
+                    String input = (source!=null?source.getText().toString():"");
                     listener.onActivation(input);
                 }
             }
