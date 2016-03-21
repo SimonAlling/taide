@@ -32,56 +32,56 @@
 
         <include layout="@layout/content_main" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email" />
-
     </android.support.design.widget.CoordinatorLayout>
 
     <RelativeLayout
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:id="@+id/drawerPane"
-        android:background="@color/drawer_background"
+        android:background="#50FFFFFF"
         android:layout_gravity="start">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:background="@color/drawer_background"
+            android:layout_marginTop="24dp"
+            android:layout_alignParentTop="true">
 
-            <TextView
-                android:id="@+id/projectName"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="@dimen/listview_left_margin"
-                android:textSize="@dimen/default_font_size"
-                android:textColor="@color/drawer_font_color"
-                android:textStyle="bold"
-                android:text="Project Name" />
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
-            <ListView
-                android:id="@+id/projectActionMenus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/drawer_listview_bg"
-                android:choiceMode="none"
-                android:entries="@array/filesystem_default_menuitems"
-                android:layout_marginBottom="10dp" />
+                <TextView
+                    android:id="@+id/projectName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="@dimen/listview_left_margin"
+                    android:textSize="@dimen/default_font_size"
+                    android:textColor="@color/drawer_font_color"
+                    android:textStyle="bold"
+                    android:text="Project Name" />
 
-            <com.baoyz.swipemenulistview.SwipeMenuListView
-                android:id="@+id/fileList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:choiceMode="singleChoice" />
+                <ListView
+                    android:id="@+id/projectActionMenus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/drawer_listview_bg"
+                    android:choiceMode="none"
+                    android:entries="@array/filesystem_default_menuitems"
+                    android:layout_marginBottom="10dp" />
 
-        </LinearLayout>
+                <com.baoyz.swipemenulistview.SwipeMenuListView
+                    android:id="@+id/fileList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:choiceMode="singleChoice" />
+
+            </LinearLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 

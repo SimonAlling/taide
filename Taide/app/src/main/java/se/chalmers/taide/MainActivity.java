@@ -3,14 +3,13 @@ package se.chalmers.taide;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -34,10 +33,8 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.filesystem.CodeFile;
-import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.util.Clipboard;
-import se.chalmers.taide.util.TabUtil;
 
 /**
  * Created by Matz on 2016-01-25.
@@ -62,32 +59,24 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-
         // Retrieve the code editor text field
         codeEditor = (EditText)findViewById(R.id.editText);
         // Init sample code
-        final String sampleCode = "public class Main{\n\n"+TabUtil.getTabs(1)+"public static void main(String[] args){\n"+TabUtil.getTabs(2)+"System.out.println(\"Hello world!\");\n"+TabUtil.getTabs(1)+"}\n\n}";
-        codeEditor.setText(sampleCode);
         codeEditor.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() <= sampleCode.length()+1){
+                if (s.length() <= 0) {
                     invalidateOptionsMenu();
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Bind code editor to the model. Use Java as language
@@ -96,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
 
         initDrawer();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -109,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
-        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
+        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo() != null);
         menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
         return true;
     }
@@ -142,29 +130,40 @@ public class MainActivity extends AppCompatActivity {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(thisActivity.getCurrentFocus().getWindowToken(), 0);
             }
+
             @Override
             public void onDrawerClosed(View drawerView) {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(codeEditor, 0);
             }
+
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {}
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
             @Override
-            public void onDrawerStateChanged(int newState) {}
+            public void onDrawerStateChanged(int newState) {
+            }
         });
+        ActionBar b = getSupportActionBar();
+        if(b != null) {
+            b.setDisplayHomeAsUpEnabled(true);
+            b.setHomeAsUpIndicator(R.mipmap.ic_drawer);
+        }
 
         ((ListView)findViewById(R.id.fileList)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
+                if (position == 0) {
                     model.gotoFolder(null);
                     updateDrawer();
-                }else {
-                    CodeFile cf = model.getFilesInCurrentDir().get(position-1);
+                } else {
+                    CodeFile cf = model.getFilesInCurrentDir().get(position - 1);
                     if (cf.isDirectory()) {
                         model.gotoFolder(cf);
                         updateDrawer();
                     } else {
+                        codeEditor.setVisibility(View.VISIBLE);
                         model.openFile(cf);
                         closeDrawer();
                     }
@@ -194,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     case 2: showTextDialog(R.string.add_new_file_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
+                                    codeEditor.setVisibility(View.VISIBLE);
                                     model.openFile(model.createFile(textInput, false));
                                     updateDrawer();
                                     closeDrawer();
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                         case 0: showTextDialog(R.string.rename_file_description, new OnDialogActivation() {
                                     @Override
                                     public void onActivation(String textInput) {
-                                        Log.d("MainActvity", "Rename went OK? "+model.renameFile(cf, textInput));
+                                        model.renameFile(cf, textInput);
                                         updateDrawer();
                                     }
                                 });

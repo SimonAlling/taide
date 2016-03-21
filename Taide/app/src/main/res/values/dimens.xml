@@ -5,5 +5,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="listview_left_margin">24dp</dimen>
     <dimen name="default_font_size">16dp</dimen>
+    <dimen name="big_font_size">32dp</dimen>
     <dimen name="drawer_action_button_width">60dp</dimen>
 </resources>

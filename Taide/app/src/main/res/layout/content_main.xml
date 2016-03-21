@@ -12,6 +12,14 @@
     tools:context="se.chalmers.taide.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <TextView
+        android:id="@+id/noTextLoadedLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:textSize="@dimen/big_font_size"
+        android:text="@string/default_info"
+        android:textColor="@color/defaultTextColor"/>
 
     <EditText
         android:layout_width="fill_parent"
@@ -20,7 +28,6 @@
         android:background="@color/defaultBackground"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
-        android:hint="@string/insert_sample_descriptor"
         android:textAlignment="viewStart"
         android:gravity="start"
         android:focusableInTouchMode="true"
@@ -30,5 +37,6 @@
         android:scrollbars="vertical"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbarSize="4dp"
-        android:scrollbarThumbVertical="@drawable/scrollbar" />
+        android:scrollbarThumbVertical="@drawable/scrollbar"
+        android:visibility="invisible" />
 </RelativeLayout>
