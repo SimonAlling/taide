@@ -2,13 +2,15 @@ package se.chalmers.taide.model.filesystem;
 
 import java.util.List;
 
+import se.chalmers.taide.model.ProjectType;
+
 /**
  * Created by Matz on 2016-03-11.
  */
 public interface FileSystem {
 
-    boolean newProject(String projectName);
-    boolean setProject(String projectName);
+    boolean newProject(String projectName, ProjectType type);
+    boolean setProject(String projectName, ProjectType type);
     List<String> getExistingProjects();
 
     CodeFile getCurrentDir();

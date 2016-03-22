@@ -10,7 +10,6 @@ import java.util.Map;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
-import se.chalmers.taide.model.history.AbstractTextHistoryHandler;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
@@ -295,12 +294,8 @@ public class SimpleEditorModel implements EditorModel {
      * @param name The name of the new project
      */
     @Override
-    public boolean createProject(String name){
-        if(fileSystem.newProject(name)){
-            return setProject(name);
-        }
-
-        return false;
+    public boolean createProject(String name, ProjectType type){
+        return fileSystem.newProject(name, type);
     }
 
     /**
@@ -309,8 +304,8 @@ public class SimpleEditorModel implements EditorModel {
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
     @Override
-    public boolean setProject(String name){
-        return fileSystem.setProject(name);
+    public boolean setProject(String name, ProjectType projectType){
+        return fileSystem.setProject(name, projectType);
     }
 
     /**

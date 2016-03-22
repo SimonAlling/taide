@@ -130,15 +130,17 @@ public interface EditorModel {
     /**
      * Creates a project and sets it to the active one.
      * @param name The name of the new project
+     * @param type The type of the project.
      */
-    boolean createProject(String name);
+    boolean createProject(String name, ProjectType type);
 
     /**
      * Sets the project to use.
      * @param name The name of the project.
+     * @param projectType The type of the project.
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
-    boolean setProject(String name);
+    boolean setProject(String name, ProjectType projectType);
 
     /**
      * Retrieves the name of the active project.

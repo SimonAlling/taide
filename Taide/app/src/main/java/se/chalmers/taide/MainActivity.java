@@ -32,6 +32,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
+import se.chalmers.taide.model.ProjectType;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.util.Clipboard;
@@ -46,6 +47,8 @@ import se.chalmers.taide.util.Clipboard;
 // massa problem har jag haft trot löst de men måste testa igen med git
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int DBX_CHOOSER_REQUEST = 0;
 
     private EditText codeEditor;
     private EditorModel model;
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind code editor to the model. Use Java as language
         model = ModelFactory.createEditorModel(getApplicationContext(), ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
-        model.createProject("TestProject");
+        model.createProject("TestProject", ProjectType.LOCAL_SYSTEM);
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
 
         initDrawer();
@@ -179,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                     case 0: showTextDialog(R.string.add_new_project_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
-                                    model.createProject(textInput);
+                                    model.createProject(textInput, ProjectType.LOCAL_SYSTEM);
                                     updateDrawer();
                                 }
                             });
@@ -187,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            model.setProject(textInput);
+                            model.setProject(textInput, ProjectType.LOCAL_SYSTEM);
                             updateDrawer();
                         }
                     });
@@ -276,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
         ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
     }
 
-    private void openDrawer(){
+    private void openDrawer() {
         ((DrawerLayout) findViewById(R.id.drawer_layout)).openDrawer(Gravity.LEFT);
     }
 
@@ -285,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
         view.setAdapter(new FileViewAdapter(getApplicationContext(), model.getFilesInCurrentDir().toArray(new CodeFile[0]), model.canStepUpOneFile()));
         ((TextView)findViewById(R.id.projectName)).setText(model.getActiveProject());
     }
-
 
     private void showChoiceDialog(int messageResource, final String[] items, final OnDialogActivation listener){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
