@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
-        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo() != null);
-        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
+        menu.findItem(R.id.action_undo).setEnabled(true);//model.peekUndo() != null);
+        menu.findItem(R.id.action_redo).setEnabled(true);//model.peekRedo() != null);
         return true;
     }
 
@@ -114,8 +114,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_copy:      Clipboard.copyToClipboard(getApplicationContext(), codeEditor); break;
             case R.id.action_cut:       Clipboard.cutToClipboard(getApplicationContext(), codeEditor); break;
             case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor); break;
-            case R.id.action_undo:      model.undo();invalidateOptionsMenu(); break;
-            case R.id.action_redo:      model.redo();invalidateOptionsMenu(); break;
+            case R.id.action_undo:      if(model.peekUndo()==null)Toast.makeText(getApplicationContext(), "No undo was found", Toast.LENGTH_LONG);
+                                        else{model.undo();invalidateOptionsMenu();}break;
+            case R.id.action_redo:      if(model.peekRedo()==null)Toast.makeText(getApplicationContext(), "No redo was found", Toast.LENGTH_LONG);
+                                        else{model.redo();invalidateOptionsMenu();}break;
             case android.R.id.home:     openDrawer();return true;
         }
 

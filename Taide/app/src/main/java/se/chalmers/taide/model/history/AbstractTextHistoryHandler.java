@@ -38,10 +38,28 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
 
             //Enable new text source
             this.inputField = input;
-            actions.clear();
-            currentIndex = -1;
-            inputField.addListener(this, true);
+            if(this.inputField != null){
+                this.inputField.addListener(this, true);
+            }
         }
+    }
+
+    /**
+     * Retrieves the currently bound text source to this handler.
+     * @return The currently bound text source.
+     */
+    @Override
+    public TextSource getTextSource(){
+        return inputField;
+    }
+
+    public String getCurrentState(){
+        StringBuffer b = new StringBuffer();
+        int index = 1;
+        for(List<TextAction> actionList : actions){
+            b.append(index++).append(". [").append(actionListToString(actionList)).append("]").append("\n");
+        }
+        return b.toString();
     }
 
     /**

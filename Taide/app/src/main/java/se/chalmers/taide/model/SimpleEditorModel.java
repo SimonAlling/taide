@@ -4,13 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
+import se.chalmers.taide.model.history.AbstractTextHistoryHandler;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
@@ -91,9 +91,6 @@ public class SimpleEditorModel implements EditorModel {
     public void setTextSource(TextSource textSource) {
         if (textSource != null) {
             if (this.textSource != null) {
-                if (historyHandler != null) {
-                    historyHandler.registerInputField(null); // Reset history handler
-                }
                 for (TextFilter tf : textFilters.values()) {
                     tf.detach();
                 }
@@ -101,10 +98,14 @@ public class SimpleEditorModel implements EditorModel {
 
             // Replace
             this.textSource = textSource;
-            this.historyHandler = HistoryHandlerFactory.createTextHistoryHandler(textSource);
             for (TextFilter tf : textFilters.values()) {
                 tf.attach(this.textSource);
             }
+
+            if(historyHandler != null){
+                historyHandler.registerInputField(null);
+            }
+            this.historyHandler = HistoryHandlerFactory.getTextHistoryHandler((currentFile==null?"":currentFile.getUniqueName()), textSource);
         }
     }
 
@@ -170,8 +171,14 @@ public class SimpleEditorModel implements EditorModel {
 
         if(file != null) {
             this.currentFile = file;
+            if (historyHandler != null) {
+                historyHandler.registerInputField(null); // Reset history handler
+            }
+            //Change contents
             String contents = file.getContents();
             textSource.setText(contents);
+            //Assign new history handler
+            this.historyHandler = HistoryHandlerFactory.getTextHistoryHandler((currentFile==null?"":currentFile.getUniqueName()), textSource);
             manuallyTriggerFilter(FILTER_KEY_HIGHLIGHT);
         }
     }

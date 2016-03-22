@@ -3,7 +3,6 @@ package se.chalmers.taide.model;
 import java.util.List;
 
 import se.chalmers.taide.model.filesystem.CodeFile;
-import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.languages.Language;
 
 /**

@@ -8,6 +8,7 @@ import android.content.Context;
 public interface CodeFile extends Comparable<CodeFile>{
 
     String getName();
+    String getUniqueName();
     boolean isDirectory();
 
     String getContents();
