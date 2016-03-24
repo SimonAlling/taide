@@ -8,6 +8,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import android.widget.EditText;
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.languages.LanguageFactory;
+import se.chalmers.taide.util.Clipboard;
 import se.chalmers.taide.util.TabUtil;
 
 
@@ -29,6 +32,7 @@ public class TextEditor extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -89,5 +93,31 @@ public class TextEditor extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_settings:  break;
+            case R.id.action_copy:      Clipboard.copyToClipboard(getContext(), codeEditor); break;
+            case R.id.action_cut:       Clipboard.cutToClipboard(getContext(), codeEditor); break;
+            case R.id.action_paste:     Clipboard.pasteFromClipboard(getContext(), codeEditor); break;
+            case R.id.action_undo:      model.undo();getActivity().invalidateOptionsMenu(); break;
+            case R.id.action_redo:      model.redo();getActivity().invalidateOptionsMenu(); break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getContext()));
+        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
+        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
     }
 }

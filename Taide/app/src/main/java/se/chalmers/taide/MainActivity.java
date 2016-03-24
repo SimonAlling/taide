@@ -48,10 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        /*menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getApplicationContext()));
-        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
-        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);*/
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -61,15 +58,8 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        /*switch (id) {
-            case R.id.action_settings:  break;
-            case R.id.action_copy:      Clipboard.copyToClipboard(getApplicationContext(), codeEditor); break;
-            case R.id.action_cut:       Clipboard.cutToClipboard(getApplicationContext(), codeEditor); break;
-            case R.id.action_paste:     Clipboard.pasteFromClipboard(getApplicationContext(), codeEditor); break;
-            case R.id.action_undo:      model.undo();invalidateOptionsMenu(); break;
-            case R.id.action_redo:      model.redo();invalidateOptionsMenu(); break;
-        }*/
-
-        return super.onOptionsItemSelected(item);
+        switch (id) {
+            default: return super.onOptionsItemSelected(item);
+        }
     }
 }
