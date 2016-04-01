@@ -63,9 +63,11 @@ public class SimpleFileSystem implements FileSystem{
     }
 
     @Override
-    public boolean newProject(String projectName, ProjectType type){
-        if(getExistingProjects().contains(projectName)){
-            return setProject(projectName, type);
+    public boolean newProject(String projectName, ProjectType type, OnProjectLoadListener listener){
+        //Use only last part as projectname.
+        String concreteName = FileSystemFactory.getConcreteName(projectName, type);
+        if(getExistingProjects().contains(concreteName)){
+            return setProject(projectName, type, listener);
         }
 
         Project p = FileSystemFactory.getProject(projectName, type);
@@ -81,16 +83,17 @@ public class SimpleFileSystem implements FileSystem{
             }
         }
 
-        return success && setProject(projectName, type);
+        return success && setProject(projectName, type, listener);
     }
 
     @Override
-    public boolean setProject(String projectName, ProjectType type) {
+    public boolean setProject(String projectName, ProjectType type, OnProjectLoadListener listener) {
         Project p = findProject(projectName);
         if(p != null) {
             baseDir = p.getBaseFolder();
             currentDir = baseDir;
             currentProject = p;
+            p.loadData(listener);
             return true;
         }else{
             //Project not found.
@@ -185,7 +188,7 @@ public class SimpleFileSystem implements FileSystem{
     @Override
     public void saveFile(CodeFile f, String contents){
         if(f != null){
-            f.saveContents(context, contents);
+            f.saveContents(contents);
         }
     }
 }

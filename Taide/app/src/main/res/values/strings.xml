@@ -22,9 +22,13 @@
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>
 
+    <string name="dropbox_app_key">o4m52bd67whe1js</string>
+    <string name="dropbox_error_auth">"Couldn't authenticate with Dropbox, please try again"</string>
+
     <string-array name="filesystem_default_menuitems">
         <item>New project</item>
         <item>Load project</item>
+        <item>Import from dropbox</item>
         <item>New file</item>
         <item>New folder</item>
     </string-array>

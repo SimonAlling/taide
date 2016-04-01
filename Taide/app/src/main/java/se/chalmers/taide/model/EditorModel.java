@@ -3,6 +3,7 @@ package se.chalmers.taide.model;
 import java.util.List;
 
 import se.chalmers.taide.model.filesystem.CodeFile;
+import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -130,22 +131,23 @@ public interface EditorModel {
     /**
      * Creates a project and sets it to the active one.
      * @param name The name of the new project
-     * @param type The type of the project.
+     * @param type The type of the project to create
+     * @param listener Triggered when the project is loaded into memory
      */
-    boolean createProject(String name, ProjectType type);
+    boolean createProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener);
 
     /**
      * Sets the project to use.
      * @param name The name of the project.
-     * @param projectType The type of the project.
+     * @param type The type of the project to create
+     * @param listener Triggered when the project is loaded into memory
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
-    boolean setProject(String name, ProjectType projectType);
+    boolean setProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener);
 
     /**
      * Retrieves the name of the active project.
      * @return The name of the active project
      */
     String getActiveProject();
-
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -29,11 +30,14 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.dropbox.chooser.android.DbxChooser;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.ProjectType;
 import se.chalmers.taide.model.filesystem.CodeFile;
+import se.chalmers.taide.model.filesystem.FileSystem;
+import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
 import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.util.Clipboard;
 
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private EditorModel model;
 
     private Dialog currentDialog;
+    private boolean authenticatingDropbox;
+    private DbxChooser dropboxChooser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Bind code editor to the model. Use Java as language
-        model = ModelFactory.createEditorModel(getApplicationContext(), ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
-        model.createProject("TestProject", ProjectType.LOCAL_SYSTEM);
+        model = ModelFactory.createEditorModel(MainActivity.this, ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
+        model.createProject("TestProject", ProjectType.LOCAL_SYSTEM, null);
         Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
 
         initDrawer();
@@ -103,6 +109,15 @@ public class MainActivity extends AppCompatActivity {
         menu.findItem(R.id.action_undo).setEnabled(true);//model.peekUndo() != null);
         menu.findItem(R.id.action_redo).setEnabled(true);//model.peekRedo() != null);
         return true;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(authenticatingDropbox){
+            DropboxFactory.authenticationDone(this);
+            showDropboxChooser();
+        }
     }
 
     @Override
@@ -125,6 +140,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DBX_CHOOSER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                DbxChooser.Result result = new DbxChooser.Result(data);
+                loadDropboxProject(result);
+            } else {
+                // Failed or was cancelled by the user.
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void initDrawer(){
@@ -180,22 +209,31 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position){
                     case 0: showTextDialog(R.string.add_new_project_description, new OnDialogActivation() {
+                        @Override
+                        public void onActivation(String textInput) {
+                            model.createProject(textInput, ProjectType.LOCAL_SYSTEM, new FileSystem.OnProjectLoadListener() {
                                 @Override
-                                public void onActivation(String textInput) {
-                                    model.createProject(textInput, ProjectType.LOCAL_SYSTEM);
+                                public void projectLoaded(boolean success) {
                                     updateDrawer();
                                 }
                             });
+                        }
+                    });
                             break;
                     case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            model.setProject(textInput, ProjectType.LOCAL_SYSTEM);
-                            updateDrawer();
+                            model.setProject(textInput, ProjectType.LOCAL_SYSTEM, new FileSystem.OnProjectLoadListener() {
+                                @Override
+                                public void projectLoaded(boolean success) {
+                                    updateDrawer();
+                                }
+                            });
                         }
                     });
                             break;
-                    case 2: showTextDialog(R.string.add_new_file_description, new OnDialogActivation() {
+                    case 2: showDropboxChooser();break;
+                    case 3: showTextDialog(R.string.add_new_file_description, new OnDialogActivation() {
                                 @Override
                                 public void onActivation(String textInput) {
                                     codeEditor.setVisibility(View.VISIBLE);
@@ -205,13 +243,13 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                             break;
-                    case 3: showTextDialog(R.string.add_new_folder_description, new OnDialogActivation() {
-                                @Override
-                                public void onActivation(String textInput) {
-                                    model.createFile(textInput, true);
-                                    updateDrawer();
-                                }
-                            });
+                    case 4: showTextDialog(R.string.add_new_folder_description, new OnDialogActivation() {
+                        @Override
+                        public void onActivation(String textInput) {
+                            model.createFile(textInput, true);
+                            updateDrawer();
+                        }
+                    });
                             break;
                 }
             }
@@ -287,6 +325,30 @@ public class MainActivity extends AppCompatActivity {
         ListView view = (ListView)findViewById(R.id.fileList);
         view.setAdapter(new FileViewAdapter(getApplicationContext(), model.getFilesInCurrentDir().toArray(new CodeFile[0]), model.canStepUpOneFile()));
         ((TextView)findViewById(R.id.projectName)).setText(model.getActiveProject());
+    }
+
+    private void showDropboxChooser(){
+        if(dropboxChooser == null){
+            authenticatingDropbox = true;
+            dropboxChooser = new DbxChooser(getResources().getString(R.string.dropbox_app_key));
+            //Activate dropbox integration
+            DropboxFactory.initDropboxIntegration(this);
+        }
+
+        if(DropboxFactory.isAuthenticated()){
+            authenticatingDropbox = false;
+            dropboxChooser.forResultType(DbxChooser.ResultType.DIRECT_LINK).launch(MainActivity.this, DBX_CHOOSER_REQUEST);
+        }
+    }
+
+    private void loadDropboxProject(DbxChooser.Result result){
+        Log.d("MainActivity", "Link: "+result.getLink().getPath());
+        model.createProject(result.getLink().getPath(), ProjectType.DROPBOX, new FileSystem.OnProjectLoadListener() {
+            @Override
+            public void projectLoaded(boolean success) {
+                updateDrawer();
+            }
+        });
     }
 
     private void showChoiceDialog(int messageResource, final String[] items, final OnDialogActivation listener){

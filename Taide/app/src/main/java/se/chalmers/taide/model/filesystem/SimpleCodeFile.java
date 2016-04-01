@@ -54,7 +54,7 @@ public class SimpleCodeFile implements CodeFile {
     }
 
     @Override
-    public boolean saveContents(Context context, String contents) {
+    public boolean saveContents(String contents) {
         try {
             OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
             out.write(contents.getBytes());

@@ -10,6 +10,7 @@ import java.util.Map;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
+import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
@@ -207,7 +208,7 @@ public class SimpleEditorModel implements EditorModel {
         }else{
             CodeFile cf = fileSystem.createFile(name);
             if(this.language != null){
-                cf.saveContents(this.context, this.language.getDefaultContent(name));
+                cf.saveContents(this.language.getDefaultContent(name));
             }
             return cf;
         }
@@ -292,20 +293,24 @@ public class SimpleEditorModel implements EditorModel {
     /**
      * Creates a project and sets it to the active one.
      * @param name The name of the new project
+     * @param type The type of the project to create
+     * @param listener Triggered when the project is loaded into memory
      */
     @Override
-    public boolean createProject(String name, ProjectType type){
-        return fileSystem.newProject(name, type);
+    public boolean createProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener){
+        return fileSystem.newProject(name, type, listener);
     }
 
     /**
      * Sets the project to use.
      * @param name The name of the project.
+     * @param type The type of the project to create
+     * @param listener Triggered when the project is loaded into memory
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
     @Override
-    public boolean setProject(String name, ProjectType projectType){
-        return fileSystem.setProject(name, projectType);
+    public boolean setProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener){
+        return fileSystem.setProject(name, type, listener);
     }
 
     /**

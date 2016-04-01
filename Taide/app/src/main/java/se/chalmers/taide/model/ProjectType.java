@@ -5,5 +5,6 @@ package se.chalmers.taide.model;
  */
 
 public enum ProjectType{
-    LOCAL_SYSTEM
+    LOCAL_SYSTEM,
+    DROPBOX
 }

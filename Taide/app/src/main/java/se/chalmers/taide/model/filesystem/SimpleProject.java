@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class SimpleProject implements Project{
 
     private String name;
+    private File baseFolder;
 
     public SimpleProject(String name){
         this.name = name;
@@ -24,8 +25,16 @@ public class SimpleProject implements Project{
     }
 
     @Override
+    public void loadData(FileSystem.OnProjectLoadListener listener) {
+        baseFolder = getBaseFolder();
+        if(listener != null){
+            listener.projectLoaded(true);
+        }
+    }
+
+    @Override
     public CodeFile createFile(String folder, String name) {
-        File f = new File(folder + "/" + name);
+        File f = new File(baseFolder.getPath() + "/" +folder + (folder.length()>0?"/":"") + name);
         try {
             if (f.createNewFile()) {
                 return new SimpleCodeFile(f);
@@ -39,7 +48,7 @@ public class SimpleProject implements Project{
 
     @Override
     public CodeFile createDir(String folder, String name) {
-        File f = new File(folder + "/" + name);
+        File f = new File(baseFolder.getPath()+"/"+folder + (folder.length()>0?"/":"") + name);
         if(f.mkdir()){
             return new SimpleCodeFile(f);
         }else{
@@ -84,7 +93,7 @@ public class SimpleProject implements Project{
         }
     }
 
-    private File getProjectFile(){
+    protected File getProjectFile(){
         return new File(Environment.PROJECT_DIR+"/"+name+"/project.ini");
     }
 }

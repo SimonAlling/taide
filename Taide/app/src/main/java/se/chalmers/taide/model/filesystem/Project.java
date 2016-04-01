@@ -9,6 +9,7 @@ public interface Project {
 
     String getName();
     boolean setupProject();
+    void loadData(FileSystem.OnProjectLoadListener listener);
     File getBaseFolder();
     CodeFile createFile(String folder, String name);
     CodeFile createDir(String folder, String name);
