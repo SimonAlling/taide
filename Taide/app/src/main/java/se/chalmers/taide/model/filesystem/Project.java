@@ -13,4 +13,5 @@ public interface Project {
     File getBaseFolder();
     CodeFile createFile(String folder, String name);
     CodeFile createDir(String folder, String name);
+    CodeFile getCodeFile(File f);
 }

@@ -63,6 +63,7 @@ public class Syncer extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         try {
+            Log.d("Dropbox", "Trying to sync '"+path+"'");
             DropboxAPI.DropboxInputStream in = api.getFileStream(path, null);
             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile));
             byte[] buf = new byte[1024];
@@ -112,9 +113,9 @@ public class Syncer extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if (result) {
-            Log.d("Uploader", "Successfully synced file from Dropbox.");
+            Log.d("Dropbox", "Successfully synced file from Dropbox.");
         } else {
-            Log.w("Uploader", "Could not sync file from Dropbox: "+mErrorMsg);
+            Log.w("Dropbox", "Could not sync file from Dropbox: "+mErrorMsg);
         }
     }
 }

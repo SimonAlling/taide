@@ -57,6 +57,11 @@ public class SimpleProject implements Project{
     }
 
     @Override
+    public CodeFile getCodeFile(File f) {
+        return new SimpleCodeFile(f);
+    }
+
+    @Override
     public boolean setupProject() {
         try {
             File projectFile = getProjectFile();

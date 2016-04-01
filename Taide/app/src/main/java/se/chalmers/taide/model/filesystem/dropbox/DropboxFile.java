@@ -1,5 +1,7 @@
 package se.chalmers.taide.model.filesystem.dropbox;
 
+import android.util.Log;
+
 import java.io.File;
 
 import se.chalmers.taide.model.filesystem.SimpleCodeFile;
@@ -39,6 +41,7 @@ public class DropboxFile extends SimpleCodeFile{
     @Override
     public boolean saveContents(String contents) {
         boolean success = super.saveContents(contents);
+        Log.d("DBFile", "DROPBOX FILE");
         if(success) {
             Dropbox.upload(this.file, this.syncLocation);
         }

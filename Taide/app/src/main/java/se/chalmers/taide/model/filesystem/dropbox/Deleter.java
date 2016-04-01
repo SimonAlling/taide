@@ -99,9 +99,9 @@ public class Deleter extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if (result) {
-            Log.d("Uploader", "Successfully deleted file from Dropbox.");
+            Log.d("Dropbox", "Successfully deleted file from Dropbox.");
         } else {
-            Log.w("Uploader", "Could not delete file from Dropbox!");
+            Log.w("Dropbox", "Could not delete file from Dropbox!");
         }
     }
 }

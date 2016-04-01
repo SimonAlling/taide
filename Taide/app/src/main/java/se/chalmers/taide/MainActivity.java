@@ -116,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(authenticatingDropbox){
             DropboxFactory.authenticationDone(this);
-            showDropboxChooser();
+            if(DropboxFactory.isAuthenticated()) {
+                showDropboxChooser();
+            }
         }
     }
 
@@ -223,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                     case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            model.setProject(textInput, ProjectType.LOCAL_SYSTEM, new FileSystem.OnProjectLoadListener() {
+                            model.setProject(textInput, new FileSystem.OnProjectLoadListener() {
                                 @Override
                                 public void projectLoaded(boolean success) {
                                     updateDrawer();
@@ -328,15 +330,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDropboxChooser(){
-        if(dropboxChooser == null){
+        if(!DropboxFactory.isAuthenticated()){
             authenticatingDropbox = true;
-            dropboxChooser = new DbxChooser(getResources().getString(R.string.dropbox_app_key));
-            //Activate dropbox integration
             DropboxFactory.initDropboxIntegration(this);
         }
 
         if(DropboxFactory.isAuthenticated()){
             authenticatingDropbox = false;
+            if(dropboxChooser == null){
+                dropboxChooser = new DbxChooser(getResources().getString(R.string.dropbox_app_key));
+            }
             dropboxChooser.forResultType(DbxChooser.ResultType.DIRECT_LINK).launch(MainActivity.this, DBX_CHOOSER_REQUEST);
         }
     }

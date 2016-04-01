@@ -139,11 +139,10 @@ public interface EditorModel {
     /**
      * Sets the project to use.
      * @param name The name of the project.
-     * @param type The type of the project to create
      * @param listener Triggered when the project is loaded into memory
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
-    boolean setProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener);
+    boolean setProject(String name, FileSystem.OnProjectLoadListener listener);
 
     /**
      * Retrieves the name of the active project.

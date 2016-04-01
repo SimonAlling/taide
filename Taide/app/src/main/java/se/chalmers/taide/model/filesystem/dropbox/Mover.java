@@ -96,9 +96,9 @@ public class Mover extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if (result) {
-            Log.d("Uploader", "Successfully moved file on Dropbox.");
+            Log.d("Dropbox", "Successfully moved file on Dropbox.");
         } else {
-            Log.w("Uploader", "Could not move file on Dropbox!");
+            Log.w("Dropbox", "Could not move file on Dropbox!");
         }
     }
 }

@@ -190,7 +190,7 @@ public class SimpleEditorModel implements EditorModel {
     @Override
     public void saveFile(CodeFile file){
         if(file != null){
-            Log.d("EditorModel", "Saving file [" + file.getName() + "] :: " + textSource.getText().length() + " chars");
+            Log.d("EditorModel", "Saving file [" + file.getName() + ", "+file.getClass().getSimpleName()+"] :: " + textSource.getText().length() + " chars");
             fileSystem.saveFile(file, textSource.getText().toString());
         }
     }
@@ -304,13 +304,12 @@ public class SimpleEditorModel implements EditorModel {
     /**
      * Sets the project to use.
      * @param name The name of the project.
-     * @param type The type of the project to create
      * @param listener Triggered when the project is loaded into memory
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
     @Override
-    public boolean setProject(String name, ProjectType type, FileSystem.OnProjectLoadListener listener){
-        return fileSystem.setProject(name, type, listener);
+    public boolean setProject(String name, FileSystem.OnProjectLoadListener listener){
+        return fileSystem.setProject(name, listener);
     }
 
     /**

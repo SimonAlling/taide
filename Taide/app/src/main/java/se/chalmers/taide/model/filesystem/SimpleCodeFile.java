@@ -55,13 +55,21 @@ public class SimpleCodeFile implements CodeFile {
 
     @Override
     public boolean saveContents(String contents) {
-        try {
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
-            out.write(contents.getBytes());
-            out.close();
-            return true;
-        }catch(IOException ioe){
-            return false;
+        if(!isDirectory()) {
+            try {
+                OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
+                out.write(contents.getBytes());
+                out.close();
+                return true;
+            } catch (IOException ioe) {
+                return false;
+            }
+        }else{
+            if(!source.exists()){
+                return source.mkdir();
+            }else{
+                return true;
+            }
         }
     }
 

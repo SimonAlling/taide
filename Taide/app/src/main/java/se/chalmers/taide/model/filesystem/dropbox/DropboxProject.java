@@ -27,28 +27,32 @@ public class DropboxProject extends SimpleProject {
     public DropboxProject(String name){
         super(FileSystemFactory.getConcreteName(name, ProjectType.DROPBOX));
         this.baseLink = name;
-        Dropbox.init(DropboxFactory.getAPI());
     }
 
     @Override
     public void loadData(FileSystem.OnProjectLoadListener listener) {
-        localBaseFolder = getBaseFolder().getPath();
+        this.localBaseFolder = getBaseFolder().getPath();
+        this.dropboxBaseFolder = baseLink.substring(baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/") + 1) + 1) + 1) + 1, baseLink.lastIndexOf("/"));
         //TODO sync all files
+        if(listener != null){
+            listener.projectLoaded(true);
+        }
     }
 
     @Override
     public boolean setupProject() {
         boolean success = super.setupProject();
         this.dropboxBaseFolder = baseLink.substring(baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/")+1)+1)+1)+1, baseLink.lastIndexOf("/"));
-        File projectFile = getProjectFile();
-        Dropbox.syncFile(projectFile, dropboxBaseFolder+"/"+projectFile.getName());
-        createDir("", "src");
-        Log.d("Dropbox", "Link: " + baseLink);
         return success;
     }
 
     @Override
     public CodeFile createFile(String folder, String name) {
+        if(!folder.startsWith(localBaseFolder)){
+            throw new IllegalArgumentException("Cannot handle files outside project scope");
+        }
+        folder = folder.substring(localBaseFolder.length());
+
         File f = new File(localBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
         if(!f.exists()) {
             try {
@@ -69,17 +73,32 @@ public class DropboxProject extends SimpleProject {
 
     @Override
     public CodeFile createDir(String folder, String name) {
+        if(!folder.startsWith(localBaseFolder)){
+            throw new IllegalArgumentException("Cannot handle directories outside project scope");
+        }
+        folder = folder.substring(localBaseFolder.length());
+
         File f = new File(localBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
         if(!f.exists()) {
             if (f.mkdir()) {
-                DropboxFile file = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
-                file.saveContents("");      //Sync empty file.
-                return file;
+                DropboxFile dir = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
+                dir.saveContents("");      //Sync empty dir.
+                return dir;
             }
         }else{
             return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name);
         }
 
         return null;
+    }
+
+    @Override
+    public CodeFile getCodeFile(File f) {
+        if(!f.getPath().startsWith(localBaseFolder)){
+            throw new IllegalArgumentException("Cannot handle files outside project scope");
+        }
+
+        String syncLocation = dropboxBaseFolder+"/"+f.getPath().substring(localBaseFolder.length()+1);
+        return new DropboxFile(f, syncLocation);
     }
 }

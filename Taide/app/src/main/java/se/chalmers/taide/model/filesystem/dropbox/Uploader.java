@@ -65,14 +65,13 @@ public class Uploader extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         try {
-            FileInputStream fis = new FileInputStream(file);
-            String path = this.path + "/" + file.getName();
             if(file.isDirectory()){
                 entry = api.createFolder(path);
                 if(entry != null){
                     return true;
                 }
             }else {
+                FileInputStream fis = new FileInputStream(file);
                 entry = api.putFileOverwrite(path, fis, file.length(), null);
                 if (entry != null) {
                     return true;
@@ -119,6 +118,7 @@ public class Uploader extends AsyncTask<Void, Long, Boolean> {
             // Unknown error
             mErrorMsg = "Unknown error.  Try again.";
         } catch (FileNotFoundException e) {
+            mErrorMsg = "FileNotFound : "+e.getMessage();
         }
         return false;
     }
@@ -126,9 +126,9 @@ public class Uploader extends AsyncTask<Void, Long, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if (result) {
-            Log.d("Uploader", "Successfully uploaded to Dropbox.");
+            Log.d("Dropbox", "Successfully uploaded to Dropbox.");
         } else {
-            Log.w("Uploader", "Could not upload to Dropbox!");
+            Log.w("Dropbox", "Could not upload to Dropbox! Cause: " + mErrorMsg);
         }
     }
 }

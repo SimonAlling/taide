@@ -10,7 +10,7 @@ import se.chalmers.taide.model.ProjectType;
 public interface FileSystem {
 
     boolean newProject(String projectName, ProjectType type, OnProjectLoadListener listener);
-    boolean setProject(String projectName, ProjectType type, OnProjectLoadListener listener);
+    boolean setProject(String projectName, OnProjectLoadListener listener);
     List<String> getExistingProjects();
 
     CodeFile getCurrentDir();

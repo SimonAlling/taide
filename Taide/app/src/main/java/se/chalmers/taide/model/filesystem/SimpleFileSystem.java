@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import se.chalmers.taide.model.ProjectType;
+import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
 
 /**
  * Created by Matz on 2016-03-11.
@@ -50,6 +51,11 @@ public class SimpleFileSystem implements FileSystem{
                         String type = data[1];
                         try{
                             projects.add(FileSystemFactory.getProject(name, ProjectType.valueOf(type)));
+
+                            //Load dropbox dependency if needed
+                            if(ProjectType.valueOf(type) == ProjectType.DROPBOX && !DropboxFactory.isAuthenticated()){
+                                DropboxFactory.initDropboxIntegration(context);
+                            }
                         } catch(IllegalArgumentException ia){
                             Log.w("FileSystem", "Trying to load a project of unknown type: "+type);
                         }
@@ -67,29 +73,33 @@ public class SimpleFileSystem implements FileSystem{
         //Use only last part as projectname.
         String concreteName = FileSystemFactory.getConcreteName(projectName, type);
         if(getExistingProjects().contains(concreteName)){
-            return setProject(projectName, type, listener);
+            Log.d("FileSystem", "Does not create project, it already exists.");
+            return setProject(concreteName, listener);
         }
 
         Project p = FileSystemFactory.getProject(projectName, type);
+        Log.d("FileSystem", "Project created of type "+p.getClass().getName());
         boolean success = p.setupProject();
         if(success){
             projects.add(p);
             try{
                 BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Environment.PROJECT_DIR+"/"+Environment.PROJECTS_DATA_FILE), true));
-                bw.write(p.getName()+" "+type.name()+"\n");
+                bw.write(projectName+" "+type.name()+"\n");
                 bw.close();
             }catch(IOException ioe){
                 Log.w("FileSystem", "Could not add project to list of projects: "+ioe.getMessage());
+                success = false;
             }
         }
 
-        return success && setProject(projectName, type, listener);
+        return success && setProject(concreteName, listener);
     }
 
     @Override
-    public boolean setProject(String projectName, ProjectType type, OnProjectLoadListener listener) {
+    public boolean setProject(String projectName, OnProjectLoadListener listener) {
         Project p = findProject(projectName);
         if(p != null) {
+            Log.d("FileSystem", "Setting project "+p.getName()+" of type "+p.getClass().getName());
             baseDir = p.getBaseFolder();
             currentDir = baseDir;
             currentProject = p;
@@ -97,6 +107,7 @@ public class SimpleFileSystem implements FileSystem{
             return true;
         }else{
             //Project not found.
+            Log.e("FileSystem", "Could not set project as active since it was not found.");
             return false;
         }
     }
@@ -123,7 +134,7 @@ public class SimpleFileSystem implements FileSystem{
 
     @Override
     public CodeFile getCurrentDir() {
-        return (currentDir==null?null:new SimpleCodeFile(currentDir));
+        return (currentDir==null?null:currentProject.getCodeFile(currentDir));
     }
 
     @Override
@@ -131,7 +142,7 @@ public class SimpleFileSystem implements FileSystem{
         List<CodeFile> files = new ArrayList<>();
         if(currentDir != null) {
             for (File f : currentDir.listFiles()) {
-                files.add(new SimpleCodeFile(f));
+                files.add(currentProject.getCodeFile(f));
             }
         }
 
@@ -155,6 +166,7 @@ public class SimpleFileSystem implements FileSystem{
 
     @Override
     public CodeFile createDir(String name) {
+        Log.d("FileSystem", "Creating dir: '"+name+"' using project of type "+(currentProject==null?"null":currentProject.getClass().getName()));
         if(currentProject != null) {
             return currentProject.createDir(currentDir.getPath(), name);
         }else{

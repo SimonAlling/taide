@@ -29,9 +29,7 @@ public class DropboxFactory {
 
     public static void initDropboxIntegration(Context context){
         AndroidAuthSession session = buildSession(context);
-        Log.d("Dropbox", "Session is active: " + session.isLinked());
         api = new DropboxAPI<>(session);
-        Log.d("Dropbox", "Added the api as well. Session is active: " + session.isLinked());
         if(!api.getSession().isLinked()) {
             api.getSession().startOAuth2Authentication(context);
         }
