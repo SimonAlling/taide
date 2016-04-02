@@ -52,12 +52,14 @@ public class Syncer extends AsyncTask<Void, Long, Boolean> {
     private DropboxAPI.Entry entry;
 
     private String mErrorMsg;
+    private Dropbox.OnActionDoneListener listener;
 
 
-    public Syncer(DropboxAPI<?> api, String dropboxPath, File outputFile) {
+    public Syncer(DropboxAPI<?> api, String dropboxPath, File outputFile, Dropbox.OnActionDoneListener listener) {
         this.api = api;
         this.path = dropboxPath;
         this.outputFile = outputFile;
+        this.listener = listener;
     }
 
     @Override
@@ -116,6 +118,10 @@ public class Syncer extends AsyncTask<Void, Long, Boolean> {
             Log.d("Dropbox", "Successfully synced file from Dropbox.");
         } else {
             Log.w("Dropbox", "Could not sync file from Dropbox: "+mErrorMsg);
+        }
+
+        if(listener != null){
+            listener.onActionDone(result);
         }
     }
 }

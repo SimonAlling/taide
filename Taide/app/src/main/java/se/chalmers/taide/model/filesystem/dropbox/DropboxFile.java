@@ -35,7 +35,7 @@ public class DropboxFile extends SimpleCodeFile{
 
     protected void syncContent(){
         lastSync = System.currentTimeMillis();
-        Dropbox.syncFile(this.file, this.syncLocation);
+        Dropbox.syncFile(this.file, this.syncLocation, null);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DropboxFile extends SimpleCodeFile{
         boolean success = super.saveContents(contents);
         Log.d("DBFile", "DROPBOX FILE");
         if(success) {
-            Dropbox.upload(this.file, this.syncLocation);
+            Dropbox.upload(this.file, this.syncLocation, null);
         }
         return success;
     }
@@ -52,7 +52,7 @@ public class DropboxFile extends SimpleCodeFile{
     public boolean remove() {
         boolean success = super.remove();
         if(success){
-            Dropbox.delete(this.syncLocation);
+            Dropbox.delete(this.syncLocation, null);
         }
         return success;
     }
@@ -63,7 +63,7 @@ public class DropboxFile extends SimpleCodeFile{
         if(success){
             int pathIndex = syncLocation.lastIndexOf("/");
             String newPath = (pathIndex>=0?syncLocation.substring(0, pathIndex):"");
-            Dropbox.rename(this.syncLocation, newPath);
+            Dropbox.rename(this.syncLocation, newPath, null);
         }
         return success;
     }

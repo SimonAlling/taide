@@ -10,7 +10,6 @@ import java.util.Map;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
-import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;

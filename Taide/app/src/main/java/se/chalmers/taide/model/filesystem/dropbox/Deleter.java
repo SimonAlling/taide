@@ -30,14 +30,9 @@ import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.exception.DropboxFileSizeException;
 import com.dropbox.client2.exception.DropboxIOException;
-import com.dropbox.client2.exception.DropboxParseException;
-import com.dropbox.client2.exception.DropboxPartialFileException;
 import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
-
-import java.io.FileNotFoundException;
 
 /**
  * Created by Matz on 2016-03-22.
@@ -51,11 +46,13 @@ public class Deleter extends AsyncTask<Void, Long, Boolean> {
     private DropboxAPI.Entry entry;
 
     private String mErrorMsg;
+    private Dropbox.OnActionDoneListener listener;
 
 
-    public Deleter(DropboxAPI<?> api, String dropboxPath) {
+    public Deleter(DropboxAPI<?> api, String dropboxPath, Dropbox.OnActionDoneListener listener) {
         this.api = api;
         this.path = dropboxPath;
+        this.listener = listener;
     }
 
     @Override
@@ -102,6 +99,10 @@ public class Deleter extends AsyncTask<Void, Long, Boolean> {
             Log.d("Dropbox", "Successfully deleted file from Dropbox.");
         } else {
             Log.w("Dropbox", "Could not delete file from Dropbox!");
+        }
+
+        if(listener != null){
+            listener.onActionDone(result);
         }
     }
 }

@@ -54,12 +54,14 @@ public class Uploader extends AsyncTask<Void, Long, Boolean> {
     private DropboxAPI.Entry entry;
 
     private String mErrorMsg;
+    private Dropbox.OnActionDoneListener listener;
 
 
-    public Uploader(DropboxAPI<?> api, String dropboxPath, File file) {
+    public Uploader(DropboxAPI<?> api, String dropboxPath, File file, Dropbox.OnActionDoneListener listener) {
         this.api = api;
         this.path = dropboxPath;
         this.file = file;
+        this.listener = listener;
     }
 
     @Override
@@ -129,6 +131,10 @@ public class Uploader extends AsyncTask<Void, Long, Boolean> {
             Log.d("Dropbox", "Successfully uploaded to Dropbox.");
         } else {
             Log.w("Dropbox", "Could not upload to Dropbox! Cause: " + mErrorMsg);
+        }
+
+        if(listener != null){
+            listener.onActionDone(result);
         }
     }
 }

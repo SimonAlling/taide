@@ -1,9 +1,7 @@
 package se.chalmers.taide.model.filesystem.dropbox;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;

@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.filesystem.dropbox;
 
-import android.provider.SyncStateContract;
 import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI;
@@ -12,7 +11,6 @@ import se.chalmers.taide.model.ProjectType;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
-import se.chalmers.taide.model.filesystem.SimpleCodeFile;
 import se.chalmers.taide.model.filesystem.SimpleProject;
 
 /**
@@ -24,18 +22,94 @@ public class DropboxProject extends SimpleProject {
     private String localBaseFolder;
     private String dropboxBaseFolder;
 
+    private int currentSyncCount = 0;
+    private int currentFetchMetadata = 0;
+    private boolean currentSyncSuccess = true;
+
     public DropboxProject(String name){
         super(FileSystemFactory.getConcreteName(name, ProjectType.DROPBOX));
         this.baseLink = name;
     }
 
     @Override
-    public void loadData(FileSystem.OnProjectLoadListener listener) {
+    public void loadData(final FileSystem.OnProjectLoadListener listener) {
         this.localBaseFolder = getBaseFolder().getPath();
         this.dropboxBaseFolder = baseLink.substring(baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/") + 1) + 1) + 1) + 1, baseLink.lastIndexOf("/"));
-        //TODO sync all files
-        if(listener != null){
-            listener.projectLoaded(true);
+        Dropbox.retrieveMetadata(dropboxBaseFolder, new Dropbox.OnMetadataRetrieveListener() {
+            @Override
+            public void metadataRetrieved(DropboxAPI.Entry metadata) {
+                syncEntry(metadata, new Dropbox.OnActionDoneListener() {
+                    @Override
+                    public void onActionDone(boolean result) {
+                        if(listener != null){
+                            listener.projectLoaded(true);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void syncEntry(DropboxAPI.Entry entry, Dropbox.OnActionDoneListener listener){
+        syncEntry("", entry, listener);
+    }
+
+    private void syncEntry(String path, DropboxAPI.Entry entry, final Dropbox.OnActionDoneListener listener){
+        if(entry != null) {
+            if (entry.isDir) {
+                //Ignore all this stuff for base folder (already created and in path)
+                if(!(entry.parentPath()+entry.fileName()).equalsIgnoreCase("/"+dropboxBaseFolder)){
+                    //Update folder structure var
+                    path += (path.length()==0?"":"/")+entry.fileName();
+
+                    //Create dir.
+                    File dir = new File(localBaseFolder+"/"+path);
+                    if(!dir.exists()){
+                        currentSyncSuccess &= dir.mkdir();
+                    }
+                }
+
+                //Sync folder contents
+                if(entry.contents != null) {
+                    for (DropboxAPI.Entry e : entry.contents) {
+                        if(e.isDir){
+                            currentFetchMetadata++;
+                            final String childPath = path;
+                            Dropbox.retrieveMetadata(e.parentPath() + e.fileName(), new Dropbox.OnMetadataRetrieveListener() {
+                                @Override
+                                public void metadataRetrieved(DropboxAPI.Entry metadata) {
+                                    currentFetchMetadata--;
+                                    syncEntry(childPath, metadata, listener);
+                                }
+                            });
+                        }else {
+                            syncEntry(path, e, listener);
+                        }
+                    }
+                }else{
+                    if(currentSyncCount == 0 && currentFetchMetadata == 0){
+                        if (listener != null) {
+                            listener.onActionDone(currentSyncSuccess);
+                        }
+                        currentSyncSuccess = true;
+                    }
+                }
+            } else {
+                currentSyncCount++;
+                Dropbox.syncFile(new File(localBaseFolder + "/" + path + "/" + entry.fileName()), entry.parentPath() + entry.fileName(), new Dropbox.OnActionDoneListener() {
+                    @Override
+                    public void onActionDone(boolean result) {
+                        currentSyncSuccess &= result;
+                        if (--currentSyncCount == 0 && currentFetchMetadata == 0) {
+                            if (listener != null) {
+                                listener.onActionDone(currentSyncSuccess);
+                            }
+                            //Reset success var
+                            currentSyncSuccess = true;
+                        }
+                    }
+                });
+            }
         }
     }
 

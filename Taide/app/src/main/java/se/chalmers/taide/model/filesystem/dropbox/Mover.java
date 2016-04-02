@@ -47,12 +47,13 @@ public class Mover extends AsyncTask<Void, Long, Boolean> {
     private DropboxAPI.Entry entry;
 
     private String mErrorMsg;
+    private Dropbox.OnActionDoneListener listener;
 
-
-    public Mover(DropboxAPI<?> api, String dropboxPath, String newPath) {
+    public Mover(DropboxAPI<?> api, String dropboxPath, String newPath, Dropbox.OnActionDoneListener listener) {
         this.api = api;
         this.path = dropboxPath;
         this.newPath = newPath;
+        this.listener = listener;
     }
 
     @Override
@@ -99,6 +100,10 @@ public class Mover extends AsyncTask<Void, Long, Boolean> {
             Log.d("Dropbox", "Successfully moved file on Dropbox.");
         } else {
             Log.w("Dropbox", "Could not move file on Dropbox!");
+        }
+
+        if(listener != null){
+            listener.onActionDone(result);
         }
     }
 }

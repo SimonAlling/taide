@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.filesystem;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;

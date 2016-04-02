@@ -3,6 +3,7 @@ package se.chalmers.taide;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private Dialog currentDialog;
     private boolean authenticatingDropbox;
     private DbxChooser dropboxChooser;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,10 +215,17 @@ public class MainActivity extends AppCompatActivity {
                     case 0: showTextDialog(R.string.add_new_project_description, new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
+                            showLoadingDialog(R.string.load_project_loading);
                             model.createProject(textInput, ProjectType.LOCAL_SYSTEM, new FileSystem.OnProjectLoadListener() {
                                 @Override
                                 public void projectLoaded(boolean success) {
-                                    updateDrawer();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateDrawer();
+                                            hideLoadingDialog();
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -225,10 +234,17 @@ public class MainActivity extends AppCompatActivity {
                     case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
+                            showLoadingDialog(R.string.load_project_loading);
                             model.setProject(textInput, new FileSystem.OnProjectLoadListener() {
                                 @Override
                                 public void projectLoaded(boolean success) {
-                                    updateDrawer();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateDrawer();
+                                            hideLoadingDialog();
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -345,13 +361,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadDropboxProject(DbxChooser.Result result){
-        Log.d("MainActivity", "Link: "+result.getLink().getPath());
+        showLoadingDialog(R.string.load_project_loading);
         model.createProject(result.getLink().getPath(), ProjectType.DROPBOX, new FileSystem.OnProjectLoadListener() {
             @Override
             public void projectLoaded(boolean success) {
-                updateDrawer();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateDrawer();
+                        hideLoadingDialog();
+                    }
+                });
             }
         });
+    }
+
+    private void showLoadingDialog(int stringRef){
+        if(loadingDialog != null){
+            hideLoadingDialog();
+        }
+        loadingDialog = ProgressDialog.show(this, getString(R.string.loading), getString(stringRef), true);
+    }
+
+    private void hideLoadingDialog(){
+        if(loadingDialog != null){
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
     }
 
     private void showChoiceDialog(int messageResource, final String[] items, final OnDialogActivation listener){
