@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.filesystem;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -54,14 +53,23 @@ public class SimpleCodeFile implements CodeFile {
     }
 
     @Override
-    public boolean saveContents(Context context, String contents) {
-        try {
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
-            out.write(contents.getBytes());
-            out.close();
-            return true;
-        }catch(IOException ioe){
-            return false;
+    public boolean saveContents(String contents) {
+        if(!isDirectory()) {
+            try {
+                OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
+                out.write(contents.getBytes());
+                out.flush();
+                out.close();
+                return true;
+            } catch (IOException ioe) {
+                return false;
+            }
+        }else{
+            if(!source.exists()){
+                return source.mkdir();
+            }else{
+                return true;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Taide</string>
+    <string name="loading">Loading...</string>
     <string name="default_info">No file has been loaded\nSlide left-to-right to handle files.</string>
     <string name="action_settings">Settings</string>
     <string name="action_copy">Copy</string>
@@ -13,6 +14,7 @@
 
     <string name="add_new_project_description">Enter the name of the new project</string>
     <string name="load_project_description">Choose the project you wish to open</string>
+    <string name="load_project_loading">Wait while the project is loaded...</string>
     <string name="add_new_file_description">Enter the name of the new file</string>
     <string name="add_new_folder_description">Enter the name of the new folder</string>
     <string name="rename_file">Rename</string>
@@ -22,9 +24,13 @@
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>
 
+    <string name="dropbox_app_key">o4m52bd67whe1js</string>
+    <string name="dropbox_error_auth">"Couldn't authenticate with Dropbox, please try again"</string>
+
     <string-array name="filesystem_default_menuitems">
         <item>New project</item>
         <item>Load project</item>
+        <item>Import from dropbox</item>
         <item>New file</item>
         <item>New folder</item>
     </string-array>
