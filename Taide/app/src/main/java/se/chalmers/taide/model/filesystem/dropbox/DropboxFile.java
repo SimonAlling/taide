@@ -83,7 +83,7 @@ public class DropboxFile extends SimpleCodeFile{
         boolean success = super.rename(newName);
         if(success){
             int pathIndex = syncLocation.lastIndexOf("/");
-            String newPath = (pathIndex>=0?syncLocation.substring(0, pathIndex):"");
+            String newPath = (pathIndex>=0?syncLocation.substring(0, pathIndex+1):"/")+newName;
             Dropbox.rename(this.syncLocation, newPath, null);
         }
         return success;
