@@ -87,6 +87,9 @@ public class DropboxProject extends SimpleProject {
                     }
                 }
 
+                //Register rev data, ignore the result
+                revisionHandler.shouldSyncEntry(entry);
+
                 //Sync folder contents
                 if (entry.contents != null) {
                     for (DropboxAPI.Entry e : entry.contents) {
@@ -104,13 +107,14 @@ public class DropboxProject extends SimpleProject {
                             syncEntry(path, e, listener);
                         }
                     }
-                } else {
-                    if (currentSyncCount == 0 && currentFetchMetadata == 0) {
-                        if (listener != null) {
-                            listener.onActionDone(currentSyncSuccess);
-                        }
-                        currentSyncSuccess = true;
+                }
+
+                //Check if everything is done.
+                if (currentSyncCount == 0 && currentFetchMetadata == 0) {
+                    if (listener != null) {
+                        listener.onActionDone(currentSyncSuccess);
                     }
+                    currentSyncSuccess = true;
                 }
             } else {        //File
                 if(revisionHandler.shouldSyncEntry(entry)) {
@@ -119,6 +123,8 @@ public class DropboxProject extends SimpleProject {
                         @Override
                         public void onActionDone(boolean result) {
                             currentSyncSuccess &= result;
+
+                            //Check if all is done.
                             if (--currentSyncCount == 0 && currentFetchMetadata == 0) {
                                 if (listener != null) {
                                     listener.onActionDone(currentSyncSuccess);

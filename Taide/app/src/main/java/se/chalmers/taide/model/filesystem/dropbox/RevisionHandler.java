@@ -126,13 +126,6 @@ public class RevisionHandler {
         newRevisionState = FileTree.rootNode();
     }
 
-    public void printData() {
-        Log.d("RevisionHandler", "Revision: OLD STATE");
-        FileTree.printFileTree(revisionState, "");
-        Log.d("RevisionHandler", "Revision: NEW STATE");
-        FileTree.printFileTree(newRevisionState, "");
-    }
-
     private void retrieveRevisionString(StringBuffer buf, FileTree tree){
         if(!tree.filename.equals(FileTree.rootNode().filename)) {
             buf.append(tree.filename).append(REVISION_FILE_SEPARATOR).append(tree.rev).append("\n");
