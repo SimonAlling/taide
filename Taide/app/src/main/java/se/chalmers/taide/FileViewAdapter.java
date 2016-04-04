@@ -42,6 +42,10 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
             if(f.isDirectory()){
                 icon.setImageResource(R.mipmap.ic_folder);
             }else{
+                textView.setEnabled(f.isOpenable());
+                if(!textView.isEnabled()){
+                    textView.setTextColor(context.getResources().getColor(R.color.disabledText));
+                }
                 icon.setImageResource(R.mipmap.ic_file);
             }
         }

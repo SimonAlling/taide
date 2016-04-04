@@ -8,6 +8,7 @@ public interface CodeFile extends Comparable<CodeFile>{
     String getName();
     String getUniqueName();
     boolean isDirectory();
+    boolean isOpenable();
 
     String getContents();
     boolean saveContents(String contents);

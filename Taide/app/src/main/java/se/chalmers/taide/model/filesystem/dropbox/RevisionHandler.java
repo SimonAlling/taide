@@ -56,7 +56,7 @@ public class RevisionHandler {
         Log.d("RevisionHandler", "Loading revision state file...");
         if(revisionState == null){
             revisionState = FileTree.rootNode();
-            File file = new File(project.getBaseFolder().getPath()+"/"+REVISION_FILE_NAME);
+            File file = new File(project.getBaseFolder().getParentFile().getPath()+"/"+REVISION_FILE_NAME);
             if(file.exists()){
                 try{
                     Scanner sc = new Scanner(file);
@@ -114,7 +114,7 @@ public class RevisionHandler {
         retrieveRevisionString(b, newRevisionState);
 
         try {
-            File file = new File(project.getBaseFolder().getPath() + "/" + REVISION_FILE_NAME);
+            File file = new File(project.getBaseFolder().getParentFile().getPath() + "/" + REVISION_FILE_NAME);
             OutputStream out = new BufferedOutputStream(new FileOutputStream(file, false));
             out.write(b.toString().getBytes());
             out.flush();

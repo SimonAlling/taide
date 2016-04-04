@@ -7,12 +7,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  * Created by Matz on 2016-03-11.
  */
 public class SimpleCodeFile implements CodeFile {
+
+    private static List<String> deniedFileFormats = Arrays.asList(new String[]{"jpg", "jpeg", "png", "gif", "psd", "zip", "gz", "tar"});
 
     private File source;
 
@@ -33,6 +37,12 @@ public class SimpleCodeFile implements CodeFile {
     @Override
     public boolean isDirectory() {
         return source.isDirectory();
+    }
+
+    @Override
+    public boolean isOpenable(){
+        String fileFormat = source.getName().substring(source.getName().lastIndexOf(".")+1);
+        return !deniedFileFormats.contains(fileFormat);
     }
 
     @Override

@@ -197,13 +197,15 @@ public class MainActivity extends AppCompatActivity {
                     updateDrawer();
                 } else {
                     CodeFile cf = model.getFilesInCurrentDir().get(position - 1);
-                    if (cf.isDirectory()) {
-                        model.gotoFolder(cf);
-                        updateDrawer();
-                    } else {
-                        codeEditor.setVisibility(View.VISIBLE);
-                        model.openFile(cf);
-                        closeDrawer();
+                    if(cf.isOpenable()) {
+                        if (cf.isDirectory()) {
+                            model.gotoFolder(cf);
+                            updateDrawer();
+                        } else {
+                            codeEditor.setVisibility(View.VISIBLE);
+                            model.openFile(cf);
+                            closeDrawer();
+                        }
                     }
                 }
             }
