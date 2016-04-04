@@ -1,5 +1,6 @@
 package se.chalmers.taide.model.filesystem.dropbox;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI;
@@ -38,37 +39,42 @@ public class DropboxProject extends SimpleProject {
         this.localBaseFolder = getBaseFolder().getPath();
         this.dropboxBaseFolder = baseLink.substring(baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/") + 1) + 1) + 1) + 1, baseLink.lastIndexOf("/"));
         this.revisionHandler = RevisionHandler.registerHandler(this, dropboxBaseFolder);
-        revisionHandler.loadRevisionState();
 
         Dropbox.retrieveMetadata(dropboxBaseFolder, new Dropbox.OnMetadataRetrieveListener() {
             @Override
-            public void metadataRetrieved(DropboxAPI.Entry metadata) {
-                syncEntry(metadata, new Dropbox.OnActionDoneListener() {
-                    @Override
-                    public void onActionDone(boolean result) {
-                        List<String> removedFiles = revisionHandler.getRemovedFiles();
-                        for(String file : removedFiles){
-                            file = file.toLowerCase();
-                            if(file.startsWith("/"+dropboxBaseFolder+"/")){
-                                file = file.substring(("/"+dropboxBaseFolder+"/").length());
-                            }
-                            File f = new File(localBaseFolder+"/"+file);
-                            if(f.exists()){
-                                f.delete();
-                            }
-                        }
+            public void metadataRetrieved(final DropboxAPI.Entry metadata) {
+                new AsyncTask<Void, Void, Void>(){
+                    protected Void doInBackground(Void... params) {
+                        syncEntry(metadata, new Dropbox.OnActionDoneListener() {
+                            @Override
+                            public void onActionDone(boolean result) {
+                                List<String> removedFiles = revisionHandler.getRemovedFiles();
+                                for(String file : removedFiles){
+                                    file = file.toLowerCase();
+                                    if(file.startsWith("/"+dropboxBaseFolder+"/")){
+                                        file = file.substring(("/"+dropboxBaseFolder+"/").length());
+                                    }
+                                    File f = new File(localBaseFolder+"/"+file);
+                                    if(f.exists()){
+                                        f.delete();
+                                    }
+                                }
 
-                        revisionHandler.saveRevisionData();
-                        if (listener != null) {
-                            listener.projectLoaded(true);
-                        }
+                                revisionHandler.saveRevisionData();
+                                if (listener != null) {
+                                    listener.projectLoaded(true);
+                                }
+                            }
+                        });
+                        return null;
                     }
-                });
+                }.execute();
             }
         });
     }
 
     private void syncEntry(DropboxAPI.Entry entry, Dropbox.OnActionDoneListener listener){
+        revisionHandler.loadRevisionState();
         syncEntry("", entry, listener);
     }
 

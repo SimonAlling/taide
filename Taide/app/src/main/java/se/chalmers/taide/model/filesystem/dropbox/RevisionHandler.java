@@ -56,7 +56,7 @@ public class RevisionHandler {
         Log.d("RevisionHandler", "Loading revision state file...");
         if(revisionState == null){
             revisionState = FileTree.rootNode();
-            File file = new File(project.getBaseFolder().getParentFile().getPath()+"/"+REVISION_FILE_NAME);
+            File file = new File(project.getBaseFolder().getPath()+"/"+REVISION_FILE_NAME);
             if(file.exists()){
                 try{
                     Scanner sc = new Scanner(file);
@@ -74,6 +74,7 @@ public class RevisionHandler {
                 }
             }
         }
+        FileTree.printFileTree(revisionState, "");
     }
 
     public List<String> getRemovedFiles(){
@@ -113,8 +114,8 @@ public class RevisionHandler {
         retrieveRevisionString(b, newRevisionState);
 
         try {
-            File file = new File(project.getBaseFolder().getParentFile().getPath() + "/" + REVISION_FILE_NAME);
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+            File file = new File(project.getBaseFolder().getPath() + "/" + REVISION_FILE_NAME);
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(file, false));
             out.write(b.toString().getBytes());
             out.flush();
             out.close();
@@ -141,11 +142,7 @@ public class RevisionHandler {
         FileTree t = FileTree.findChild(revisionState, path, baseFolder);
         boolean shouldSync = (t == revisionState || !t.rev.equals(entry.rev));
         FileTree parent = FileTree.findChild(newRevisionState, entry.parentPath(), baseFolder);
-        if(shouldSync){
-            parent.addChild(new FileTree(entry.parentPath()+entry.fileName()+(entry.isDir?"/":""), entry.rev));
-        }else{
-            parent.addChild(t);
-        }
+        parent.addChild(new FileTree(entry.parentPath()+entry.fileName()+(entry.isDir?"/":""), entry.rev));
 
         return shouldSync;
     }
