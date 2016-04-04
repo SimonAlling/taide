@@ -6,6 +6,7 @@ import com.dropbox.client2.DropboxAPI;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import se.chalmers.taide.model.ProjectType;
 import se.chalmers.taide.model.filesystem.CodeFile;
@@ -45,6 +46,18 @@ public class DropboxProject extends SimpleProject {
                 syncEntry(metadata, new Dropbox.OnActionDoneListener() {
                     @Override
                     public void onActionDone(boolean result) {
+                        List<String> removedFiles = revisionHandler.getRemovedFiles();
+                        for(String file : removedFiles){
+                            file = file.toLowerCase();
+                            if(file.startsWith("/"+dropboxBaseFolder+"/")){
+                                file = file.substring(("/"+dropboxBaseFolder+"/").length());
+                            }
+                            File f = new File(localBaseFolder+"/"+file);
+                            if(f.exists()){
+                                f.delete();
+                            }
+                        }
+
                         revisionHandler.saveRevisionData();
                         if (listener != null) {
                             listener.projectLoaded(true);

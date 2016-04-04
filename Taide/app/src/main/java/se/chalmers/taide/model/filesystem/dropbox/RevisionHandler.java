@@ -76,6 +76,37 @@ public class RevisionHandler {
         }
     }
 
+    public List<String> getRemovedFiles(){
+        List<String> files = new LinkedList<>();
+        retrieveRemovedFiles(files, revisionState, newRevisionState);
+        return files;
+    }
+
+    private void retrieveRemovedFiles(List<String> files, FileTree oldTree, FileTree newTree){
+        for(FileTree child : oldTree.children){
+            FileTree newChild = null;
+            for(FileTree aspirant : newTree.children){
+                if(aspirant.filename.equalsIgnoreCase(child.filename)){
+                    newChild = aspirant;
+                    break;
+                }
+            }
+
+            if(newChild == null){
+                addToRemovalList(files, child);
+            }else{
+                retrieveRemovedFiles(files, child, newChild);
+            }
+        }
+    }
+
+    private void addToRemovalList(List<String> files, FileTree tree){
+        files.add(tree.filename);
+        for(FileTree t : tree.children){
+            addToRemovalList(files, t);
+        }
+    }
+
     public void saveRevisionData(){
         Log.d("RevisionHandler", "Saving revision state file...");
         StringBuffer b = new StringBuffer();
