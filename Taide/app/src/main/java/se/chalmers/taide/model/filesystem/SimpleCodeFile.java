@@ -58,6 +58,7 @@ public class SimpleCodeFile implements CodeFile {
             try {
                 OutputStream out = new BufferedOutputStream(new FileOutputStream(source));
                 out.write(contents.getBytes());
+                out.flush();
                 out.close();
                 return true;
             } catch (IOException ioe) {

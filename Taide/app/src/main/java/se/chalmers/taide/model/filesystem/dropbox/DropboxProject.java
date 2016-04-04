@@ -25,6 +25,7 @@ public class DropboxProject extends SimpleProject {
     private int currentSyncCount = 0;
     private int currentFetchMetadata = 0;
     private boolean currentSyncSuccess = true;
+    private RevisionHandler revisionHandler;
 
     public DropboxProject(String name){
         super(FileSystemFactory.getConcreteName(name, ProjectType.DROPBOX));
@@ -35,13 +36,17 @@ public class DropboxProject extends SimpleProject {
     public void loadData(final FileSystem.OnProjectLoadListener listener) {
         this.localBaseFolder = getBaseFolder().getPath();
         this.dropboxBaseFolder = baseLink.substring(baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/", baseLink.indexOf("/") + 1) + 1) + 1) + 1, baseLink.lastIndexOf("/"));
+        this.revisionHandler = RevisionHandler.registerHandler(this, dropboxBaseFolder);
+        revisionHandler.loadRevisionState();
+
         Dropbox.retrieveMetadata(dropboxBaseFolder, new Dropbox.OnMetadataRetrieveListener() {
             @Override
             public void metadataRetrieved(DropboxAPI.Entry metadata) {
                 syncEntry(metadata, new Dropbox.OnActionDoneListener() {
                     @Override
                     public void onActionDone(boolean result) {
-                        if(listener != null){
+                        revisionHandler.saveRevisionData();
+                        if (listener != null) {
                             listener.projectLoaded(true);
                         }
                     }
@@ -56,23 +61,23 @@ public class DropboxProject extends SimpleProject {
 
     private void syncEntry(String path, DropboxAPI.Entry entry, final Dropbox.OnActionDoneListener listener){
         if(entry != null) {
-            if (entry.isDir) {
+            if (entry.isDir) {  //Folder.
                 //Ignore all this stuff for base folder (already created and in path)
-                if(!(entry.parentPath()+entry.fileName()).equalsIgnoreCase("/"+dropboxBaseFolder)){
+                if (!(entry.parentPath() + entry.fileName()).equalsIgnoreCase("/" + dropboxBaseFolder)) {
                     //Update folder structure var
-                    path += (path.length()==0?"":"/")+entry.fileName();
+                    path += (path.length() == 0 ? "" : "/") + entry.fileName();
 
                     //Create dir.
-                    File dir = new File(localBaseFolder+"/"+path);
-                    if(!dir.exists()){
+                    File dir = new File(localBaseFolder + "/" + path);
+                    if (!dir.exists()) {
                         currentSyncSuccess &= dir.mkdir();
                     }
                 }
 
                 //Sync folder contents
-                if(entry.contents != null) {
+                if (entry.contents != null) {
                     for (DropboxAPI.Entry e : entry.contents) {
-                        if(e.isDir){
+                        if (e.isDir) {
                             currentFetchMetadata++;
                             final String childPath = path;
                             Dropbox.retrieveMetadata(e.parentPath() + e.fileName(), new Dropbox.OnMetadataRetrieveListener() {
@@ -82,36 +87,39 @@ public class DropboxProject extends SimpleProject {
                                     syncEntry(childPath, metadata, listener);
                                 }
                             });
-                        }else {
+                        } else {
                             syncEntry(path, e, listener);
                         }
                     }
-                }else{
-                    if(currentSyncCount == 0 && currentFetchMetadata == 0){
+                } else {
+                    if (currentSyncCount == 0 && currentFetchMetadata == 0) {
                         if (listener != null) {
                             listener.onActionDone(currentSyncSuccess);
                         }
                         currentSyncSuccess = true;
                     }
                 }
-            } else {
-                currentSyncCount++;
-                Dropbox.syncFile(new File(localBaseFolder + "/" + path + "/" + entry.fileName()), entry.parentPath() + entry.fileName(), new Dropbox.OnActionDoneListener() {
-                    @Override
-                    public void onActionDone(boolean result) {
-                        currentSyncSuccess &= result;
-                        if (--currentSyncCount == 0 && currentFetchMetadata == 0) {
-                            if (listener != null) {
-                                listener.onActionDone(currentSyncSuccess);
+            } else {        //File
+                if(revisionHandler.shouldSyncEntry(entry)) {
+                    currentSyncCount++;
+                    Dropbox.syncFile(new File(localBaseFolder + "/" + path + "/" + entry.fileName()), entry.parentPath() + entry.fileName(), new Dropbox.OnActionDoneListener() {
+                        @Override
+                        public void onActionDone(boolean result) {
+                            currentSyncSuccess &= result;
+                            if (--currentSyncCount == 0 && currentFetchMetadata == 0) {
+                                if (listener != null) {
+                                    listener.onActionDone(currentSyncSuccess);
+                                }
+                                //Reset success var
+                                currentSyncSuccess = true;
                             }
-                            //Reset success var
-                            currentSyncSuccess = true;
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
+
 
     @Override
     public boolean setupProject() {
@@ -131,15 +139,15 @@ public class DropboxProject extends SimpleProject {
         if(!f.exists()) {
             try {
                 if (f.createNewFile()) {
-                    DropboxFile file = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
-                    file.saveContents("");      //Sync empty file.
+                    DropboxFile file = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
+                    file.saveContents(" ");      //Sync empty file.
                     return file;
                 }
             } catch (IOException ioe) {
                 Log.e("Project", "Could not create file: " + ioe.getMessage());
             }
         }else{
-            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name);
+            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
         }
 
         return null;
@@ -155,12 +163,12 @@ public class DropboxProject extends SimpleProject {
         File f = new File(localBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
         if(!f.exists()) {
             if (f.mkdir()) {
-                DropboxFile dir = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
-                dir.saveContents("");      //Sync empty dir.
+                DropboxFile dir = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
+                dir.saveContents(" ");      //Sync empty dir.
                 return dir;
             }
         }else{
-            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name);
+            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
         }
 
         return null;
@@ -173,6 +181,6 @@ public class DropboxProject extends SimpleProject {
         }
 
         String syncLocation = dropboxBaseFolder+"/"+f.getPath().substring(localBaseFolder.length()+1);
-        return new DropboxFile(f, syncLocation);
+        return new DropboxFile(f, syncLocation, revisionHandler);
     }
 }

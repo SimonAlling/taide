@@ -2,6 +2,8 @@ package se.chalmers.taide.model.filesystem.dropbox;
 
 import android.util.Log;
 
+import com.dropbox.client2.DropboxAPI;
+
 import java.io.File;
 
 import se.chalmers.taide.model.filesystem.SimpleCodeFile;
@@ -17,11 +19,13 @@ public class DropboxFile extends SimpleCodeFile{
     private File file;
     private String syncLocation;
     private long lastSync = -1;
+    private RevisionHandler revisionHandler;
 
-    public DropboxFile(File file, String syncLocation){
+    public DropboxFile(File file, String syncLocation, RevisionHandler revisionHandler){
         super(file);
         this.file = file;
         this.syncLocation = syncLocation;
+        this.revisionHandler = revisionHandler;
     }
 
     @Override
@@ -40,12 +44,29 @@ public class DropboxFile extends SimpleCodeFile{
 
     @Override
     public boolean saveContents(String contents) {
-        boolean success = super.saveContents(contents);
-        Log.d("DBFile", "DROPBOX FILE");
-        if(success) {
-            Dropbox.upload(this.file, this.syncLocation, null);
+        String prevContents = super.getContents();
+        if(!prevContents.equals(contents)) {
+            boolean success = super.saveContents(contents);
+            if(success) {
+                Dropbox.upload(this.file, this.syncLocation, revisionHandler==null?null:new Dropbox.OnActionDoneListener() {
+                    @Override
+                    public void onActionDone(boolean result) {
+                        Dropbox.retrieveMetadata(syncLocation, new Dropbox.OnMetadataRetrieveListener() {
+                            @Override
+                            public void metadataRetrieved(DropboxAPI.Entry metadata) {
+                                if(revisionHandler != null && metadata != null){
+                                    revisionHandler.updateSingleEntry(metadata.parentPath()+metadata.fileName(), metadata.rev);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            return success;
+        }else{
+            Log.d("DropboxFile", "No change in file: Did not sync.");
+            return true;
         }
-        return success;
     }
 
     @Override
