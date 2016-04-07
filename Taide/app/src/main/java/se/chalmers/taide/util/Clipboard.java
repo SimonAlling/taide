@@ -21,11 +21,13 @@ public class Clipboard {
      * @param input The text field to be copied from
      */
     public static void copyToClipboard(Context context, EditText input) {
-        ClipboardManager manager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
-        int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
-        int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
-        String text = input.getText().subSequence(start, end).toString();
-        manager.setPrimaryClip(ClipData.newPlainText("Taide code", text));
+        if(context != null) {
+            ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
+            int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
+            String text = input.getText().subSequence(start, end).toString();
+            manager.setPrimaryClip(ClipData.newPlainText("Taide code", text));
+        }
     }
 
     /**
@@ -34,8 +36,10 @@ public class Clipboard {
      * @param input The text field to be cut from
      */
     public static void cutToClipboard(Context context, EditText input) {
-        copyToClipboard(context, input);
-        input.getText().replace(Math.min(input.getSelectionStart(), input.getSelectionEnd()), Math.max(input.getSelectionStart(), input.getSelectionEnd()), "");
+        if(context != null) {
+            copyToClipboard(context, input);
+            input.getText().replace(Math.min(input.getSelectionStart(), input.getSelectionEnd()), Math.max(input.getSelectionStart(), input.getSelectionEnd()), "");
+        }
     }
 
     /**
@@ -45,20 +49,22 @@ public class Clipboard {
      * @param input The text field to paste into
      */
     public static void pasteFromClipboard(Context context, EditText input) {
-        ClipboardManager manager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (manager.hasPrimaryClip() && manager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-            ClipData clip = manager.getPrimaryClip();
-            StringBuilder text = new StringBuilder();
-            for (int i = 0; i < clip.getItemCount(); i++) {
-                text.append(clip.getItemAt(i).getText());
-                if (i<clip.getItemCount()-1) {
-                    text.append("\n");
+        if(context != null) {
+            ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            if (manager.hasPrimaryClip() && manager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                ClipData clip = manager.getPrimaryClip();
+                StringBuilder text = new StringBuilder();
+                for (int i = 0; i < clip.getItemCount(); i++) {
+                    text.append(clip.getItemAt(i).getText());
+                    if (i < clip.getItemCount() - 1) {
+                        text.append("\n");
+                    }
                 }
-            }
 
-            int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
-            int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
-            input.getText().replace(start, end, text.toString());
+                int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
+                int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
+                input.getText().replace(start, end, text.toString());
+            }
         }
     }
 
@@ -68,6 +74,10 @@ public class Clipboard {
      * @return <code>true</code> if the clipboard has available text data, <code>false</code> otherwise
      */
     public static boolean hasPasteContent(Context context) {
+        if(context == null){
+            return false;
+        }
+
         ClipboardManager manager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
         return manager.hasPrimaryClip() && manager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
     }

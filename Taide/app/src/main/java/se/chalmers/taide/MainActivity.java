@@ -1,6 +1,10 @@
 package se.chalmers.taide;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,25 +13,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import se.chalmers.taide.util.Clipboard;
-
 /**
  * Created by Matz on 2016-01-25.
  *
  * Main class for the Android app UI.
  */
 
-
-// massa problem har jag haft trot löst de men måste testa igen med git
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Load default preferences if not set
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        //Init view
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);
+        showTextEditorView();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -41,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -53,13 +58,38 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         switch (id) {
-            default: return super.onOptionsItemSelected(item);
+            case R.id.action_settings:  showSettingsMenu();return true;
+            default:                    return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        FragmentManager fm = getFragmentManager();
+        if(fm != null){
+            if(fm.getBackStackEntryCount()>1) {     //Check that entries exist and ignore first population
+                fm.popBackStack();
+                return;
+            }
+        }
+
+        //If not fully handled yet here, call parent
+        super.onBackPressed();
+    }
+
+    private void showTextEditorView(){
+        showFragment(new TextEditorFragment());
+    }
+
+    private void showSettingsMenu() {
+        showFragment(new SettingsFragment());
+    }
+
+    private void showFragment(Fragment fragment){
+        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        ft.addToBackStack(null).commit();
     }
 }

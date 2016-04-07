@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/defaultBackground"
     tools:context="se.chalmers.taide.MainActivity">
 
     <include layout="@layout/toolbar_main"
         android:id="@+id/toolbarParent"/>
 
-    <fragment android:name="se.chalmers.taide.TextEditor"
-        android:id="@+id/textEditor"
+    <FrameLayout
+        android:id="@+id/mainFragment"
         android:layout_below="@id/toolbarParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -23,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:layout_alignBottom="@id/textEditor"
+        android:layout_alignBottom="@id/mainFragment"
         android:src="@android:drawable/ic_dialog_email" />
 
 </RelativeLayout>

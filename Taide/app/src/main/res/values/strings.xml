@@ -11,6 +11,32 @@
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- VALUES TO BE USED IN THE SETTINGS VIEW -->
+    <string name="pref_group_sync_title">Sync options</string>
+    <!-- Sync -->
+    <string name="pref_title_sync">Sync resources</string>
+    <string name="pref_summary_sync_on">Sync is activated</string>
+    <string name="pref_summary_sync_off">Sync is deactivated</string>
+    <!-- Denied file formats -->
+    <string name="pref_title_sync_deny_formats">Sync resources</string>
+    <string name="pref_summary_sync_deny_formats_all">All file formats are allowed.</string>
+    <string name="pref_summary_sync_deny_formats_partly">Some file formats are allowed.</string>
+    <string name="pref_summary_sync_deny_formats_none">No file formats allowed.</string>
+    <string-array name="file_formats_values">
+        <item>.jpg,.png,.gif,.svg</item>
+        <item>.zip</item>
+        <item>.tar.gz</item>
+        <item>.jar</item>
+        <item>.class</item>
+        <item>.o</item>
+    </string-array>
+    <string-array name="file_formats_entries">
+        <item>Images (jpg, png, gif, svg)</item>
+        <item>Zip archives</item>
+        <item>tar.gz archives</item>
+        <item>JAR files</item>
+        <item>Compiled class files (Java)</item>
+        <item>Compiled o files (C)</item>
+    </string-array>
 </resources>
