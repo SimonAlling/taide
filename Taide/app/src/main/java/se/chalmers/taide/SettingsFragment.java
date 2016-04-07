@@ -1,12 +1,16 @@
 package se.chalmers.taide;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.Menu;
 
 import java.util.Collections;
+
+import se.chalmers.taide.util.Clipboard;
 
 /**
  * Created by Matz on 2016-04-07.
@@ -30,6 +34,7 @@ public class SettingsFragment extends PreferenceFragment{
         //Add preferences menu
         addPreferencesFromResource(R.xml.preferences);
         updateSyncPreferences(sharedPreferences);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -45,6 +50,12 @@ public class SettingsFragment extends PreferenceFragment{
         if(sharedPreferences != null){
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
         }
+    }
+
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_settings).setEnabled(false);
     }
 
     private void onPreferenceChange(SharedPreferences preferences, String key){

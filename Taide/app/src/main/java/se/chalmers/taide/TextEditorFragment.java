@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,12 @@ public class TextEditorFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.text_editor_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -107,6 +114,7 @@ public class TextEditorFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_settings).setEnabled(true);
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getActivity()));
         menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
         menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
