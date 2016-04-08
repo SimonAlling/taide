@@ -1,5 +1,7 @@
 package se.chalmers.taide.model;
 
+import android.util.Log;
+
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -35,10 +37,10 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
         // Only apply if last character entered was new line character
         if (start > 0 && source.charAt(start-1) == '\n') {
             // Calculate changes
-            int index = Math.max(0, source.lastIndexOf('\n', Math.max(0, start - 2)));
-            String lastLine = source.substring(index + 1, start - 1);
-            String prefix = getLanguage().getIndentationPrefix(source, index+1, lastLine);
-            String suffix = getLanguage().getIndentationSuffix(source, index+1, lastLine);
+            int index = (start<2?0:source.lastIndexOf('\n', start-2) + 1);
+            String lastLine = source.substring(index, start - 1);
+            String prefix = getLanguage().getIndentationPrefix(source, index, lastLine);
+            String suffix = getLanguage().getIndentationSuffix(source, index, lastLine);
 
             //Apply changes
             codeView.getText().replace(start, start, prefix+suffix);
