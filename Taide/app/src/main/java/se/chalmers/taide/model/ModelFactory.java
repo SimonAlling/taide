@@ -11,6 +11,8 @@ import se.chalmers.taide.model.languages.SimpleAutoFill;
  */
 public class ModelFactory {
 
+    private static EditorModel currentModel;
+
     /**
      * Creates a EditorModel with the given language and binds it to the
      * given text view
@@ -19,7 +21,16 @@ public class ModelFactory {
      * @return A valid EditorModel object with correct properties.
      */
     public static EditorModel createEditorModel(TextSource textSource, String lang) {
-        return new SimpleEditorModel(textSource, lang);
+        currentModel = new SimpleEditorModel(textSource, lang);
+        return currentModel;
+    }
+
+    /**
+     * Tries to retrieve the current editor model. If none is created, returns null
+     * @return The current editor model, or null if not found
+     */
+    public static EditorModel getCurrentEditorModel(){
+        return currentModel;
     }
 
     /**

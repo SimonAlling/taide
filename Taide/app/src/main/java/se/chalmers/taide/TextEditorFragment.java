@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -55,9 +57,8 @@ public class TextEditorFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Bind code editor to the model. Use Java as language
-        model = ModelFactory.createEditorModel(ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
-        Log.d("MainActivity", "Started model with language: " + model.getLanguage().getName());
+        // Bind code editor to the model.
+        initModel();
 
         return view;
     }
@@ -70,6 +71,12 @@ public class TextEditorFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle bundle){
+        super.onActivityCreated(bundle);
+        initModel();
     }
 
     @Override
@@ -106,7 +113,7 @@ public class TextEditorFragment extends Fragment {
                     break;
             }
         }else{
-            Log.w("TextEditorFragment", "Could not perform action since activity was not attached");
+            Log.w("TextEditor", "Could not perform action since activity was not attached");
         }
 
         return super.onOptionsItemSelected(item);
@@ -118,5 +125,21 @@ public class TextEditorFragment extends Fragment {
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getActivity()));
         menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
         menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
+    }
+
+    private void initModel(){
+        if(model == null) {
+            model = ModelFactory.getCurrentEditorModel();
+            if (model == null) {
+                if(codeEditor != null) {
+                    model = ModelFactory.createEditorModel(ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
+                    Log.d("TextEditor", "Started model with language: " + model.getLanguage().getName());
+                }else{
+                    Log.w("TextEditor", "WARNING: No functional model in use!");
+                }
+            }else{
+                Log.d("TextEditor", "Fetched model with language: " + model.getLanguage().getName());
+            }
+        }
     }
 }
