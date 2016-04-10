@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.view.Menu;
 
 import java.util.Collections;
 
@@ -47,12 +46,6 @@ public class SettingsFragment extends PreferenceFragment{
         if(sharedPreferences != null){
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
         }
-    }
-
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_settings).setEnabled(false);
     }
 
     private void onPreferenceChange(SharedPreferences preferences, String key){

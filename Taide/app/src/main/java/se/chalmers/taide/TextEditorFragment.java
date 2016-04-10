@@ -141,7 +141,6 @@ public class TextEditorFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_settings).setEnabled(true);
         menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getActivity()));
         menu.findItem(R.id.action_undo).setEnabled(model.peekUndo()!=null);
         menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);

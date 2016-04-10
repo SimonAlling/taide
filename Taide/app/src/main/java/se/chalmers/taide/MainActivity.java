@@ -18,6 +18,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private boolean showSettingsNavigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem settingsMenuItem = menu.findItem(R.id.action_settings);
+        settingsMenuItem.setVisible(showSettingsNavigation);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -59,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         if(fm != null){
             if(fm.getBackStackEntryCount()>1) {     //Check that entries exist and ignore first population
                 fm.popBackStack();
+                if(!showSettingsNavigation){
+                    showSettingsNavigation = true;
+                    invalidateOptionsMenu();
+                }
                 return;
             }
         }
@@ -76,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showFragment(Fragment fragment){
+        showSettingsNavigation = !(fragment instanceof SettingsFragment);
         FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
