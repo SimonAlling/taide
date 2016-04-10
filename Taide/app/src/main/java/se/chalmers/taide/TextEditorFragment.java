@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
@@ -55,6 +54,27 @@ public class TextEditorFragment extends Fragment {
             }
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+
+        RadialActionMenuLayout leftMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutLeft);
+        leftMenu.setButtonTexts(new String[]{"0", "1", "2"});
+        leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
+            @Override
+            public void actionButtonTriggered(int index) {
+                Toast.makeText(getActivity().getApplicationContext(), "Pressed button "+index+" on left side", Toast.LENGTH_SHORT).show();
+            }
+        });
+        RadialActionMenuLayout rightMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutRight);
+        rightMenu.setButtonTexts(new String[]{"Cut", "Copy", "Paste"});
+        rightMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
+            @Override
+            public void actionButtonTriggered(int index) {
+                switch (index) {
+                    case 0: Clipboard.cutToClipboard(getActivity(), codeEditor);break;
+                    case 1: Clipboard.copyToClipboard(getActivity(), codeEditor);break;
+                    case 2: Clipboard.pasteFromClipboard(getActivity(), codeEditor);break;
+                }
+            }
         });
 
         // Bind code editor to the model.

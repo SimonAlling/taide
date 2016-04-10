@@ -1,7 +1,5 @@
 package se.chalmers.taide.model;
 
-import android.util.Log;
-
 import se.chalmers.taide.model.languages.Language;
 
 /**

@@ -10,6 +10,8 @@
         <item name="android:colorForeground">@color/colorPrimaryText</item>
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
         <item name="android:textColorSecondary">@color/colorSecondaryText</item>
+
+        <item name="actionMenuColor">@color/lightYellow</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

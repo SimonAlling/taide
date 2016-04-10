@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Attributes for the action menu -->
+    <attr name="menuAlignment" format="enum">
+        <enum name="left" value="0"/>
+        <enum name="right" value="1"/>
+    </attr>
+    <attr name="buttonCount" format="integer" />
+    <attr name="animationDuration" format="integer" />
+    <attr name="selectionAnimationDuration" format="integer" />
+    <attr name="buttonColor" format="reference" />
+
+    <attr name="actionMenuColor" format="reference" />
+
+</resources>

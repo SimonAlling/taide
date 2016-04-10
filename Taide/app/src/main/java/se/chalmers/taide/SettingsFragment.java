@@ -1,6 +1,5 @@
 package se.chalmers.taide;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,8 +8,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 
 import java.util.Collections;
-
-import se.chalmers.taide.util.Clipboard;
 
 /**
  * Created by Matz on 2016-04-07.

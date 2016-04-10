@@ -11,6 +11,9 @@
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>
 
+    <string name="actionmenu_left_title">\?</string>
+    <string name="actionmenu_right_title">{ }</string>
+
 
     <!-- VALUES TO BE USED IN THE SETTINGS VIEW -->
     <string name="pref_group_sync_title">Sync options</string>
