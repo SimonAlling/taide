@@ -157,6 +157,7 @@ public class TextEditorFragment extends Fragment {
                     Log.w("TextEditor", "WARNING: No functional model in use!");
                 }
             }else{
+                model.setTextSource(ModelFactory.editTextToTextSource(codeEditor));
                 Log.d("TextEditor", "Fetched model with language: " + model.getLanguage().getName());
             }
         }

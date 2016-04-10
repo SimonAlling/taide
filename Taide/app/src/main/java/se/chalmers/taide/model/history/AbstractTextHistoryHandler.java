@@ -38,9 +38,13 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
 
             //Enable new text source
             this.inputField = input;
-            actions.clear();
-            currentIndex = -1;
-            inputField.addListener(this, true);
+            if(this.inputField != null) {
+                actions.clear();
+                currentIndex = -1;
+                inputField.addListener(this, true);
+            }else{
+                Log.w("TextHistoryHandler", "Registered a null text source: no event bind performed");
+            }
         }
     }
 
