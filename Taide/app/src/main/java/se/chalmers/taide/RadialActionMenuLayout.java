@@ -1,9 +1,10 @@
 package se.chalmers.taide;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +17,6 @@ import android.widget.RelativeLayout;
  */
 public class RadialActionMenuLayout extends RelativeLayout{
 
-    private static final String DEFAULT_NAMESPACE = "http://schemas.android.com/apk/res-auto";
     private static final int DEFAULT_NBR_OF_BUTTONS = 3;
     private static final int DEFAULT_ANIMATION_DURATION = 400;
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200;
@@ -30,6 +30,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
     private OnActionButtonTriggeredListener[] buttonListeners;
     private int animationDuration;
     private int selectionAnimationDuration;
+    private int buttonColor;
 
 
     public RadialActionMenuLayout(final Context context){
@@ -45,21 +46,23 @@ public class RadialActionMenuLayout extends RelativeLayout{
         mainView = LayoutInflater.from(context).inflate(R.layout.radial_action_menu, this);
 
         //Init values from xml
-        int buttonColor = -1, mainButtonText = -1;
-        try {
-            buttonColor = attrs.getAttributeResourceValue(DEFAULT_NAMESPACE, "buttonColor", -1);
-            alignment = Alignment.getAlignment(attrs.getAttributeIntValue(DEFAULT_NAMESPACE, "menuAlignment", 1));
-            generateButtons(attrs.getAttributeIntValue(DEFAULT_NAMESPACE, "buttonCount", DEFAULT_NBR_OF_BUTTONS), buttonColor);
-            animationDuration = attrs.getAttributeIntValue(DEFAULT_NAMESPACE, "animationDuration", DEFAULT_ANIMATION_DURATION);
-            selectionAnimationDuration = attrs.getAttributeIntValue(DEFAULT_NAMESPACE, "selectionAnimationDuration", DEFAULT_SELECTION_ANIMATION_DURATION);
-            mainButtonText = attrs.getAttributeResourceValue(DEFAULT_NAMESPACE, "title", -1);
-        }catch(NumberFormatException nfe){
-            Log.w("RadialActionMenuLayout", "Invalid XML data: Integer value required.");
+        TypedArray attributeData = context.obtainStyledAttributes(attrs, R.styleable.RadialActionMenuLayout, 0, 0);
+        buttonColor = attributeData.getResourceId(R.styleable.RadialActionMenuLayout_buttonColor, -1);
+        if(buttonColor < 0){
+            TypedValue tv = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.actionMenuColor, tv, false);
+            buttonColor = tv.data;
         }
+        alignment = Alignment.getAlignment(attributeData.getInt(R.styleable.RadialActionMenuLayout_menuAlignment, 1));
+        generateButtons(attributeData.getInt(R.styleable.RadialActionMenuLayout_buttonCount, DEFAULT_NBR_OF_BUTTONS));
+        animationDuration = attributeData.getInt(R.styleable.RadialActionMenuLayout_animationDuration, DEFAULT_ANIMATION_DURATION);
+        selectionAnimationDuration = attributeData.getInt(R.styleable.RadialActionMenuLayout_selectionAnimationDuration, DEFAULT_SELECTION_ANIMATION_DURATION);
+        String mainButtonText = attributeData.getString(R.styleable.RadialActionMenuLayout_menuTitle);
+        attributeData.recycle();
 
         //Init main button
         LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mainButtonView = getCircleButton(inflater, (ViewGroup)mainView, mainButtonText>=0?getResources().getString(mainButtonText):DEFAULT_MAIN_BUTTON_TEXT, buttonColor);
+        View mainButtonView = getCircleButton(inflater, (ViewGroup)mainView, mainButtonText==null?DEFAULT_MAIN_BUTTON_TEXT:mainButtonText);
 
         //Init main button handler
         mainButton = (Button)mainButtonView.findViewById(R.id.radialButton);
@@ -78,9 +81,70 @@ public class RadialActionMenuLayout extends RelativeLayout{
         });
     }
 
+    public void setAlignment(Alignment alignment){
+        if(alignment != null && alignment != this.alignment){
+            this.alignment = alignment;
+            invalidate();
+            requestLayout();
+        }
+    }
+
+    public Alignment getAlignment(){
+        return alignment;
+    }
+
+    public void setButtonCount(int buttonCount){
+        generateButtons(buttonCount);
+        invalidate();
+        requestLayout();
+    }
+
+    public int getButtonCount(){
+        return buttons.length;
+    }
+
+    public void setAnimationDuration(int animationDuration){
+        this.animationDuration = animationDuration;
+    }
+
+    public int getAnimationDuration(){
+        return animationDuration;
+    }
+
+    public void setSelectionAnimationDuration(int selectionAnimationDuration){
+        this.selectionAnimationDuration = selectionAnimationDuration;
+    }
+
+    public int getSelectionAnimationDuration(){
+        return selectionAnimationDuration;
+    }
+
+    public void setButtonColor(int resourceId){
+        this.buttonColor = resourceId;
+        generateButtons(buttons.length);
+        invalidate();
+        requestLayout();
+    }
+
+    public int getButtonColor(){
+        return buttonColor;
+    }
+
+    public void setMenuTitle(String title){
+        mainButton.setText(title);
+        invalidate();
+        requestLayout();
+    }
+
+    public String getMenuTitle(){
+        return mainButton.getText().toString();
+    }
+
     public void setButtonText(int buttonIndex, String text){
         if(buttonIndex>=0 && buttonIndex<buttons.length){
             ((Button)buttons[buttonIndex].findViewById(R.id.radialButton)).setText(text);
+            invalidate();
+            requestLayout();
         }
     }
 
@@ -90,8 +154,10 @@ public class RadialActionMenuLayout extends RelativeLayout{
         }
 
         for(int i = 0; i<texts.length; i++){
-            setButtonText(i, texts[i]);
+            ((Button)buttons[i].findViewById(R.id.radialButton)).setText(texts[i]);
         }
+        invalidate();
+        requestLayout();
     }
 
     public void setAction(int buttonIndex, OnActionButtonTriggeredListener listener){
@@ -106,7 +172,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
         }
     }
 
-    private View getCircleButton(LayoutInflater inflater, ViewGroup parent, String text, int color){
+    private View getCircleButton(LayoutInflater inflater, ViewGroup parent, String text){
         View v = inflater.inflate(R.layout.radial_button, null);
         parent.addView(v);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)v.getLayoutParams();
@@ -116,23 +182,32 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
         Button b = ((Button)v.findViewById(R.id.radialButton));
         b.setText(text);
-        if(color >= 0){
-            ((GradientDrawable)b.getBackground()).setColor(getResources().getColor(color));
-        }
+        ((GradientDrawable)b.getBackground()).setColor(getResources().getColor(buttonColor));
 
         return v;
     }
 
-    private void generateButtons(int buttonCount, int color){
-        this.buttons = new View[buttonCount];
-        this.buttonListeners = new OnActionButtonTriggeredListener[buttonCount];
+    private void generateButtons(int buttonCount){
+        View[] newButtons = new View[buttonCount];
+        OnActionButtonTriggeredListener[] newButtonListeners = new OnActionButtonTriggeredListener[buttonCount];
         LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout parent = (RelativeLayout)mainView;
         for(int i = 0; i < buttonCount; i++){
-            View v = getCircleButton(inflater, parent, "", color);
-            v.setVisibility(View.GONE);
-            buttons[i] = v;
+            if(this.buttons != null && i<this.buttons.length){
+                newButtons[i] = this.buttons[i];
+                newButtonListeners[i] = this.buttonListeners[i];
+
+                //Update color
+                ((GradientDrawable)newButtons[i].findViewById(R.id.radialButton).getBackground()).setColor(getResources().getColor(buttonColor));
+            }else {
+                View v = getCircleButton(inflater, parent, "");
+                v.setVisibility(View.GONE);
+                newButtons[i] = v;
+            }
         }
+
+        this.buttons = newButtons;
+        this.buttonListeners = newButtonListeners;
     }
 
     private void show(){
@@ -187,7 +262,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
         void actionButtonTriggered(int index);
     }
 
-    private enum Alignment{
+    public enum Alignment{
         LEFT, RIGHT;
 
         private static Alignment getAlignment(int index){
