@@ -7,6 +7,15 @@
     <color name="colorSecondaryText">#BBBBBB</color>
 
     <color name="darkBackground">#262626</color>
+    <color name="defaultTextColor">#ffffff</color>
+    <color name="disabledText">#bbb</color>
+
+    <color name="drawer_background">#ffffff</color>
+    <color name="drawer_background_dark_transparent">#6F000000</color>
+    <color name="drawer_font_color">#000000</color>
+    <color name="drawer_font_color_transparent_bg">#FFFFFF</color>
+    <color name="drawer_border_color">#dddddd</color>
+    <color name="drawer_action_delete">#cc0000</color>
 
     <color name="pink">#f42661</color>
     <color name="cyan">#66d9df</color>

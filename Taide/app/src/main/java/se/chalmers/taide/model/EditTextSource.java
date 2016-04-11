@@ -88,9 +88,16 @@ public class EditTextSource implements TextSource {
     }
 
     @Override
+    public void setText(String text){
+        input.setSelection(0);
+        input.setText(text);
+    }
+
+    @Override
     public void setSpannable(SpannableString str) {
-        int start = input.getSelectionStart(), end = input.getSelectionEnd();
-        input.getText().clear();
+        int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
+        int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
+        //input.getText().clear();
         input.setText(str, TextView.BufferType.SPANNABLE);
         input.setSelection(start, end);
     }

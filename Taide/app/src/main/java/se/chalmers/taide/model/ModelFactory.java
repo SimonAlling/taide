@@ -1,7 +1,9 @@
 package se.chalmers.taide.model;
 
+import android.content.Context;
 import android.widget.EditText;
 
+import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.model.languages.SimpleAutoFill;
 
 /**
@@ -14,14 +16,13 @@ public class ModelFactory {
     private static EditorModel currentModel;
 
     /**
-     * Creates a EditorModel with the given language and binds it to the
-     * given text view
+     * Creates a EditorModel and binds it to the given text view
+     * @param context The current context
      * @param textSource The text source to attach
-     * @param lang The name of the language to use (see LanguageFactory constants)
      * @return A valid EditorModel object with correct properties.
      */
-    public static EditorModel createEditorModel(TextSource textSource, String lang) {
-        currentModel = new SimpleEditorModel(textSource, lang);
+    public static EditorModel createEditorModel(Context context, TextSource textSource) {
+        currentModel = new SimpleEditorModel(context, textSource);
         return currentModel;
     }
 
@@ -45,7 +46,11 @@ public class ModelFactory {
     }
 
     public static TextSource editTextToTextSource(EditText editText) {
-        return new EditTextSource(editText);
+        if(editText != null){
+            return new EditTextSource(editText);
+        }else{
+            return null;
+        }
     }
 
 }

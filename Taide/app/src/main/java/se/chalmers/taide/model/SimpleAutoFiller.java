@@ -1,5 +1,6 @@
 package se.chalmers.taide.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.taide.model.languages.Language;
@@ -19,7 +20,7 @@ public class SimpleAutoFiller extends AbstractTextFilter{
      * @param lang The language to use.
      */
     protected SimpleAutoFiller(Language lang){
-        this(lang.getAutoFills());
+        this(lang == null ? Collections.<AutoFill>emptyList() : lang.getAutoFills());
     }
 
     /**

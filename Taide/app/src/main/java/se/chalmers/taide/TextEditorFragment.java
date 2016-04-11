@@ -27,6 +27,10 @@ public class TextEditorFragment extends Fragment {
     private EditText codeEditor;
     private EditorModel model;
 
+    public EditText getCodeEditor(){
+        return codeEditor;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,14 +155,14 @@ public class TextEditorFragment extends Fragment {
             model = ModelFactory.getCurrentEditorModel();
             if (model == null) {
                 if(codeEditor != null) {
-                    model = ModelFactory.createEditorModel(ModelFactory.editTextToTextSource(codeEditor), LanguageFactory.JAVA);
-                    Log.d("TextEditor", "Started model with language: " + model.getLanguage().getName());
+                    model = ModelFactory.createEditorModel(getActivity(), ModelFactory.editTextToTextSource(codeEditor));
+                    Log.d("TextEditor", "Started model for text editor.");
                 }else{
                     Log.w("TextEditor", "WARNING: No functional model in use!");
                 }
             }else{
                 model.setTextSource(ModelFactory.editTextToTextSource(codeEditor));
-                Log.d("TextEditor", "Fetched model with language: " + model.getLanguage().getName());
+                Log.d("TextEditor", "Fetched existing model and setup editor.");
             }
         }
     }

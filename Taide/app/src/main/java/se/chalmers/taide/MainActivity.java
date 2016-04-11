@@ -1,14 +1,21 @@
 package se.chalmers.taide;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import com.dropbox.chooser.android.DbxChooser;
+
+import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
 
 /**
  * Created by Matz on 2016-01-25.
@@ -18,6 +25,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FileNavigatorDrawer fileNavigator;
     private boolean showSettingsNavigation;
 
     @Override
@@ -32,7 +40,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);
+
         showTextEditorView();
+        fileNavigator = new FileNavigatorDrawer(this, getCodeEditor());
+        fileNavigator.initDrawer();
     }
 
     @Override
@@ -49,10 +60,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        fileNavigator.onActivityResume();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:  showSettingsMenu();return true;
+            case android.R.id.home:     fileNavigator.openDrawer();return true;
             default:                    return super.onOptionsItemSelected(item);
         }
     }
@@ -65,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 fm.popBackStack();
                 if(!showSettingsNavigation){
                     showSettingsNavigation = true;
+                    invalidateFileNavigator();
                     invalidateOptionsMenu();
                 }
                 return;
@@ -88,5 +107,39 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
+        invalidateFileNavigator();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FileNavigatorDrawer.DBX_CHOOSER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                fileNavigator.loadDropboxProject(data);
+            } else {
+                // Failed or was cancelled by the user.
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void invalidateFileNavigator(){
+        if(fileNavigator != null) {
+            boolean enabled = (getFragmentManager().findFragmentById(R.id.mainFragment) instanceof TextEditorFragment);
+            fileNavigator.setEnabled(enabled);
+            if (enabled) {
+                fileNavigator.setTextInput(getCodeEditor());
+                fileNavigator.updateModelReference();
+            }
+        }
+    }
+
+    private EditText getCodeEditor(){
+        Fragment f = getFragmentManager().findFragmentById(R.id.mainFragment);
+        if(f instanceof TextEditorFragment){
+            return ((TextEditorFragment)f).getCodeEditor();
+        }else{
+            return null;
+        }
     }
 }

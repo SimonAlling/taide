@@ -62,4 +62,11 @@ public interface Language {
      */
     List<AutoFill> getAutoFills();
 
+    /**
+     * Generates the default content a file should be filled with on creation.
+     * @param filename The name of the file
+     * @return Text content the new file should be filled with
+     */
+    String getDefaultContent(String filename);
+
 }

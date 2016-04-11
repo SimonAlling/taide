@@ -1,5 +1,8 @@
 package se.chalmers.taide.model.history;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import se.chalmers.taide.model.TextSource;
 
 /**
@@ -7,16 +10,26 @@ import se.chalmers.taide.model.TextSource;
  */
 public class HistoryHandlerFactory {
 
-    private static FileHistoryHandler fileHistoryHandler;
+    private static Map<String, TextHistoryHandler> textHistoryHandlers = new HashMap<>();
 
-    public static TextHistoryHandler createTextHistoryHandler(TextSource editor){
-        TextHistoryHandler thh = new TimeTextHistoryHandler();
+    public static TextHistoryHandler getTextHistoryHandler(String name, TextSource editor){
+        return getTextHistoryHandler(name, editor, false);
+    }
+
+    public static TextHistoryHandler getTextHistoryHandler(String name, TextSource editor, boolean forceRecreate){
+        TextHistoryHandler thh;
+        if(forceRecreate || !textHistoryHandlers.containsKey(name)){
+            thh = new TimeTextHistoryHandler();
+            textHistoryHandlers.put(name, thh);
+        }else{
+            thh = textHistoryHandlers.get(name);
+        }
+
         thh.registerInputField(editor);
-
         return thh;
     }
 
     public static FileHistoryHandler getDefaultFileHistoryHandler(){
-        throw new UnsupportedOperationException("File handling is not yet implemented.");
+        throw new UnsupportedOperationException("CodeFile handling is not yet implemented.");
     }
 }

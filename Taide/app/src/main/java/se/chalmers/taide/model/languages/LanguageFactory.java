@@ -25,20 +25,35 @@ public class LanguageFactory {
     /**
      * Instantiate a language object based on the name parameter.
      * @param name The name of the language (default is LanguageFactory.JAVA)
-     * @param resouces The current application context resources
+     * @param resources The current application context resources
      * @return A language instance representing the given programming language
      * @throws IllegalArgumentException If the given name is invalid (does not exist)
      */
-    public static Language getLanguage(String name, Resources resouces) throws IllegalArgumentException {
+    public static Language getLanguage(String name, Resources resources) throws IllegalArgumentException {
         if (name == null) {
             Log.d("LanguageFactory", "No language provided, defaulting to Java");
             name = DEFAULT_LANGUAGE;
         }
 
         switch (name.toLowerCase()) {
-            case JAVA: return new JavaImpl(resouces);
+            case JAVA: return new JavaImpl(resources);
             default:   throw new IllegalArgumentException("No language with name '"+name+"' found.");
         }
+    }
+
+    /**
+     * Retrieves the language based on the given file format
+     * @param fileformat The file ending of the language
+     * @param resources The current application context resources
+     * @return A language instance representing the given programming language
+     */
+    public static Language getLanguageFromFileFormat(String fileformat, Resources resources){
+        String concreteName = null;
+        switch(fileformat){
+            case "java":    concreteName = JAVA;break;
+        }
+
+        return getLanguage(concreteName, resources);
     }
 
 }
