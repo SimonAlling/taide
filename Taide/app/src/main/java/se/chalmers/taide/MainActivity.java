@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);
 
-        showTextEditorView();
+        //showTextEditorView();
         fileNavigator = new FileNavigatorDrawer(this, getCodeEditor());
         fileNavigator.initDrawer();
     }
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showFragment(Fragment fragment){
         showSettingsNavigation = !(fragment instanceof SettingsFragment);
-        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
+        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.textField, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
         invalidateFileNavigator();
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void invalidateFileNavigator(){
         if(fileNavigator != null) {
-            boolean enabled = (getFragmentManager().findFragmentById(R.id.mainFragment) instanceof TextEditorFragment);
+            boolean enabled = (getFragmentManager().findFragmentById(R.id.textField) instanceof TextEditorFragment);
             fileNavigator.setEnabled(enabled);
             if (enabled) {
                 fileNavigator.setTextInput(getCodeEditor());
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private EditText getCodeEditor(){
-        Fragment f = getFragmentManager().findFragmentById(R.id.mainFragment);
+        Fragment f = getFragmentManager().findFragmentById(R.id.textField);
         if(f instanceof TextEditorFragment){
             return ((TextEditorFragment)f).getCodeEditor();
         }else{
