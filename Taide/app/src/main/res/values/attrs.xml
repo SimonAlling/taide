@@ -13,6 +13,18 @@
         <attr name="menuTitle" format="string" />
     </declare-styleable>
 
-    <attr name="actionMenuColor" format="reference" />
+    <declare-styleable name="Theme">
+        <attr name="actionMenuColor" format="reference|color" />
+        <attr name="drawerBackground" format="reference|color" />
+        <attr name="iconFile" format="reference" />
+        <attr name="iconFolder" format="reference" />
+        <attr name="iconUpOneFileLevel" format="reference" />
+
+        <attr name="actionNewProject" format="reference" />
+        <attr name="actionLoadProject" format="reference" />
+        <attr name="actionImportProject" format="reference" />
+        <attr name="actionNewFile" format="reference" />
+        <attr name="actionNewFolder" format="reference" />
+    </declare-styleable>
 
 </resources>

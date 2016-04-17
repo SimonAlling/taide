@@ -152,7 +152,11 @@ public class SimpleFileSystem implements FileSystem{
 
     @Override
     public String getCurrentProject() {
-        return baseDir.getParentFile().getName();
+        if(baseDir == null) {
+            return null;
+        }else {
+            return baseDir.getParentFile().getName();
+        }
     }
 
     @Override

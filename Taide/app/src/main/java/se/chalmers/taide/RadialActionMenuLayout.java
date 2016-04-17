@@ -182,7 +182,9 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
         Button b = ((Button)v.findViewById(R.id.radialButton));
         b.setText(text);
-        ((GradientDrawable)b.getBackground()).setColor(getResources().getColor(buttonColor));
+        if(b.getBackground() instanceof GradientDrawable) {
+            ((GradientDrawable) b.getBackground()).setColor(getResources().getColor(buttonColor));
+        }
 
         return v;
     }

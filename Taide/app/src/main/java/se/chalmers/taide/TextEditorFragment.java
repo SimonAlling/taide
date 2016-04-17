@@ -3,6 +3,7 @@ package se.chalmers.taide;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,18 +19,12 @@ import android.widget.Toast;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
-import se.chalmers.taide.model.languages.LanguageFactory;
 import se.chalmers.taide.util.Clipboard;
-import se.chalmers.taide.util.TabUtil;
 
 public class TextEditorFragment extends Fragment {
 
     private EditText codeEditor;
     private EditorModel model;
-
-    public EditText getCodeEditor(){
-        return codeEditor;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,16 +38,13 @@ public class TextEditorFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_text_editor, container, false);
 
         // Retrieve the code editor text field
-        codeEditor = (EditText)view.findViewById(R.id.editText);
-        // Init sample code
-        final String sampleCode = "public class Main{\n\n"+ TabUtil.getTabs(1)+"public static void main(String[] args){\n"+TabUtil.getTabs(2)+"System.out.println(\"Hello world!\");\n"+TabUtil.getTabs(1)+"}\n\n}";
-        codeEditor.setText(sampleCode);
+        codeEditor = (EditText)view.findViewById(R.id.codeEditor);
         codeEditor.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() <= sampleCode.length()+1 && getActivity() != null){
+                if(s.length() <= 0 && getActivity() != null){
                     getActivity().invalidateOptionsMenu();
                 }
             }
@@ -60,12 +52,16 @@ public class TextEditorFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
+        // Bind code editor to the model.
+        initModel();
+
+        //Bind action menus
         RadialActionMenuLayout leftMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutLeft);
         leftMenu.setButtonTexts(new String[]{"0", "1", "2"});
         leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
-                Toast.makeText(getActivity().getApplicationContext(), "Pressed button "+index+" on left side", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Pressed button " + index + " on left side", Toast.LENGTH_SHORT).show();
             }
         });
         RadialActionMenuLayout rightMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutRight);
@@ -74,27 +70,20 @@ public class TextEditorFragment extends Fragment {
             @Override
             public void actionButtonTriggered(int index) {
                 switch (index) {
-                    case 0: Clipboard.cutToClipboard(getActivity(), codeEditor);break;
-                    case 1: Clipboard.copyToClipboard(getActivity(), codeEditor);break;
-                    case 2: Clipboard.pasteFromClipboard(getActivity(), codeEditor);break;
+                    case 0:
+                        Clipboard.cutToClipboard(getActivity(), codeEditor);
+                        break;
+                    case 1:
+                        Clipboard.copyToClipboard(getActivity(), codeEditor);
+                        break;
+                    case 2:
+                        Clipboard.pasteFromClipboard(getActivity(), codeEditor);
+                        break;
                 }
             }
         });
 
-        // Bind code editor to the model.
-        initModel();
-
         return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     @Override

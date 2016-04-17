@@ -44,6 +44,7 @@ public class SimpleEditorModel implements EditorModel {
      * @param text The text view to attach
      */
     protected SimpleEditorModel(Context context, TextSource text) {
+        this.context = context;
         this.textFilters = new HashMap<>();
         this.fileSystem = FileSystemFactory.getFileSystem(context);
 

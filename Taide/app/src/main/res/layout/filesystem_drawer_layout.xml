@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:id="@+id/drawerPane"
+    android:background="?attr/drawerBackground"
+    android:layout_gravity="start">
+
+    <RelativeLayout
+        android:id="@+id/drawerContentWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="6dp"
+        android:layout_alignParentTop="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/projectName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="@dimen/listview_left_margin"
+                android:textSize="@dimen/default_font_size"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                android:text="Project Name" />
+
+            <ListView
+                android:id="@+id/projectActionMenus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:choiceMode="none"
+                android:entries="@array/filesystem_default_menuitems"
+                android:layout_marginBottom="10dp" />
+
+            <com.baoyz.swipemenulistview.SwipeMenuListView
+                android:id="@+id/fileList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteText"
+                android:choiceMode="singleChoice" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

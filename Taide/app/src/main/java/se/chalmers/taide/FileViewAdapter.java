@@ -1,6 +1,7 @@
 package se.chalmers.taide;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,32 +26,38 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //Find correct context
+        Context context = (convertView!=null?convertView.getContext():(parent!=null?parent.getContext():this.context));
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.fileview, parent, false);
-        TextView textView = (TextView) rowView.findViewById(R.id.fileview_name);
-        ImageView icon = (ImageView)rowView.findViewById(R.id.fileview_icon);
+        View rowView = inflater.inflate(R.layout.icon_text_item_view_files, parent, false);
+        TextView textView = (TextView) rowView.findViewById(R.id.item_name);
+        ImageView icon = (ImageView)rowView.findViewById(R.id.item_icon);
         if(position == 0){
             textView.setText(R.string.upOneLevel);
             textView.setEnabled(canStepUpOneLevel);
-            if(!textView.isEnabled()) {
-                textView.setTextColor(context.getResources().getColor(R.color.disabledText));
-            }
-            icon.setImageResource(R.mipmap.ic_uponelevel);
+            icon.setImageResource(getReferenceFromStyle(context, R.attr.iconUpOneFileLevel, R.drawable.ic_up_one_file_level_white));
         }else{
             CodeFile f = getItem(position);
             textView.setText(f.getName());
             if(f.isDirectory()){
-                icon.setImageResource(R.mipmap.ic_folder);
+                icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFolder, R.drawable.ic_folder_white));
             }else{
                 textView.setEnabled(f.isOpenable());
-                if(!textView.isEnabled()){
-                    textView.setTextColor(context.getResources().getColor(R.color.disabledText));
-                }
-                icon.setImageResource(R.mipmap.ic_file);
+                icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFile, R.drawable.ic_file_white));
             }
         }
 
+        int textColor = getReferenceFromStyle(context, textView.isEnabled() ? android.R.attr.textColorPrimary : android.R.attr.textColorSecondary, android.R.color.black);
+        textView.setTextColor(context.getResources().getColor(textColor));
+
         return rowView;
+    }
+
+    private int getReferenceFromStyle(Context context, int attribute, int def){
+        TypedValue tv = new TypedValue();
+        context.getTheme().resolveAttribute(attribute, tv, false);
+        return tv.data==0?def:tv.data;
     }
 
     @Override

@@ -9,13 +9,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
-import com.dropbox.chooser.android.DbxChooser;
-
-import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
+import java.lang.reflect.Field;
 
 /**
  * Created by Matz on 2016-01-25.
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FileNavigatorDrawer fileNavigator;
     private boolean showSettingsNavigation;
+    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         showTextEditorView();
-        fileNavigator = new FileNavigatorDrawer(this, getCodeEditor());
-        fileNavigator.initDrawer();
+        this.savedInstanceState = savedInstanceState;
     }
 
     @Override
@@ -62,15 +63,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        fileNavigator.onActivityResume();
+        updateFileNavigator(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState){
+        super.onSaveInstanceState(saveInstanceState);
+        fileNavigator.saveInstanceState(saveInstanceState);
+        this.savedInstanceState = saveInstanceState;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        fileNavigator.onOptionsItemSelected(item);
+
         int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:  showSettingsMenu();return true;
-            case android.R.id.home:     fileNavigator.openDrawer();return true;
             default:                    return super.onOptionsItemSelected(item);
         }
     }
@@ -83,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 fm.popBackStack();
                 if(!showSettingsNavigation){
                     showSettingsNavigation = true;
-                    invalidateFileNavigator();
+                    updateFileNavigator(savedInstanceState);
                     invalidateOptionsMenu();
                 }
                 return;
@@ -107,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
-        invalidateFileNavigator();
     }
 
     @Override
@@ -115,31 +123,27 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == FileNavigatorDrawer.DBX_CHOOSER_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 fileNavigator.loadDropboxProject(data);
-            } else {
-                // Failed or was cancelled by the user.
             }
-        } else {
+        }else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    public void invalidateFileNavigator(){
-        if(fileNavigator != null) {
-            boolean enabled = (getFragmentManager().findFragmentById(R.id.mainFragment) instanceof TextEditorFragment);
-            fileNavigator.setEnabled(enabled);
-            if (enabled) {
-                fileNavigator.setTextInput(getCodeEditor());
-                fileNavigator.updateModelReference();
+    private void updateFileNavigator(Bundle instanceState){
+        Log.d("Main", "Update file nav");
+        View v = findViewById(R.id.codeEditor);
+        if(v != null) {
+            if (fileNavigator == null) {
+                Log.d("Main", "Reupdating");
+                fileNavigator = new FileNavigatorDrawer(this, (EditText) v);
+                fileNavigator.initDrawer();
+            } else {
+                Log.d("Main", "Just calling onResume");
+                fileNavigator.setTextInput((EditText)v);
+                fileNavigator.onActivityResume(instanceState);
             }
-        }
-    }
-
-    private EditText getCodeEditor(){
-        Fragment f = getFragmentManager().findFragmentById(R.id.mainFragment);
-        if(f instanceof TextEditorFragment){
-            return ((TextEditorFragment)f).getCodeEditor();
         }else{
-            return null;
+            Log.d("Main", "Nope, not found");
         }
     }
 }

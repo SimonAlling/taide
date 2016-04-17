@@ -11,14 +11,25 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+    <TextView
+        android:id="@+id/noTextLoadedLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:textSize="@dimen/big_font_size"
+        android:text="@string/default_info"
+        android:textColor="@color/defaultTextColor"/>
+
     <RelativeLayout
+        android:id="@+id/codeEditorWrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="invisible">
 
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/editText"
+            android:id="@+id/codeEditor"
             android:background="@android:color/transparent"
             android:textAlignment="viewStart"
             android:gravity="start"
@@ -28,7 +39,7 @@
             android:isScrollContainer="true"
             android:scrollbars="vertical"
             android:scrollbarStyle="outsideOverlay"
-            android:scrollbarSize="4dp"/>
+            android:scrollbarSize="4dp" />
 
 
         <se.chalmers.taide.RadialActionMenuLayout

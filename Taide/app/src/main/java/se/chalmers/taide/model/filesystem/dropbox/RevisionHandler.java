@@ -74,7 +74,6 @@ public class RevisionHandler {
                 }
             }
         }
-        FileTree.printFileTree(revisionState, "");
     }
 
     public List<String> getRemovedFiles(){

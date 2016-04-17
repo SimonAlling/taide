@@ -34,6 +34,13 @@ public class SimpleProject implements Project{
 
     @Override
     public CodeFile createFile(String folder, String name) {
+        //Make sure path is not added twice
+        String projectFolder = baseFolder.getPath().toLowerCase();
+        if(folder.toLowerCase().startsWith(projectFolder)){
+            folder = folder.substring(projectFolder.length());
+        }
+
+        //Create stuff.
         File f = new File(baseFolder.getPath() + "/" +folder + (folder.length()>0?"/":"") + name);
         try {
             if (f.createNewFile()) {
@@ -48,6 +55,13 @@ public class SimpleProject implements Project{
 
     @Override
     public CodeFile createDir(String folder, String name) {
+        //Make sure path is not added twice
+        String projectFolder = baseFolder.getPath().toLowerCase();
+        if(folder.toLowerCase().startsWith(projectFolder)){
+            folder = folder.substring(projectFolder.length());
+        }
+
+        //Create stuff.
         File f = new File(baseFolder.getPath()+"/"+folder + (folder.length()>0?"/":"") + name);
         if(f.mkdir()){
             return new SimpleCodeFile(f);

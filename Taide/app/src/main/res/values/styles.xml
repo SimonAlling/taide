@@ -11,8 +11,24 @@
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
         <item name="android:textColorSecondary">@color/colorSecondaryText</item>
 
+        <item name="iconFile">@drawable/ic_file_white</item>
+        <item name="iconFolder">@drawable/ic_folder_white</item>
+        <item name="iconUpOneFileLevel">@drawable/ic_up_one_file_level_white</item>
+
+        <item name="actionNewProject">@drawable/ic_create_file_white</item>
+        <item name="actionLoadProject">@drawable/ic_create_folder_white</item>
+        <item name="actionImportProject">@drawable/ic_delete_white</item>
+        <item name="actionNewFile">@drawable/ic_create_file_white</item>
+        <item name="actionNewFolder">@drawable/ic_create_folder_white</item>
+
         <item name="actionMenuColor">@color/lightYellow</item>
+        <item name="drawerBackground">@android:color/black</item>
     </style>
+
+    <style name="TextViewDark" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
