@@ -43,16 +43,13 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
 
     @Override
     public String peekUndoAction(){
-        String peek = super.peekUndoAction();
-        if(peek == null){
-            if(currentTextAction != null){
-                List<TextAction> a = new LinkedList<>();
-                a.add(new TextAction(currentTextAction, currentTextInput, currentTextPos));
-                peek = actionListToString(a);
-            }
+        if(currentTextAction != null){
+            List<TextAction> a = new LinkedList<>();
+            a.add(new TextAction(currentTextAction, currentTextInput, currentTextPos));
+            return actionListToString(a);
+        }else {
+            return super.peekUndoAction();
         }
-
-        return peek;
     }
 
     private TimerTask getCountdownTask(){

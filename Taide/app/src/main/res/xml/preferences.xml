@@ -17,5 +17,16 @@
             android:entries="@array/file_formats_entries"
             android:defaultValue="@array/file_formats_values"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_group_others_title"
+        android:key="pref_key_others_settings">
+        <ListPreference
+            android:key="pref_key_history_handler_type"
+            android:summary="@string/pref_summary_history_handler_type"
+            android:title="@string/pref_title_history_handler_type"
+            android:entryValues="@array/history_handlers_values"
+            android:entries="@array/history_handlers_entries"
+            android:defaultValue="time" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

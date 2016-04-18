@@ -3,7 +3,9 @@ package se.chalmers.taide.model.history;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import se.chalmers.taide.R;
 import se.chalmers.taide.model.TextSource;
