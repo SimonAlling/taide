@@ -1,6 +1,7 @@
 package se.chalmers.taide.model;
 
 import se.chalmers.taide.model.languages.Language;
+import se.chalmers.taide.model.languages.LanguageFactory;
 
 /**
  * Created by Matz on 2016-02-10.

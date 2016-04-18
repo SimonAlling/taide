@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,7 +39,7 @@ public class TextEditorFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_text_editor, container, false);
 
         // Retrieve the code editor text field
-        codeEditor = (EditText)view.findViewById(R.id.codeEditor);
+        codeEditor = (EditText)view.findViewById(R.id.editText);
         codeEditor.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -61,7 +62,13 @@ public class TextEditorFragment extends Fragment {
         leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
-                Toast.makeText(getActivity().getApplicationContext(), "Pressed button " + index + " on left side", Toast.LENGTH_SHORT).show();
+                switch (index) {
+                    case 0: View v = getActivity().findViewById(R.id.markup);
+
+                            v.setVisibility(v.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE);
+                            break;
+                    default: break;
+                }
             }
         });
         RadialActionMenuLayout rightMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutRight);

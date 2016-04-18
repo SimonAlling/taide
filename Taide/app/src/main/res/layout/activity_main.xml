@@ -19,11 +19,22 @@
 		<include layout="@layout/toolbar_main"
 			android:id="@+id/toolbarParent"/>
 
-		<FrameLayout
-			android:id="@+id/mainFragment"
-			android:layout_below="@id/toolbarParent"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
+        <fragment
+            android:id="@+id/markup"
+            android:layout_height="400dp"
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            class="se.chalmers.taide.MarkupFragment"
+            />
+
+        <fragment
+            android:id="@+id/textField"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_below="@id/toolbarParent"
+            android:layout_above="@id/markup"
+            class="se.chalmers.taide.TextEditorFragment"
+            />
 
 	</RelativeLayout>
 
