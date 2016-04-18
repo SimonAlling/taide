@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         this.savedInstanceState = savedInstanceState;
-
     }
 
     @Override
