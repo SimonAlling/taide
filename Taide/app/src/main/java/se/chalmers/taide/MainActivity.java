@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);
 
-        showTextEditorView();
         this.savedInstanceState = savedInstanceState;
     }
 
@@ -103,17 +102,13 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void showTextEditorView(){
-        showFragment(new TextEditorFragment());
-    }
-
     private void showSettingsMenu() {
         showFragment(new SettingsFragment());
     }
 
     private void showFragment(Fragment fragment){
         showSettingsNavigation = !(fragment instanceof SettingsFragment);
-        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.mainFragment, fragment);
+        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.textField, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
     }
@@ -129,21 +124,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFileNavigator(Bundle instanceState){
+    private void updateFileNavigator(Bundle instanceState) {
         Log.d("Main", "Update file nav");
-        View v = findViewById(R.id.codeEditor);
-        if(v != null) {
+        View v = findViewById(R.id.editText);
+        if (v != null) {
             if (fileNavigator == null) {
                 Log.d("Main", "Reupdating");
-                fileNavigator = new FileNavigatorDrawer(this, (EditText) v);
+                fileNavigator = new FileNavigatorDrawer(this, (EditText)v);
                 fileNavigator.initDrawer();
             } else {
                 Log.d("Main", "Just calling onResume");
-                fileNavigator.setTextInput((EditText)v);
+                fileNavigator.setTextInput((EditText) v);
                 fileNavigator.onActivityResume(instanceState);
             }
-        }else{
-            Log.d("Main", "Nope, not found");
         }
     }
 }

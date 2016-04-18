@@ -1,5 +1,5 @@
 <resources>
-	<!-- General stuff -->
+    <!-- General stuff -->
     <string name="app_name">Taide</string>
     <string name="loading">Loading...</string>
     <string name="default_info">No file has been loaded\nSlide left-to-right to handle files.</string>
@@ -14,7 +14,7 @@
     <string name="dialog_cancel">Cancel</string>
 
 
-	<!-- Filesystem nav strings -->
+    <!-- Filesystem nav strings -->
     <string-array name="filesystem_default_menuitems">
         <item>New project</item>
         <item>Load project</item>
@@ -31,16 +31,16 @@
     <string name="rename_file">Rename</string>
     <string name="rename_file_description">Enter the new name of the file</string>
     <string name="remove_file_description">This will remove the file permanently. Proceed?</string>
-	
-	<!-- Dropbox stuff -->
+
+    <!-- Dropbox stuff -->
     <string name="dropbox_app_key">o4m52bd67whe1js</string>
     <string name="dropbox_error_auth">"Couldn't authenticate with Dropbox, please try again"</string>
 
-	<!-- History handling (undo/redo) -->
+    <!-- History handling (undo/redo) -->
     <string name="history_add_text">Added</string>
     <string name="history_remove_text">Removed</string>
 
-	<!-- Action menu strings -->
+    <!-- Action menu strings -->
     <string name="actionmenu_left_title">\?</string>
     <string name="actionmenu_right_title">{ }</string>
 
@@ -84,5 +84,8 @@
         <item>Time based</item>
         <item>Word based</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
