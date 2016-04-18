@@ -18,28 +18,39 @@ public class MarkupFragment extends Fragment {
             view.setOnTouchListener(new View.OnTouchListener() {
                 int pX = 0;
                 float dX = 0;
+                int sX = 0;
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     EditText text = (EditText) getActivity().findViewById(R.id.editText);
                     switch(event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             pX = text.getSelectionStart();
+                            sX = pX;
                             dX = event.getX();
-                            Log.d("Action_Down", "Should do nothing really");
                             return true;
                         case MotionEvent.ACTION_MOVE:
                             float x = event.getX();
-                            if(Math.round(x/10) > Math.round(dX/10)) {
-                                pX = pX + 1;
-                                text.setSelection(pX);
-                            }else if((Math.round(x/10) < Math.round(dX/10)) && pX > 0) {
-                                pX = pX - 1;
-                                text.setSelection(pX);
+                            if(event.getPointerCount() > 1) {
+                                if (Math.round(x / 10) > Math.round(dX / 10)) {
+                                    pX = pX + 1;
+                                    text.setSelection(sX, pX);
+                                } else if ((Math.round(x / 10) < Math.round(dX / 10)) && pX > 0) {
+                                    pX = pX - 1;
+                                    text.setSelection(sX, pX);
+                                }
+                                dX = x;
+                                return true;
+                            }else {
+                                if (Math.round(x / 10) > Math.round(dX / 10)) {
+                                    pX = pX + 1;
+                                    text.setSelection(pX);
+                                } else if ((Math.round(x / 10) < Math.round(dX / 10)) && pX > 0) {
+                                    pX = pX - 1;
+                                    text.setSelection(pX);
+                                }
+                                dX = x;
+                                return true;
                             }
-                            dX = x;
-                            return true;
-                        case MotionEvent.ACTION_UP:
-                            return false;
                         default: return false;
                     }
                 }
