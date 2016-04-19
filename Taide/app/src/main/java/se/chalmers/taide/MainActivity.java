@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Init view
         setContentView(R.layout.activity_main);
+        ((EditText)findViewById(R.id.editText)).setHorizontallyScrolling(true);
+        findViewById(R.id.markup).setVisibility(View.GONE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);

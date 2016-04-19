@@ -64,8 +64,14 @@ public class TextEditorFragment extends Fragment {
             public void actionButtonTriggered(int index) {
                 switch (index) {
                     case 0: View v = getActivity().findViewById(R.id.markup);
-
-                            v.setVisibility(v.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE);
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            if(v.getVisibility() == View.VISIBLE) {
+                                v.setVisibility(View.GONE);
+                                imm.toggleSoftInput(0, 1);
+                            }else {
+                                v.setVisibility(View.VISIBLE);
+                                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                            }
                             break;
                     default: break;
                 }
