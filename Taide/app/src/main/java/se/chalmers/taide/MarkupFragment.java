@@ -51,26 +51,32 @@ public class MarkupFragment extends Fragment {
                                 if (pointer0Left) {
                                     int newStartPos = getNewHandlePos(startPos, x0, dX0, maxLength);
                                     int newEndPos = getNewHandlePos(endPos, x1, dX1, maxLength);
-                                    text.setSelection(newStartPos, newEndPos);
-                                    if (newStartPos != startPos) {
-                                        startPos = newStartPos;
-                                        dX0 = x0;
-                                    }
-                                    if (newEndPos != endPos) {
-                                        endPos = newEndPos;
-                                        dX1 = x1;
+                                    if(newStartPos <= newEndPos) {
+                                        text.setSelection(newStartPos, newEndPos);
+
+                                        if (newStartPos != startPos) {
+                                            startPos = newStartPos;
+                                            dX0 = x0;
+                                        }
+                                        if (newEndPos != endPos) {
+                                            endPos = newEndPos;
+                                            dX1 = x1;
+                                        }
                                     }
                                 } else {
                                     int newStartPos = getNewHandlePos(startPos, x1, dX1, maxLength);
                                     int newEndPos = getNewHandlePos(endPos, x0, dX0, maxLength);
-                                    text.setSelection(newStartPos, newEndPos);
-                                    if (newStartPos != startPos) {
-                                        startPos = newStartPos;
-                                        dX1 = x1;
-                                    }
-                                    if (newEndPos != endPos) {
-                                        endPos = newEndPos;
-                                        dX0 = x0;
+                                    if(newStartPos <= newEndPos) {
+                                        text.setSelection(newStartPos, newEndPos);
+
+                                        if (newStartPos != startPos) {
+                                            startPos = newStartPos;
+                                            dX1 = x1;
+                                        }
+                                        if (newEndPos != endPos) {
+                                            endPos = newEndPos;
+                                            dX0 = x0;
+                                        }
                                     }
                                 }
                                 if(startPos != endPos)
@@ -91,17 +97,23 @@ public class MarkupFragment extends Fragment {
                                     int maxLength = text.getText().length();
                                     if (pointer0Left) {
                                         int newStartPos = getNewHandlePos(startPos, x0, dX0, maxLength);
-                                        text.setSelection(newStartPos, endPos);
-                                        if (newStartPos != startPos) {
-                                            startPos = newStartPos;
-                                            dX0 = x0;
+                                        if(newStartPos <= endPos) {
+                                            text.setSelection(newStartPos, endPos);
+
+                                            if (newStartPos != startPos) {
+                                                startPos = newStartPos;
+                                                dX0 = x0;
+                                            }
                                         }
                                     } else {
                                         int newEndPos = getNewHandlePos(endPos, x0, dX0, maxLength);
-                                        text.setSelection(startPos, newEndPos);
-                                        if (newEndPos != endPos) {
-                                            endPos = newEndPos;
-                                            dX0 = x0;
+                                        if(startPos <= newEndPos) {
+                                            text.setSelection(startPos, newEndPos);
+
+                                            if (newEndPos != endPos) {
+                                                endPos = newEndPos;
+                                                dX0 = x0;
+                                            }
                                         }
                                     }
                                     if(startPos != endPos)
