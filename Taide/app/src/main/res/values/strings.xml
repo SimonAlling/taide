@@ -57,12 +57,10 @@
     <string name="pref_summary_sync_deny_formats_partly">Some file formats are allowed.</string>
     <string name="pref_summary_sync_deny_formats_none">No file formats allowed.</string>
     <string-array name="file_formats_entries">
-        <item>Images (jpg, png, gif, svg)</item>
-        <item>Zip archives</item>
-        <item>tar.gz archives</item>
-        <item>JAR files</item>
-        <item>Compiled class files (Java)</item>
-        <item>Compiled o files (C)</item>
+        <item>Images (.jpg, .png, etc)</item>
+        <item>Compressed archives (.zip, .tar.gz etc)</item>
+        <item>Java archives (.jar)</item>
+        <item>Compiled Java files (.class)</item>
     </string-array>
     <!-- Other stuff (settings) -->
     <string name="pref_group_others_title">Other options</string>

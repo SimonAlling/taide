@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="file_formats_values">
-        <item>.jpg,.png,.gif,.svg</item>
-        <item>.zip</item>
-        <item>.tar.gz</item>
+        <item>.jpg,.jpeg,.png,.gif,.tiff,.bmp</item>
+        <item>.zip,.tar.gz,.rar,.7z</item>
         <item>.jar</item>
         <item>.class</item>
-        <item>.o</item>
     </string-array>
     <string-array name="history_handlers_values">
         <item>time</item>
