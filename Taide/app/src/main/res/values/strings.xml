@@ -45,25 +45,17 @@
     <string name="actionmenu_right_title">{ }</string>
 
 
-    <!-- VALUES TO BE USED IN THE SETTINGS VIEW -->
+    <!-- SETTINGS -->
     <string name="pref_group_sync_title">Sync options</string>
     <!-- Sync -->
     <string name="pref_title_sync">Sync resources</string>
     <string name="pref_summary_sync_on">Sync is activated</string>
     <string name="pref_summary_sync_off">Sync is deactivated</string>
-    <!-- Denied file formats -->
+    <!-- What to sync -->
     <string name="pref_title_sync_deny_formats">Sync resources</string>
     <string name="pref_summary_sync_deny_formats_all">All file formats are allowed.</string>
     <string name="pref_summary_sync_deny_formats_partly">Some file formats are allowed.</string>
     <string name="pref_summary_sync_deny_formats_none">No file formats allowed.</string>
-    <string-array name="file_formats_values">
-        <item>.jpg,.png,.gif,.svg</item>
-        <item>.zip</item>
-        <item>.tar.gz</item>
-        <item>.jar</item>
-        <item>.class</item>
-        <item>.o</item>
-    </string-array>
     <string-array name="file_formats_entries">
         <item>Images (jpg, png, gif, svg)</item>
         <item>Zip archives</item>
@@ -76,10 +68,6 @@
     <string name="pref_group_others_title">Other options</string>
     <string name="pref_title_history_handler_type">Undo/redo management</string>
     <string name="pref_summary_history_handler_type">Choose how to register changes</string>
-    <string-array name="history_handlers_values">
-        <item>time</item>
-        <item>word</item>
-    </string-array>
     <string-array name="history_handlers_entries">
         <item>Time based</item>
         <item>Word based</item>
