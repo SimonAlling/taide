@@ -5,14 +5,13 @@
         android:key="pref_key_storage_settings">
         <CheckBoxPreference
             android:key="pref_key_use_sync"
-            android:summary="@string/pref_summary_sync_on"
             android:title="@string/pref_title_sync"
             android:defaultValue="true" />
         <MultiSelectListPreference
-            android:key="pref_key_sync_deny_formats"
+            android:key="pref_key_sync_formats"
             android:dependency="pref_key_use_sync"
-            android:summary="@string/pref_summary_sync_deny_formats_all"
-            android:title="@string/pref_title_sync_deny_formats"
+            android:summary="@string/pref_summary_sync_formats_all"
+            android:title="@string/pref_title_sync_formats"
             android:entryValues="@array/file_formats_values"
             android:entries="@array/file_formats_entries"
             android:defaultValue="@array/file_formats_values"/>

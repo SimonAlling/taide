@@ -49,16 +49,14 @@
     <string name="pref_group_sync_title">Sync options</string>
     <!-- Sync -->
     <string name="pref_title_sync">Sync resources</string>
-    <string name="pref_summary_sync_on">Sync is activated</string>
-    <string name="pref_summary_sync_off">Sync is deactivated</string>
     <!-- What to sync -->
-    <string name="pref_title_sync_deny_formats">Sync resources</string>
-    <string name="pref_summary_sync_deny_formats_all">All file formats are allowed.</string>
-    <string name="pref_summary_sync_deny_formats_partly">Some file formats are allowed.</string>
-    <string name="pref_summary_sync_deny_formats_none">No file formats allowed.</string>
+    <string name="pref_title_sync_formats">Customize</string>
+    <string name="pref_summary_sync_formats_all">Sync all resources</string>
+    <string name="pref_summary_sync_formats_some">Sync some resources</string>
+    <string name="pref_summary_sync_formats_none">Sync no resources</string>
     <string-array name="file_formats_entries">
         <item>Images (.jpg, .png, etc)</item>
-        <item>Compressed archives (.zip, .tar.gz etc)</item>
+        <item>Archives (.zip etc)</item>
         <item>Java archives (.jar)</item>
         <item>Compiled Java files (.class)</item>
     </string-array>
