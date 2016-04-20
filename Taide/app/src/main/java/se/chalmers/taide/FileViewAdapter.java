@@ -15,24 +15,31 @@ import se.chalmers.taide.model.filesystem.CodeFile;
  * Created by Matz on 2016-03-11.
  */
 public class FileViewAdapter extends ArrayAdapter<CodeFile>{
+
     private final Context context;
     private boolean canStepUpOneLevel;
 
     public FileViewAdapter(Context context, CodeFile[] values, boolean canStepUpOneLevel) {
-        super(context, -1, prepareArray(values));
+        super(context, android.R.layout.simple_list_item_1, prepareArray(values));
         this.context = context;
         this.canStepUpOneLevel = canStepUpOneLevel;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //Find correct context
-        Context context = (convertView!=null?convertView.getContext():(parent!=null?parent.getContext():this.context));
+        Context context;
+        View view;
+        if(convertView == null){
+            context = (parent!=null?parent.getContext():this.context);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.icon_text_item_view_files, parent, false);
+        }else{
+            context = convertView.getContext();
+            view = convertView;
+        }
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.icon_text_item_view_files, parent, false);
-        TextView textView = (TextView) rowView.findViewById(R.id.item_name);
-        ImageView icon = (ImageView)rowView.findViewById(R.id.item_icon);
+        TextView textView = (TextView) view.findViewById(R.id.item_name);
+        ImageView icon = (ImageView) view.findViewById(R.id.item_icon);
         if(position == 0){
             textView.setText(R.string.upOneLevel);
             textView.setEnabled(canStepUpOneLevel);
@@ -40,9 +47,9 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         }else{
             CodeFile f = getItem(position);
             textView.setText(f.getName());
-            if(f.isDirectory()){
+            if (f.isDirectory()) {
                 icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFolder, R.drawable.ic_folder_white));
-            }else{
+            } else {
                 textView.setEnabled(f.isOpenable());
                 icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFile, R.drawable.ic_file_white));
             }
@@ -51,7 +58,7 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         int textColor = getReferenceFromStyle(context, textView.isEnabled() ? android.R.attr.textColorPrimary : android.R.attr.textColorSecondary, android.R.color.black);
         textView.setTextColor(context.getResources().getColor(textColor));
 
-        return rowView;
+        return view;
     }
 
     private int getReferenceFromStyle(Context context, int attribute, int def){

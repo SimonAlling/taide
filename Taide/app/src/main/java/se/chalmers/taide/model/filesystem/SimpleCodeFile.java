@@ -142,7 +142,7 @@ public class SimpleCodeFile implements CodeFile {
         if(isDirectory() != another.isDirectory()){
             return (isDirectory()?-1:1);
         }else{
-            return this.getName().compareTo(another.getName());
+            return this.getName().compareToIgnoreCase(another.getName());
         }
     }
 }
