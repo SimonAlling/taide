@@ -82,30 +82,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed(){
-        FragmentManager fm = getFragmentManager();
-        if(fm != null){
-            if(fm.getBackStackEntryCount()>1) {     //Check that entries exist and ignore first population
-                fm.popBackStack();
-                updateFileNavigator(savedInstanceState);
-                invalidateOptionsMenu();
-                return;
-            }
-        }
-
-        //If not fully handled yet here, call parent
-        super.onBackPressed();
-    }
-
     private void showSettingsMenu() {
-        showFragment(new SettingsFragment());
-    }
-
-    private void showFragment(Fragment fragment){
-        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.textField, fragment);
-        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        ft.addToBackStack(null).commit();
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override
