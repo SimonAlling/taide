@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 public class MainActivity extends AppCompatActivity {
 
     private FileNavigatorDrawer fileNavigator;
-    private boolean showSettingsNavigation;
     private Bundle savedInstanceState;
 
     @Override
@@ -44,18 +43,18 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         this.savedInstanceState = savedInstanceState;
+        findViewById(R.id.markup).setVisibility(View.GONE);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        Log.d("Menu", "Menu Inflate: "+menu.size()+" :: "+menu.getItem(0).getTitle());
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem settingsMenuItem = menu.findItem(R.id.action_settings);
-        settingsMenuItem.setVisible(showSettingsNavigation);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -89,11 +88,8 @@ public class MainActivity extends AppCompatActivity {
         if(fm != null){
             if(fm.getBackStackEntryCount()>1) {     //Check that entries exist and ignore first population
                 fm.popBackStack();
-                if(!showSettingsNavigation){
-                    showSettingsNavigation = true;
-                    updateFileNavigator(savedInstanceState);
-                    invalidateOptionsMenu();
-                }
+                updateFileNavigator(savedInstanceState);
+                invalidateOptionsMenu();
                 return;
             }
         }
@@ -107,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showFragment(Fragment fragment){
-        showSettingsNavigation = !(fragment instanceof SettingsFragment);
         FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.textField, fragment);
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.addToBackStack(null).commit();
