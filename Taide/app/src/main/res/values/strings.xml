@@ -2,7 +2,7 @@
     <!-- General stuff -->
     <string name="app_name">Taide</string>
     <string name="loading">Loading...</string>
-    <string name="default_info">No file has been loaded\nSlide left-to-right to handle files.</string>
+    <string name="default_info">Slide in from the left to manage files</string>
     <string name="action_settings">Settings</string>
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
