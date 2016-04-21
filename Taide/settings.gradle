@@ -1,2 +1,7 @@
 include ':app'
 include ':dropboxChooserSDK'
+
+include ':app', ':SliderPreference'
+project(':SliderPreference').projectDir = new File('SliderPreference')
+
+
