@@ -60,6 +60,9 @@
         <item>Java archives (.jar)</item>
         <item>Compiled Java files (.class)</item>
     </string-array>
+    <!-- Selection -->
+    <string name="pref_group_selection_title">Text selection</string>
+    <string name="pref_title_selection_sensitivity">Sensitivity</string>
     <!-- Other stuff (settings) -->
     <string name="pref_group_others_title">Other</string>
     <string name="pref_title_history_handler_type">Undo/redo management</string>

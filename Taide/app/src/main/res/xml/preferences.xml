@@ -17,6 +17,13 @@
             android:defaultValue="@array/file_formats_values"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/pref_group_selection_title"
+        android:key="pref_key_selection_settings">
+        <net.jayschwa.android.preference.SliderPreference
+            android:key="pref_key_selection_sensitivity"
+            android:title="@string/pref_title_selection_sensitivity"/>
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="@string/pref_group_others_title"
         android:key="pref_key_others_settings">
         <ListPreference
