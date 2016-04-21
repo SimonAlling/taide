@@ -23,7 +23,7 @@ public class MarkupFragment extends Fragment {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if(fragmentHeight == 0) {
+                if (fragmentHeight == 0) {
                     fragmentHeight = getActivity().findViewById(R.id.markup).getLayoutParams().height;
                 }
             }
@@ -75,6 +75,22 @@ public class MarkupFragment extends Fragment {
                                         dX1 = x1;
                                     }
                                 }
+                                float y0 = event.getY(0);
+                                float y1 = event.getY(1);
+                                int newStartPosY = getNewHandlePosY(text.getText().toString(), startPos, y0, dY0);
+                                int newEndPosY = getNewHandlePosY(text.getText().toString(), endPos, y1, dY1);
+                                if (newStartPosY <= newEndPosY) {
+                                    text.setSelection(newStartPosY, newEndPosY);
+
+                                    if (newStartPosY != startPos) {
+                                        startPos = newStartPosY;
+                                        dY0 = y0;
+                                    }
+                                    if (newEndPosY != endPos) {
+                                        endPos = newEndPosY;
+                                        dY1 = y1;
+                                    }
+                                }
                             } else {
                                 int newStartPos = getNewHandlePosX(startPos, x1, dX1, maxLength);
                                 int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
@@ -88,6 +104,22 @@ public class MarkupFragment extends Fragment {
                                     if (newEndPos != endPos) {
                                         endPos = newEndPos;
                                         dX0 = x0;
+                                    }
+                                }
+                                float y0 = event.getY(0);
+                                float y1 = event.getY(1);
+                                int newStartPosY = getNewHandlePosY(text.getText().toString(), startPos, y1, dY1);
+                                int newEndPosY = getNewHandlePosY(text.getText().toString(), endPos, y0, dY0);
+                                if (newStartPosY <= newEndPosY) {
+                                    text.setSelection(newStartPosY, newEndPosY);
+
+                                    if (newStartPosY != startPos) {
+                                        startPos = newStartPosY;
+                                        dY1 = y1;
+                                    }
+                                    if (newEndPosY != endPos) {
+                                        endPos = newEndPosY;
+                                        dY0 = y0;
                                     }
                                 }
                             }
@@ -176,10 +208,17 @@ public class MarkupFragment extends Fragment {
                     if (y - dY > 0) {
                         int nextEnter = text.indexOf('\n', pointer);
                         int prevEnter = text.lastIndexOf('\n', pointer);
+                        if (prevEnter == pointer)
+                            prevEnter = text.lastIndexOf('\n', pointer - 1);
+
                         if (nextEnter >= 0) {
                             int nextRowEnter = text.indexOf('\n', nextEnter + 1);
-                            if (nextRowEnter >= 0 && nextRowEnter >= nextEnter + (pointer - prevEnter)) {
-                                return (nextEnter + (pointer - prevEnter));
+                            if (nextRowEnter >= 0) {
+                                if (nextRowEnter >= nextEnter + (pointer - prevEnter)) {
+                                    return (nextEnter + (pointer - prevEnter));
+                                } else {
+                                    return nextRowEnter;
+                                }
                             } else {
                                 if (nextRowEnter < 0 && text.length() <= nextEnter + (pointer - prevEnter)) {
                                     return text.length();
@@ -191,15 +230,21 @@ public class MarkupFragment extends Fragment {
                         }
                     } else {
                         int prevEnter = text.lastIndexOf('\n', pointer);
+                        if (prevEnter == pointer)
+                            prevEnter = text.lastIndexOf('\n', pointer - 1);
+
                         if (prevEnter >= 0) {
                             int prevRowEnter = text.lastIndexOf('\n', prevEnter - 1);
-                            if (prevRowEnter >= 0 && prevEnter >= prevRowEnter + (pointer - prevEnter)) {
-                                return (prevRowEnter + (pointer - prevEnter));
+                            if (prevRowEnter >= 0) {
+                                if (prevEnter >= prevRowEnter + (pointer - prevEnter)) {
+                                    return (prevRowEnter + (pointer - prevEnter));
+                                } else {
+                                    return prevEnter;
+                                }
                             } else {
-                                if (prevRowEnter < 0 && prevEnter >= (pointer - prevEnter)) {
+                                if (prevEnter > (pointer - prevEnter)) {
                                     return (pointer - prevEnter - 1);
                                 }
-                                return prevEnter;
                             }
                         } else {
                             return 0;
