@@ -46,7 +46,7 @@
 
 
     <!-- SETTINGS -->
-    <string name="pref_group_sync_title">Sync options</string>
+    <string name="pref_group_sync_title">Sync</string>
     <!-- Sync -->
     <string name="pref_title_sync">Sync resources</string>
     <!-- What to sync -->
@@ -61,9 +61,9 @@
         <item>Compiled Java files (.class)</item>
     </string-array>
     <!-- Other stuff (settings) -->
-    <string name="pref_group_others_title">Other options</string>
+    <string name="pref_group_others_title">Other</string>
     <string name="pref_title_history_handler_type">Undo/redo management</string>
-    <string name="pref_summary_history_handler_type">Choose how to register changes</string>
+    <string name="pref_summary_history_handler_type">How to register changes</string>
     <string-array name="history_handlers_entries">
         <item>Time based</item>
         <item>Word based</item>
