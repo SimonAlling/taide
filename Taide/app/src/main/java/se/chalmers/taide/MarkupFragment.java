@@ -44,7 +44,9 @@ public class MarkupFragment extends Fragment {
 
                     case MotionEvent.ACTION_POINTER_DOWN:
                         dX0 = event.getX(0);
+                        dY0 = event.getY(0);
                         dX1 = event.getX(1);
+                        dY1 = event.getY(1);
 
                         if (dX0 - dX1 < 0) {
                             pointer0Left = true;
@@ -56,11 +58,11 @@ public class MarkupFragment extends Fragment {
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        if (event.getPointerCount() > 1) {
-                            float x0 = event.getX(0);
-                            float x1 = event.getX(1);
-                            int maxLength = text.getText().length();
-                            if (pointer0Left) {
+                                if (event.getPointerCount() > 1) {
+                                    float x0 = event.getX(0);
+                                    float x1 = event.getX(1);
+                                    int maxLength = text.getText().length();
+                                    if (pointer0Left) {
                                 int newStartPos = getNewHandlePosX(startPos, x0, dX0, maxLength);
                                 int newEndPos = getNewHandlePosX(endPos, x1, dX1, maxLength);
                                 if (newStartPos <= newEndPos) {
@@ -195,9 +197,9 @@ public class MarkupFragment extends Fragment {
                 int width = size.x;
                 if (Math.abs(x - dX) >= width / 75) {
                     if (x - dX < 0 && pointer > 0) {
-                        return (pointer - 1);
+                        return (pointer - (int)Math.abs((x-dX)/(width/75)));
                     } else if (x - dX > 0 && pointer < maxLength) {
-                        return (pointer + 1);
+                        return (pointer + (int)Math.abs((x-dX)/(width/75)));
                     }
                 }
                 return pointer;

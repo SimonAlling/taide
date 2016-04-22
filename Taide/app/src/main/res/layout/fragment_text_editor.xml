@@ -27,7 +27,7 @@
         android:visibility="invisible">
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:singleLine="true"
             android:scrollHorizontally="true"
