@@ -12,9 +12,20 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
     private Language language;
     private TextSource textSource;
     private String[] triggerTexts;
+    private boolean allowChainingEvents = false;
 
     protected AbstractTextFilter(String... triggerTexts){
         this.triggerTexts = triggerTexts;
+    }
+
+    protected void setAllowChainingEvents(boolean allowChainingEvents){
+        if(allowChainingEvents != this.allowChainingEvents){
+            this.allowChainingEvents = allowChainingEvents;
+            if(textSource != null) {
+                textSource.removeListener(this);
+                textSource.addListener(this, allowChainingEvents);
+            }
+        }
     }
 
     /**
@@ -54,7 +65,7 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
         }
 
         this.textSource = textSource;
-        this.textSource.addListener(this);
+        this.textSource.addListener(this, allowChainingEvents);
     }
 
     /**

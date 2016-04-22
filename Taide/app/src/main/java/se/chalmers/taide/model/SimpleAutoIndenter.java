@@ -19,6 +19,7 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
     protected SimpleAutoIndenter(Language lang) {
         super("\n");
         setLanguage(lang);
+        setAllowChainingEvents(true);
     }
 
     /**
