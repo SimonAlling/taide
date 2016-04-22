@@ -4,12 +4,16 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MarkupFragment extends Fragment {
 
@@ -20,10 +24,11 @@ public class MarkupFragment extends Fragment {
     private final double RIGHT_BORDER_PERCENTAGE = 0.10;
     private final double TOP_BORDER_PERCENTAGE = 0.10;
     private final double BOTTOM_BORDER_PERCENTAGE = 0.10;
-    private final Handler LEFT_SCROLL_HANDLER = null;
-    private final Handler RIGHT_SCROLL_HANDLER = null;
-    private final Handler TOP_SCROLL_HANDLER = null;
-    private final Handler BOTTOM_SCROLL_HANDLER = null;
+    private Handler LEFT_SCROLL_HANDLER = null;
+    private Handler RIGHT_SCROLL_HANDLER = null;
+    private Handler TOP_SCROLL_HANDLER = null;
+    private Handler BOTTOM_SCROLL_HANDLER = null;
+    private final List<Integer> ACTIVE_POINTERS = new ArrayList<>();
     /** End constants */
 
     /** Start private variables */
@@ -59,6 +64,9 @@ public class MarkupFragment extends Fragment {
                         dX0 = event.getX();
                         dY0 = event.getY();
                         marked = false;
+                        if (!ACTIVE_POINTERS.contains(event.getActionIndex())) {
+                            ACTIVE_POINTERS.add(event.getActionIndex());
+                        }
                         break;
 
                     case MotionEvent.ACTION_POINTER_DOWN:
@@ -74,6 +82,9 @@ public class MarkupFragment extends Fragment {
                         }
                         if (!marked)
                             endPos = startPos;
+                        if (!ACTIVE_POINTERS.contains(event.getActionIndex())) {
+                            ACTIVE_POINTERS.add(event.getActionIndex());
+                        }
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -112,7 +123,7 @@ public class MarkupFragment extends Fragment {
                                         dY1 = y1;
                                     }
                                 }
-                                } else {
+                            } else {
                                 int newStartPos = getNewHandlePosX(startPos, x1, dX1, maxLength);
                                 int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
                                 if (newStartPos <= newEndPos) {
@@ -192,20 +203,29 @@ public class MarkupFragment extends Fragment {
                                     marked = true;
                             }
                         }
-                        return false;
+                        break;
 
                     case MotionEvent.ACTION_POINTER_UP:
                         if (marked)
                             TEXT_AREA.setSelection(startPos, endPos);
-                        return true;
+                        if (ACTIVE_POINTERS.contains(event.getActionIndex()))
+                            ACTIVE_POINTERS.remove(event.getActionIndex());
+                        break;
 
                     case MotionEvent.ACTION_UP:
                         if (marked)
                             TEXT_AREA.setSelection(startPos, endPos);
-                        return true;
+                        if (ACTIVE_POINTERS.contains(event.getActionIndex()))
+                            ACTIVE_POINTERS.remove(event.getActionIndex());
+                        break;
 
                     default:
                         return false;
+                }
+                if (pointerInArea(Area.LEFT) && LEFT_SCROLL_HANDLER != null) {
+                    contScroll(Area.LEFT);
+                } else if (pointerInArea(Area.RIGHT) && RIGHT_SCROLL_HANDLER != null) {
+                    contScroll(Area.RIGHT);
                 }
                 return true;
             }
@@ -216,7 +236,7 @@ public class MarkupFragment extends Fragment {
                 int width = size.x;
                 if (Math.abs(x - dX) >= width / 75) {
                     if (x - dX < 0 && pointer > 0) {
-                        return Math.max((pointer - (int)Math.abs((x-dX)/(width/75))),0);
+                        return Math.max((pointer - (int) Math.abs((x - dX) / (width / 75))), 0);
                     } else if (x - dX > 0 && pointer < maxLength) {
                         return Math.min((pointer + (int) Math.abs((x - dX) / (width / 75))), maxLength);
                     }
@@ -279,7 +299,7 @@ public class MarkupFragment extends Fragment {
              * @param direction The direction to continuously scroll towards. Sending a CENTER here does nothing.
              * @return The handler issued for the continuous scroll. Null if asked to scroll towards CENTER
              */
-            private Handler contScroll(Area direction){
+            private Handler contScroll(Area direction) {
                 Handler scrollHandler = new Handler();
                 switch (direction) {
                     case LEFT:
@@ -301,34 +321,38 @@ public class MarkupFragment extends Fragment {
             }
 
             /** Start Runnables */
-            private final Runnable scrollRightAction = new Runnable(){
+            private final Runnable scrollRightAction = new Runnable() {
                 @Override
-                public void run(){
-                    if (pointerInArea(Area.RIGHT)){
+                public void run() {
+                    if (pointerInArea(Area.RIGHT)) {
                         int end = TEXT_AREA.getSelectionEnd();
-                        if (marked){
+                        if (marked) {
                             int start = TEXT_AREA.getSelectionStart();
                             TEXT_AREA.setSelection(start, Math.min(end + 1, TEXT_AREA.length()));
                         } else {
                             TEXT_AREA.setSelection(Math.min(end + 1, TEXT_AREA.length()));
                         }
                         RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    } else {
+                        RIGHT_SCROLL_HANDLER = null;
                     }
                 }
             };
 
-            private final Runnable scrollLeftAction = new Runnable(){
+            private final Runnable scrollLeftAction = new Runnable() {
                 @Override
-                public void run(){
-                    if (pointerInArea(Area.LEFT)){
+                public void run() {
+                    if (pointerInArea(Area.LEFT)) {
                         int start = TEXT_AREA.getSelectionStart();
-                        if (marked){
+                        if (marked) {
                             int end = TEXT_AREA.getSelectionEnd();
                             TEXT_AREA.setSelection(Math.max(start - 1, 0), end);
                         } else {
                             TEXT_AREA.setSelection(Math.max(start - 1, 0));
                         }
                         LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    } else {
+                        LEFT_SCROLL_HANDLER = null;
                     }
                 }
             };
@@ -338,37 +362,49 @@ public class MarkupFragment extends Fragment {
              * @param area the area we want to check whatever or not there is a pointer in
              * @return
              */
-            private boolean pointerInArea(Area area){
+            private boolean pointerInArea(Area area) {
+                Log.d("MarkupFragment", "Pointers active: " + ACTIVE_POINTERS.size());
+                if (ACTIVE_POINTERS.size() == 0) {
+                    return false;
+                }
                 Point size = new Point();
                 getActivity().getWindowManager().getDefaultDisplay().getSize(size);
                 int width = size.x;
                 int height = fragmentHeight;
-                switch (area){
+
+
+                switch (area) {
                     case LEFT:
-                        if (dX0 < width * LEFT_BORDER_PERCENTAGE || dX1 < width * LEFT_BORDER_PERCENTAGE)
+                        if ((dX0 < width * LEFT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
+                                || (dX1 < width * LEFT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
                             return true;
                         break;
                     case RIGHT:
-                        if (dX0 > width - width * RIGHT_BORDER_PERCENTAGE || dX1 > width - width * RIGHT_BORDER_PERCENTAGE)
+                        if ((dX0 > width - width * RIGHT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
+                                || (dX1 > width - width * RIGHT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
                             return true;
                         break;
                     case TOP:
-                        if (dX0 > height - height * BOTTOM_BORDER_PERCENTAGE || dX1 > height - height * BOTTOM_BORDER_PERCENTAGE)
+                        if ((dX0 > height - height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
+                                || (dX1 > height - height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
                             return true;
                         break;
                     case BOTTOM:
-                        if (dX0 < height * TOP_BORDER_PERCENTAGE || dX1 < height * BOTTOM_BORDER_PERCENTAGE)
+                        if ((dX0 < height * TOP_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
+                                || (dX1 < height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
                             return true;
                         break;
                     case CENTER:
-                        if (dX0 > width * LEFT_BORDER_PERCENTAGE
+                        if ((dX0 > width * LEFT_BORDER_PERCENTAGE
                                 && dX0 < width - width * RIGHT_BORDER_PERCENTAGE
                                 && dX0 > height * TOP_BORDER_PERCENTAGE
                                 && dX0 < height - height * BOTTOM_BORDER_PERCENTAGE
-                                && dX1 > width * LEFT_BORDER_PERCENTAGE
+                                && ACTIVE_POINTERS.contains(0))
+                                && (dX1 > width * LEFT_BORDER_PERCENTAGE
                                 && dX1 < width - width * RIGHT_BORDER_PERCENTAGE
                                 && dX1 > height * TOP_BORDER_PERCENTAGE
-                                && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE)
+                                && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE
+                                && ACTIVE_POINTERS.contains(1)))
                             return true;
                         break;
                     default:
