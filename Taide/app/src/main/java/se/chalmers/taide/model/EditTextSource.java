@@ -15,34 +15,35 @@ import java.util.List;
  */
 public class EditTextSource implements TextSource {
 
-    private EditText input;
+    private EditText mainTextView;
     private List<TextSourceListener> listeners;
     private List<TextSourceListener> listenersAllowChains;
     private boolean applyingFilters = false;
 
-    protected EditTextSource(EditText input) {
-        this.input = input;
-        this.input.addTextChangedListener(new TextWatcher() {
+    protected EditTextSource(EditText textView) {
+        this.mainTextView = textView;
+        this.mainTextView.addTextChangedListener(new TextWatcher() {
             private String currentInputContent = "";
             private String fullContent = null;
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //Make sure that anything actually has changed
-                if(s.toString().equals(currentInputContent)){
+                if (s.toString().equals(currentInputContent)) {
                     //Ignore change. Do not chain filter changes.
                     return;
-                }else{
+                } else {
                     //Handle swap in/out of full document
-                    if(fullContent != null){
-                        if(start == 0 && before == 0 && count == fullContent.length()){
+                    if (fullContent != null) {
+                        if (start == 0 && before == 0 && count == fullContent.length()) {
                             currentInputContent = fullContent;
                             fullContent = null;
                             return;
-                        }else{
+                        } else {
                             //Send previous call.
                             for (TextSourceListener listener : listeners) {
                                 listener.onTextChanged("", 0, fullContent.length(), 0);
@@ -50,7 +51,7 @@ public class EditTextSource implements TextSource {
                         }
                         fullContent = null;
                     }
-                    if(start == 0 && before == currentInputContent.length() && count == 0){
+                    if (start == 0 && before == currentInputContent.length() && count == 0) {
                         fullContent = currentInputContent;
                         currentInputContent = s.toString();
                         return;
@@ -61,12 +62,12 @@ public class EditTextSource implements TextSource {
 
                 String str = s.toString();
                 //Apply for all listeners that allow chaining
-                for(TextSourceListener listener : listenersAllowChains){
+                for (TextSourceListener listener : listenersAllowChains) {
                     listener.onTextChanged(str, start, before, count);
                 }
 
                 //Don't apply to normal unless it's an immediate event (from the edittext itself)
-                if(!applyingFilters) {
+                if (!applyingFilters) {
                     applyingFilters = true;
                     for (TextSourceListener listener : listeners) {
                         listener.onTextChanged(str, start, before, count);
@@ -76,7 +77,8 @@ public class EditTextSource implements TextSource {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
         this.listeners = new LinkedList<>();
         this.listenersAllowChains = new LinkedList<>();
@@ -84,42 +86,42 @@ public class EditTextSource implements TextSource {
 
     @Override
     public Editable getText() {
-        return input.getText();
+        return mainTextView.getText();
     }
 
     @Override
     public void setText(String text){
-        input.setSelection(0);
-        input.setText(text);
+        mainTextView.setSelection(0);
+        mainTextView.setText(text);
     }
 
     @Override
     public void setSpannable(SpannableString str) {
-        int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
-        int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
-        //input.getText().clear();
-        input.setText(str, TextView.BufferType.SPANNABLE);
-        input.setSelection(start, end);
+        int start = Math.min(mainTextView.getSelectionStart(), mainTextView.getSelectionEnd());
+        int end = Math.max(mainTextView.getSelectionStart(), mainTextView.getSelectionEnd());
+        //mainTextView.getText().clear();
+        mainTextView.setText(str, TextView.BufferType.SPANNABLE);
+        mainTextView.setSelection(start, end);
     }
 
     @Override
     public int getSelectionStart() {
-        return Math.min(input.getSelectionStart(), input.getSelectionEnd());
+        return Math.min(mainTextView.getSelectionStart(), mainTextView.getSelectionEnd());
     }
 
     @Override
     public int getSelectionEnd() {
-        return Math.max(input.getSelectionStart(), input.getSelectionEnd());
+        return Math.max(mainTextView.getSelectionStart(), mainTextView.getSelectionEnd());
     }
 
     @Override
     public void setSelection(int selection) {
-        input.setSelection(selection);
+        mainTextView.setSelection(selection);
     }
 
     @Override
     public Resources getResources() {
-        return input.getResources();
+        return mainTextView.getResources();
     }
 
     @Override
