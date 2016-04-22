@@ -15,7 +15,7 @@ public class MarkupFragment extends Fragment {
 
     /** Start constants */
     private final int DELAY = 100; //TODO: Replace with settings for sensitivity
-    private final EditText TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
+    private EditText TEXT_AREA;
     private final double LEFT_BORDER_PERCENTAGE = 0.10;
     private final double RIGHT_BORDER_PERCENTAGE = 0.10;
     private final double TOP_BORDER_PERCENTAGE = 0.10;
@@ -32,10 +32,13 @@ public class MarkupFragment extends Fragment {
     private boolean marked = false, pointer0Left = true;
     /** End private variables */
 
+    private enum Area{
+        LEFT, RIGHT, TOP, BOTTOM, CENTER
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_markup, container, false);
-
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -49,6 +52,7 @@ public class MarkupFragment extends Fragment {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                EditText TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         startPos = TEXT_AREA.getSelectionStart();
@@ -214,7 +218,7 @@ public class MarkupFragment extends Fragment {
                     if (x - dX < 0 && pointer > 0) {
                         return Math.max((pointer - (int)Math.abs((x-dX)/(width/75))),0);
                     } else if (x - dX > 0 && pointer < maxLength) {
-                        return Math.min((pointer + (int) Math.abs((x - dX) / (width / 75))), TEXT_AREA.length());
+                        return Math.min((pointer + (int) Math.abs((x - dX) / (width / 75))), maxLength);
                     }
                 }
                 return pointer;
@@ -270,113 +274,109 @@ public class MarkupFragment extends Fragment {
                 }
                 return pointer;
             }
+
+            /** Starts a continuous scrolling towards a given direction.
+             * @param direction The direction to continuously scroll towards. Sending a CENTER here does nothing.
+             * @return The handler issued for the continuous scroll. Null if asked to scroll towards CENTER
+             */
+            private Handler contScroll(Area direction){
+                Handler scrollHandler = new Handler();
+                switch (direction) {
+                    case LEFT:
+                        LEFT_SCROLL_HANDLER.removeCallbacks(scrollLeftAction);
+                        scrollHandler.postDelayed(scrollLeftAction, DELAY);
+                        break;
+                    case RIGHT:
+                        RIGHT_SCROLL_HANDLER.removeCallbacks(scrollRightAction);
+                        scrollHandler.postDelayed(scrollRightAction, DELAY);
+                        break;
+                    case TOP:
+                        break;
+                    case BOTTOM:
+                        break;
+                    default:
+                        return null;
+                }
+                return scrollHandler;
+            }
+
+            /** Start Runnables */
+            private final Runnable scrollRightAction = new Runnable(){
+                @Override
+                public void run(){
+                    if (pointerInArea(Area.RIGHT)){
+                        int end = TEXT_AREA.getSelectionEnd();
+                        if (marked){
+                            int start = TEXT_AREA.getSelectionStart();
+                            TEXT_AREA.setSelection(start, Math.min(end + 1, TEXT_AREA.length()));
+                        } else {
+                            TEXT_AREA.setSelection(Math.min(end + 1, TEXT_AREA.length()));
+                        }
+                        RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    }
+                }
+            };
+
+            private final Runnable scrollLeftAction = new Runnable(){
+                @Override
+                public void run(){
+                    if (pointerInArea(Area.LEFT)){
+                        int start = TEXT_AREA.getSelectionStart();
+                        if (marked){
+                            int end = TEXT_AREA.getSelectionEnd();
+                            TEXT_AREA.setSelection(Math.max(start - 1, 0), end);
+                        } else {
+                            TEXT_AREA.setSelection(Math.max(start - 1, 0));
+                        }
+                        LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    }
+                }
+            };
+            /** End Runnables */
+
+            /** Checks if there is a pointer present in one of the five areas within the markup fragment
+             * @param area the area we want to check whatever or not there is a pointer in
+             * @return
+             */
+            private boolean pointerInArea(Area area){
+                Point size = new Point();
+                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+                int width = size.x;
+                int height = fragmentHeight;
+                switch (area){
+                    case LEFT:
+                        if (dX0 < width * LEFT_BORDER_PERCENTAGE || dX1 < width * LEFT_BORDER_PERCENTAGE)
+                            return true;
+                        break;
+                    case RIGHT:
+                        if (dX0 > width - width * RIGHT_BORDER_PERCENTAGE || dX1 > width - width * RIGHT_BORDER_PERCENTAGE)
+                            return true;
+                        break;
+                    case TOP:
+                        if (dX0 > height - height * BOTTOM_BORDER_PERCENTAGE || dX1 > height - height * BOTTOM_BORDER_PERCENTAGE)
+                            return true;
+                        break;
+                    case BOTTOM:
+                        if (dX0 < height * TOP_BORDER_PERCENTAGE || dX1 < height * BOTTOM_BORDER_PERCENTAGE)
+                            return true;
+                        break;
+                    case CENTER:
+                        if (dX0 > width * LEFT_BORDER_PERCENTAGE
+                                && dX0 < width - width * RIGHT_BORDER_PERCENTAGE
+                                && dX0 > height * TOP_BORDER_PERCENTAGE
+                                && dX0 < height - height * BOTTOM_BORDER_PERCENTAGE
+                                && dX1 > width * LEFT_BORDER_PERCENTAGE
+                                && dX1 < width - width * RIGHT_BORDER_PERCENTAGE
+                                && dX1 > height * TOP_BORDER_PERCENTAGE
+                                && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE)
+                            return true;
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
         });
         return view;
-    }
-
-    /** Starts a continuous scrolling towards a given direction.
-     * @param direction The direction to continuously scroll towards. Sending a CENTER here does nothing.
-     * @return The handler issued for the continuous scroll. Null if asked to scroll towards CENTER
-     */
-    private Handler contScroll(Area direction){
-        Handler scrollHandler = new Handler();
-        switch (direction) {
-            case LEFT:
-                LEFT_SCROLL_HANDLER.removeCallbacks(scrollLeftAction);
-                scrollHandler.postDelayed(scrollLeftAction, DELAY);
-                break;
-            case RIGHT:
-                RIGHT_SCROLL_HANDLER.removeCallbacks(scrollRightAction);
-                scrollHandler.postDelayed(scrollRightAction, DELAY);
-                break;
-            case TOP:
-                break;
-            case BOTTOM:
-                break;
-            default:
-                return null;
-        }
-        return scrollHandler;
-    }
-
-    /** Start Runnables */
-    private final Runnable scrollRightAction = new Runnable(){
-        @Override
-        public void run(){
-            if (pointerInArea(Area.RIGHT)){
-                int end = TEXT_AREA.getSelectionEnd();
-                if (marked){
-                    int start = TEXT_AREA.getSelectionStart();
-                    TEXT_AREA.setSelection(start, Math.min(end + 1, TEXT_AREA.length()));
-                } else {
-                    TEXT_AREA.setSelection(Math.min(end + 1, TEXT_AREA.length()));
-                }
-                RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
-            }
-        }
-    };
-
-    private final Runnable scrollLeftAction = new Runnable(){
-        @Override
-        public void run(){
-            if (pointerInArea(Area.LEFT)){
-                int start = TEXT_AREA.getSelectionStart();
-                if (marked){
-                    int end = TEXT_AREA.getSelectionEnd();
-                    TEXT_AREA.setSelection(Math.max(start - 1, 0), end);
-                } else {
-                    TEXT_AREA.setSelection(Math.max(start - 1, 0));
-                }
-                LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
-            }
-        }
-    };
-    /** End Runnables */
-
-    /** Checks if there is a pointer present in one of the five areas within the markup fragment
-     * @param area the area we want to check whatever or not there is a pointer in
-     * @return
-     */
-    private boolean pointerInArea(Area area){
-        Point size = new Point();
-        getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-        int width = size.x;
-        int height = fragmentHeight;
-        switch (area){
-            case LEFT:
-                if (dX0 < width * LEFT_BORDER_PERCENTAGE || dX1 < width * LEFT_BORDER_PERCENTAGE)
-                    return true;
-                break;
-            case RIGHT:
-                if (dX0 > width - width * RIGHT_BORDER_PERCENTAGE || dX1 > width - width * RIGHT_BORDER_PERCENTAGE)
-                    return true;
-                break;
-            case TOP:
-                if (dX0 > height - height * BOTTOM_BORDER_PERCENTAGE || dX1 > height - height * BOTTOM_BORDER_PERCENTAGE)
-                    return true;
-                break;
-            case BOTTOM:
-                if (dX0 < height * TOP_BORDER_PERCENTAGE || dX1 < height * BOTTOM_BORDER_PERCENTAGE)
-                    return true;
-                break;
-            case CENTER:
-                if (dX0 > width * LEFT_BORDER_PERCENTAGE
-                        && dX0 < width - width * RIGHT_BORDER_PERCENTAGE
-                        && dX0 > height * TOP_BORDER_PERCENTAGE
-                        && dX0 < height - height * BOTTOM_BORDER_PERCENTAGE
-                        && dX1 > width * LEFT_BORDER_PERCENTAGE
-                        && dX1 < width - width * RIGHT_BORDER_PERCENTAGE
-                        && dX1 > height * TOP_BORDER_PERCENTAGE
-                        && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE)
-                    return true;
-                break;
-            default:
-                break;
-        }
-        return false;
-    }
-
-    private enum Area{
-        LEFT, RIGHT, TOP, BOTTOM, CENTER
     }
 }
