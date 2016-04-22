@@ -207,6 +207,7 @@ public class JavaImpl extends SimpleLanguage {
         autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
         autoFills.add(new SimpleAutoFill("syso","System.out.println(",");"));
         autoFills.add(new SimpleAutoFill("{", "{", "}"));
+        autoFills.add(new SimpleAutoFill("[", "[", "]"));
         autoFills.add(new IgnoreInputAutoFill(")", new IgnoreInputAutoFill.IgnoreDecider() {
             @Override
             public boolean shouldIgnoreChar(String source, int offset) {

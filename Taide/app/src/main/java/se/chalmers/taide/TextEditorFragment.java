@@ -72,20 +72,14 @@ public class TextEditorFragment extends Fragment {
             }
         });
         RadialActionMenuLayout rightMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutRight);
-        rightMenu.setButtonTexts(new String[]{"Cut", "Copy", "Paste"});
+        rightMenu.setButtonTexts(new String[]{"[]", "()", "{}"});
         rightMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
                 switch (index) {
-                    case 0:
-                        Clipboard.cutToClipboard(getActivity(), codeEditor);
-                        break;
-                    case 1:
-                        Clipboard.copyToClipboard(getActivity(), codeEditor);
-                        break;
-                    case 2:
-                        Clipboard.pasteFromClipboard(getActivity(), codeEditor);
-                        break;
+                    case 0: insertStringToCodeEditor("[");break;
+                    case 1: insertStringToCodeEditor("(");break;
+                    case 2: insertStringToCodeEditor("{");break;
                 }
             }
         });
@@ -161,5 +155,11 @@ public class TextEditorFragment extends Fragment {
                 Log.d("TextEditor", "Fetched existing model and setup editor.");
             }
         }
+    }
+
+    private void insertStringToCodeEditor(String insertString){
+        int start = Math.max(Math.min(codeEditor.getSelectionStart(), codeEditor.getSelectionEnd()), 0);
+        int end = Math.max(Math.max(codeEditor.getSelectionStart(), codeEditor.getSelectionEnd()), 0);
+        codeEditor.getText().replace(start, end, insertString, 0, insertString.length());
     }
 }

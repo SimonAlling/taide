@@ -48,14 +48,29 @@ public class SimpleEditorModel implements EditorModel {
         this.textFilters = new HashMap<>();
         this.fileSystem = FileSystemFactory.getFileSystem(context);
 
-        // Init filters
-        textFilters.put(FILTER_KEY_INDENTATION, new SimpleAutoIndenter(this.language));
-        textFilters.put(FILTER_KEY_AUTOFILL, new SimpleAutoFiller(this.language));
-        textFilters.put(FILTER_KEY_HIGHLIGHT, new SimpleHighlighter(this.language));
-
         // Setup text view and apply highlight immediately
         setTextSource(text);
+
+        setupFilters();
+    }
+
+    private void setupFilters(){
+        addFilter(FILTER_KEY_INDENTATION, new SimpleAutoIndenter(this.language));
+        addFilter(FILTER_KEY_AUTOFILL, new SimpleAutoFiller(this.language));
+        addFilter(FILTER_KEY_HIGHLIGHT, new SimpleHighlighter(this.language));
         manuallyTriggerFilter(FILTER_KEY_HIGHLIGHT);
+    }
+
+    private void addFilter(String name, TextFilter filter){
+        if(this.textSource != null){
+            filter.attach(this.textSource);
+        }
+
+        //Update list references
+        TextFilter oldFilter = textFilters.put(name, filter);
+        if(oldFilter != null){
+            oldFilter.detach();
+        }
     }
 
     /**
@@ -75,9 +90,7 @@ public class SimpleEditorModel implements EditorModel {
     public void setLanguage(Language lang) {
         if (lang != null && !lang.equals(this.language)) {
             this.language = lang;
-            for (TextFilter tf : textFilters.values()) {
-                tf.setLanguage(lang);
-            }
+            setupFilters();
         }
     }
 
@@ -88,22 +101,15 @@ public class SimpleEditorModel implements EditorModel {
      */
     @Override
     public void setTextSource(TextSource textSource) {
-        if (textSource != null) {
-            if (this.textSource != null) {
-                for (TextFilter tf : textFilters.values()) {
-                    tf.detach();
-                }
-            }
-
-            // Replace
-            this.textSource = textSource;
-            for (TextFilter tf : textFilters.values()) {
-                tf.attach(this.textSource);
-            }
-
+        if (textSource != null && textSource != this.textSource) {
+            //Reset
             if(historyHandler != null){
                 historyHandler.registerInputField(null);
             }
+
+            // Replace and renew
+            this.textSource = textSource;
+            setupFilters();
             this.historyHandler = HistoryHandlerFactory.getTextHistoryHandler((currentFile==null?"":currentFile.getUniqueName()), textSource);
         }
     }
