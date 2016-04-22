@@ -102,16 +102,16 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
     /**
      * Triggered when anything changes in the text field. Calls applyFilterEffect()
      * if any of the trigger texts are inserted.
-     * @param s The contents of the text view
+     * @param textFieldContent The contents of the text field
      * @param start The start of the change
      * @param before The previous length of the data (starting at start)
      * @param count The new length of the data (starting at start)
      */
     @Override
-    public void onTextChanged(String s, int start, int before, int count) {
+    public void onTextChanged(String textFieldContent, int start, int before, int count) {
         // Update filter if correct input received
         if (count >= before) {
-            String input = s.substring(0, start + count);
+            String input = textFieldContent.substring(0, start + count);
             for (String triggerText : triggerTexts) {
                 if (input.endsWith(triggerText)) {
                     applyFilterEffect(triggerText);
