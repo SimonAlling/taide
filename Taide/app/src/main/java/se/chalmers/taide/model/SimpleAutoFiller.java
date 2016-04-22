@@ -37,22 +37,33 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     }
 
     /**
+     * [FUNCTIONAL] Checks whether a matching autofill was found.
+     * @param autoFill The autofill we want to check for
+     * @param trigger The string that triggered an autofill
+     * @return <code>true</code> if it was a match
+     */
+    private static boolean matchingAutoFill(AutoFill autoFill, String trigger) {
+        return autoFill.getTrigger().equals(trigger);
+    }
+
+    /**
      * This method is called when some trigger has been detected
      * @param trigger The string that triggered the effect
      */
     @Override
     protected void applyFilterEffect(String trigger) {
         TextSource textView = getTextView();
+        int caretPosition = textView.getSelectionStart();
+        int triggerStartPosition = caretPosition - trigger.length();
         for (AutoFill autoFill : autoFills) {
-            // If it was this auto fill that triggered it, apply it.
-            String textUntilSelection = textView.getText().subSequence(0, textView.getSelectionStart()).toString();
-            if (autoFill.getTrigger().equals(trigger) && textUntilSelection.endsWith(trigger)) {
-                int pos = textView.getSelectionStart();
-                String prefix = autoFill.getPrefix(textView.getText().toString(), pos);
-                String suffix = autoFill.getSuffix(textView.getText().toString(), pos);
+            // If it was this autofill that was triggered, apply it:
+            if (matchingAutoFill(autoFill, trigger)) {
+                String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
+                String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
+                int triggerEndPosition = caretPosition + autoFill.selectionIncreaseCount(textView.getText().toString(), caretPosition);
 
-                textView.getText().replace(pos - trigger.length(), pos+autoFill.selectionIncreaseCount(textView.getText().toString(), pos), prefix + suffix);
-                textView.setSelection(pos + prefix.length() - trigger.length());
+                textView.getText().replace(triggerStartPosition, triggerEndPosition, prefix + suffix);
+                textView.setSelection(caretPosition + prefix.length() - trigger.length());
             }
         }
     }
