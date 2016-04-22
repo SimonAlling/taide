@@ -4,7 +4,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,17 +13,24 @@ import android.widget.EditText;
 
 public class MarkupFragment extends Fragment {
 
-    // Start constants
-    private static final int CONST_DELAY = 100;
-    private final EditText TEXT = (EditText) getActivity().findViewById(R.id.editText);
-    // End constants
+    /** Start constants */
+    private final int DELAY = 100; //TODO: Replace with settings for sensitivity
+    private final EditText TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
+    private final double LEFT_BORDER_PERCENTAGE = 0.10;
+    private final double RIGHT_BORDER_PERCENTAGE = 0.10;
+    private final double TOP_BORDER_PERCENTAGE = 0.10;
+    private final double BOTTOM_BORDER_PERCENTAGE = 0.10;
+    private final Handler LEFT_SCROLL_HANDLER = null;
+    private final Handler RIGHT_SCROLL_HANDLER = null;
+    private final Handler TOP_SCROLL_HANDLER = null;
+    private final Handler BOTTOM_SCROLL_HANDLER = null;
+    /** End constants */
 
-    // Start private variables
+    /** Start private variables */
     private int startPos = 0, endPos = 0, fragmentHeight = 0;
     private float dX0 = 0, dX1 = 0, dY0 = 0, dY1 = 0;
     private boolean marked = false, pointer0Left = true;
-    private Handler lScrollHandler, rScrollHandler, dScrollHandler, uScrollHandler;
-    // End private variables
+    /** End private variables */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +51,7 @@ public class MarkupFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
-                        startPos = TEXT.getSelectionStart();
+                        startPos = TEXT_AREA.getSelectionStart();
                         dX0 = event.getX();
                         dY0 = event.getY();
                         marked = false;
@@ -70,12 +76,12 @@ public class MarkupFragment extends Fragment {
                         if (event.getPointerCount() > 1) {
                             float x0 = event.getX(0);
                             float x1 = event.getX(1);
-                            int maxLength = TEXT.getText().length();
+                            int maxLength = TEXT_AREA.getText().length();
                             if (pointer0Left) {
                                 int newStartPos = getNewHandlePosX(startPos, x0, dX0, maxLength);
                                 int newEndPos = getNewHandlePosX(endPos, x1, dX1, maxLength);
                                 if (newStartPos <= newEndPos) {
-                                    TEXT.setSelection(newStartPos, newEndPos);
+                                    TEXT_AREA.setSelection(newStartPos, newEndPos);
 
                                     if (newStartPos != startPos) {
                                         startPos = newStartPos;
@@ -88,10 +94,10 @@ public class MarkupFragment extends Fragment {
                                 }
                                 float y0 = event.getY(0);
                                 float y1 = event.getY(1);
-                                int newStartPosY = getNewHandlePosY(TEXT.getText().toString(), startPos, y0, dY0);
-                                int newEndPosY = getNewHandlePosY(TEXT.getText().toString(), endPos, y1, dY1);
+                                int newStartPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y0, dY0);
+                                int newEndPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), endPos, y1, dY1);
                                 if (newStartPosY <= newEndPosY) {
-                                    TEXT.setSelection(newStartPosY, newEndPosY);
+                                    TEXT_AREA.setSelection(newStartPosY, newEndPosY);
 
                                     if (newStartPosY != startPos) {
                                         startPos = newStartPosY;
@@ -106,7 +112,7 @@ public class MarkupFragment extends Fragment {
                                 int newStartPos = getNewHandlePosX(startPos, x1, dX1, maxLength);
                                 int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
                                 if (newStartPos <= newEndPos) {
-                                    TEXT.setSelection(newStartPos, newEndPos);
+                                    TEXT_AREA.setSelection(newStartPos, newEndPos);
 
                                     if (newStartPos != startPos) {
                                         startPos = newStartPos;
@@ -119,10 +125,10 @@ public class MarkupFragment extends Fragment {
                                 }
                                 float y0 = event.getY(0);
                                 float y1 = event.getY(1);
-                                int newStartPosY = getNewHandlePosY(TEXT.getText().toString(), startPos, y1, dY1);
-                                int newEndPosY = getNewHandlePosY(TEXT.getText().toString(), endPos, y0, dY0);
+                                int newStartPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y1, dY1);
+                                int newEndPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), endPos, y0, dY0);
                                 if (newStartPosY <= newEndPosY) {
-                                    TEXT.setSelection(newStartPosY, newEndPosY);
+                                    TEXT_AREA.setSelection(newStartPosY, newEndPosY);
 
                                     if (newStartPosY != startPos) {
                                         startPos = newStartPosY;
@@ -140,27 +146,27 @@ public class MarkupFragment extends Fragment {
                         } else {
                             if (!marked) {
                                 float x = event.getX();
-                                int maxLength = TEXT.getText().length();
+                                int maxLength = TEXT_AREA.getText().length();
                                 int newPos = getNewHandlePosX(startPos, x, dX0, maxLength);
-                                TEXT.setSelection(newPos);
+                                TEXT_AREA.setSelection(newPos);
                                 if (newPos != startPos) {
                                     startPos = newPos;
                                     dX0 = x;
                                 }
                                 float y = event.getY();
-                                int newPosY = getNewHandlePosY(TEXT.getText().toString(), startPos, y, dY0);
-                                TEXT.setSelection(newPosY);
+                                int newPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y, dY0);
+                                TEXT_AREA.setSelection(newPosY);
                                 if (newPosY != startPos) {
                                     startPos = newPosY;
                                     dY0 = y;
                                 }
                             } else {
                                 float x0 = event.getX(0);
-                                int maxLength = TEXT.getText().length();
+                                int maxLength = TEXT_AREA.getText().length();
                                 if (pointer0Left) {
                                     int newStartPos = getNewHandlePosX(startPos, x0, dX0, maxLength);
                                     if (newStartPos <= endPos) {
-                                        TEXT.setSelection(newStartPos, endPos);
+                                        TEXT_AREA.setSelection(newStartPos, endPos);
 
                                         if (newStartPos != startPos) {
                                             startPos = newStartPos;
@@ -170,7 +176,7 @@ public class MarkupFragment extends Fragment {
                                 } else {
                                     int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
                                     if (startPos <= newEndPos) {
-                                        TEXT.setSelection(startPos, newEndPos);
+                                        TEXT_AREA.setSelection(startPos, newEndPos);
 
                                         if (newEndPos != endPos) {
                                             endPos = newEndPos;
@@ -186,12 +192,12 @@ public class MarkupFragment extends Fragment {
 
                     case MotionEvent.ACTION_POINTER_UP:
                         if (marked)
-                            TEXT.setSelection(startPos, endPos);
+                            TEXT_AREA.setSelection(startPos, endPos);
                         return true;
 
                     case MotionEvent.ACTION_UP:
                         if (marked)
-                            TEXT.setSelection(startPos, endPos);
+                            TEXT_AREA.setSelection(startPos, endPos);
                         return true;
 
                     default:
@@ -208,7 +214,7 @@ public class MarkupFragment extends Fragment {
                     if (x - dX < 0 && pointer > 0) {
                         return Math.max((pointer - (int)Math.abs((x-dX)/(width/75))),0);
                     } else if (x - dX > 0 && pointer < maxLength) {
-                        return Math.min((pointer + (int)Math.abs((x-dX)/(width/75))) ,TEXT.length());
+                        return Math.min((pointer + (int) Math.abs((x - dX) / (width / 75))), TEXT_AREA.length());
                     }
                 }
                 return pointer;
@@ -268,30 +274,44 @@ public class MarkupFragment extends Fragment {
         return view;
     }
 
-    /**
-     *
-     * @param scrollRight True for moving right, false for moving left
-     * @return The handler issued for the continuous scroll
+    /** Starts a continuous scrolling towards a given direction.
+     * @param direction The direction to continuously scroll towards. Sending a CENTER here does nothing.
+     * @return The handler issued for the continuous scroll. Null if asked to scroll towards CENTER
      */
-    private Handler contScrollX(boolean scrollRight){
+    private Handler contScroll(Area direction){
         Handler scrollHandler = new Handler();
-        if (scrollRight){
-            scrollHandler.postDelayed(scrollRightAction, CONST_DELAY);
-        } else {
-            scrollHandler.postDelayed(scrollLeftAction, CONST_DELAY);
+        switch (direction) {
+            case LEFT:
+                LEFT_SCROLL_HANDLER.removeCallbacks(scrollLeftAction);
+                scrollHandler.postDelayed(scrollLeftAction, DELAY);
+                break;
+            case RIGHT:
+                RIGHT_SCROLL_HANDLER.removeCallbacks(scrollRightAction);
+                scrollHandler.postDelayed(scrollRightAction, DELAY);
+                break;
+            case TOP:
+                break;
+            case BOTTOM:
+                break;
+            default:
+                return null;
         }
         return scrollHandler;
     }
 
+    /** Start Runnables */
     private final Runnable scrollRightAction = new Runnable(){
         @Override
         public void run(){
-            int end = TEXT.getSelectionEnd();
-            if (marked){
-                int start = TEXT.getSelectionStart();
-                TEXT.setSelection(start, Math.min(end + 1, TEXT.length()));
-            } else {
-                TEXT.setSelection(Math.min(end + 1, TEXT.length()));
+            if (pointerInArea(Area.RIGHT)){
+                int end = TEXT_AREA.getSelectionEnd();
+                if (marked){
+                    int start = TEXT_AREA.getSelectionStart();
+                    TEXT_AREA.setSelection(start, Math.min(end + 1, TEXT_AREA.length()));
+                } else {
+                    TEXT_AREA.setSelection(Math.min(end + 1, TEXT_AREA.length()));
+                }
+                RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
             }
         }
     };
@@ -299,13 +319,64 @@ public class MarkupFragment extends Fragment {
     private final Runnable scrollLeftAction = new Runnable(){
         @Override
         public void run(){
-            int start = TEXT.getSelectionStart();
-            if (marked){
-                int end = TEXT.getSelectionEnd();
-                TEXT.setSelection(Math.max(start - 1, 0), end);
-            } else {
-                TEXT.setSelection(Math.max(start - 1, 0));
+            if (pointerInArea(Area.LEFT)){
+                int start = TEXT_AREA.getSelectionStart();
+                if (marked){
+                    int end = TEXT_AREA.getSelectionEnd();
+                    TEXT_AREA.setSelection(Math.max(start - 1, 0), end);
+                } else {
+                    TEXT_AREA.setSelection(Math.max(start - 1, 0));
+                }
+                LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
             }
         }
     };
+    /** End Runnables */
+
+    /** Checks if there is a pointer present in one of the five areas within the markup fragment
+     * @param area the area we want to check whatever or not there is a pointer in
+     * @return
+     */
+    private boolean pointerInArea(Area area){
+        Point size = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        int width = size.x;
+        int height = fragmentHeight;
+        switch (area){
+            case LEFT:
+                if (dX0 < width * LEFT_BORDER_PERCENTAGE || dX1 < width * LEFT_BORDER_PERCENTAGE)
+                    return true;
+                break;
+            case RIGHT:
+                if (dX0 > width - width * RIGHT_BORDER_PERCENTAGE || dX1 > width - width * RIGHT_BORDER_PERCENTAGE)
+                    return true;
+                break;
+            case TOP:
+                if (dX0 > height - height * BOTTOM_BORDER_PERCENTAGE || dX1 > height - height * BOTTOM_BORDER_PERCENTAGE)
+                    return true;
+                break;
+            case BOTTOM:
+                if (dX0 < height * TOP_BORDER_PERCENTAGE || dX1 < height * BOTTOM_BORDER_PERCENTAGE)
+                    return true;
+                break;
+            case CENTER:
+                if (dX0 > width * LEFT_BORDER_PERCENTAGE
+                        && dX0 < width - width * RIGHT_BORDER_PERCENTAGE
+                        && dX0 > height * TOP_BORDER_PERCENTAGE
+                        && dX0 < height - height * BOTTOM_BORDER_PERCENTAGE
+                        && dX1 > width * LEFT_BORDER_PERCENTAGE
+                        && dX1 < width - width * RIGHT_BORDER_PERCENTAGE
+                        && dX1 > height * TOP_BORDER_PERCENTAGE
+                        && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE)
+                    return true;
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
+
+    private enum Area{
+        LEFT, RIGHT, TOP, BOTTOM, CENTER
+    }
 }
