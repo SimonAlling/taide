@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 public class RadialActionMenuLayout extends RelativeLayout{
 
     private static final int DEFAULT_NBR_OF_BUTTONS = 3;
-    private static final int DEFAULT_ANIMATION_DURATION = 400;
+    private static final int DEFAULT_ANIMATION_DURATION = 100;
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200;
     private static final String DEFAULT_MAIN_BUTTON_TEXT = "";
 
