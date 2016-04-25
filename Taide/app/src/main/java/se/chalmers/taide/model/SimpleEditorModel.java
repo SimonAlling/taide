@@ -14,6 +14,7 @@ import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.model.languages.LanguageFactory;
+import se.chalmers.taide.model.languages.SimpleAutoFill;
 
 /**
  * Created by Matz on 2016-02-07.
@@ -112,6 +113,20 @@ public class SimpleEditorModel implements EditorModel {
             setupFilters();
             this.historyHandler = HistoryHandlerFactory.getTextHistoryHandler((currentFile==null?"":currentFile.getUniqueName()), textSource);
         }
+    }
+
+    /**
+     * Checks whether this shortFormat string has any auto fill and retrieves its
+     * replacer if such exists.
+     * @param shortFormat The short format for the auto fill (the trigger)
+     * @return The replacer of the shortFormat, or null if not existing
+     */
+    public String getAutoFillReplacement(String shortFormat){
+        if(textFilters.containsKey(FILTER_KEY_AUTOFILL) && textSource != null){
+            SimpleAutoFiller autoFill = (SimpleAutoFiller)textFilters.get(FILTER_KEY_AUTOFILL);
+            return autoFill.getAutoFillReplacement(shortFormat, textSource.getText().toString(), textSource.getSelectionStart());
+        }
+        return null;
     }
 
     /**
