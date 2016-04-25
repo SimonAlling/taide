@@ -1,22 +1,14 @@
 package se.chalmers.taide;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Matz on 2016-01-25.
@@ -49,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        Log.d("Menu", "Menu Inflate: "+menu.size()+" :: "+menu.getItem(0).getTitle());
         return true;
     }
 
@@ -67,13 +58,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState){
         super.onSaveInstanceState(saveInstanceState);
-        fileNavigator.saveInstanceState(saveInstanceState);
+        if(fileNavigator != null) {
+            fileNavigator.saveInstanceState(saveInstanceState);
+        }
         this.savedInstanceState = saveInstanceState;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        fileNavigator.onOptionsItemSelected(item);
+        if(fileNavigator != null) {
+            fileNavigator.onOptionsItemSelected(item);
+        }
 
         int id = item.getItemId();
         switch (id) {
@@ -89,28 +84,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FileNavigatorDrawer.DBX_CHOOSER_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                fileNavigator.loadDropboxProject(data);
-            }
-        }else {
+        //Only handle ourselves if file navigator does not consume event
+        if (fileNavigator == null || !fileNavigator.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
     private void updateFileNavigator(Bundle instanceState) {
-        Log.d("Main", "Update file nav");
         View v = findViewById(R.id.editText);
         if (v != null) {
             if (fileNavigator == null) {
-                Log.d("Main", "Reupdating");
                 fileNavigator = new FileNavigatorDrawer(this, (EditText)v);
                 fileNavigator.initDrawer();
             } else {
-                Log.d("Main", "Just calling onResume");
                 fileNavigator.setTextInput((EditText) v);
-                fileNavigator.onActivityResume(instanceState);
             }
+            fileNavigator.onActivityResume(instanceState);
         }
     }
 }

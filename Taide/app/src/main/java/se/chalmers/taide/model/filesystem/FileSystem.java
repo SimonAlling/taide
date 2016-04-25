@@ -15,6 +15,7 @@ public interface FileSystem {
 
     CodeFile getCurrentDir();
     List<CodeFile> getFilesInCurrentDir();
+    CodeFile findFileByName(String name);
     String getCurrentProject();
 
     CodeFile createFile(String name);

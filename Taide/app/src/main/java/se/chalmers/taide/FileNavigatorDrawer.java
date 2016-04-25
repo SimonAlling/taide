@@ -70,8 +70,19 @@ public class FileNavigatorDrawer {
 
     public void saveInstanceState(Bundle saveInstanceState){
         if(currentFile != null) {
-            saveInstanceState.putCharSequence(CURRENT_FILE_KEYNAME, currentFile.getName());
+            saveInstanceState.putCharSequence(CURRENT_FILE_KEYNAME, currentFile.getUniqueName());
         }
+    }
+
+    public boolean handleActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == FileNavigatorDrawer.DBX_CHOOSER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                loadDropboxProject(data);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     public void onActivityResume(Bundle savedInstanceState){
@@ -81,7 +92,11 @@ public class FileNavigatorDrawer {
                 showDropboxChooser();
             }
         }else{
-            //if(savedInstanceState.get(CURRENT_FILE_KEYNAME) != null)
+            //Reload handle to previously opened file.
+            if(savedInstanceState != null && currentFile == null && savedInstanceState.get(CURRENT_FILE_KEYNAME) != null){
+                currentFile = model.findFileByName(savedInstanceState.getString(CURRENT_FILE_KEYNAME));
+            }
+
             if(currentFile != null){
                 openFile(currentFile);
             }
@@ -256,6 +271,9 @@ public class FileNavigatorDrawer {
                 }
             }
         });
+
+        //Load stuff if available.
+        updateDrawer();
     }
 
     public void closeDrawer(){
@@ -383,7 +401,7 @@ public class FileNavigatorDrawer {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == Dialog.BUTTON_POSITIVE && listener != null) {
                     EditText source = ((EditText) currentDialog.findViewById(R.id.dialog_input_text));
-                    String input = (source!=null?source.getText().toString():"");
+                    String input = (source != null ? source.getText().toString() : "");
                     listener.onActivation(input);
                 }
             }
@@ -396,7 +414,6 @@ public class FileNavigatorDrawer {
         });
         currentDialog = builder.create();
         currentDialog.show();
-        Log.d("FileNavDrawer", "Dialog is : " + currentDialog.getClass().getName());
     }
 
     private interface OnDialogActivation {

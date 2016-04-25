@@ -21,8 +21,8 @@ public class DropboxFile extends SimpleCodeFile{
     private long lastSync = -1;
     private RevisionHandler revisionHandler;
 
-    public DropboxFile(File file, String syncLocation, RevisionHandler revisionHandler){
-        super(file);
+    public DropboxFile(File file, String projectPath, String syncLocation, RevisionHandler revisionHandler){
+        super(file, projectPath);
         this.file = file;
         this.syncLocation = syncLocation;
         this.revisionHandler = revisionHandler;

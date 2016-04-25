@@ -294,6 +294,16 @@ public class SimpleEditorModel implements EditorModel {
     }
 
     /**
+     * Returns the CodeFile representation of the given path in the current project.
+     * @param name The path name of the file
+     * @return The CodeFile representation of the file, null if not found
+     */
+    @Override
+    public CodeFile findFileByName(String name){
+        return fileSystem.findFileByName(name);
+    }
+
+    /**
      * Retrieve a list of the names of all existing projects
      * @return A list of the names of all existing projects
      */

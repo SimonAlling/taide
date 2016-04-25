@@ -164,7 +164,7 @@ public class DropboxProject extends SimpleProject {
         if(!f.exists()) {
             try {
                 if (f.createNewFile()) {
-                    DropboxFile file = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
+                    DropboxFile file = new DropboxFile(f, localBaseFolder, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
                     file.saveContents(" ");      //Sync empty file.
                     return file;
                 }
@@ -172,7 +172,7 @@ public class DropboxProject extends SimpleProject {
                 Log.e("Project", "Could not create file: " + ioe.getMessage());
             }
         }else{
-            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
+            return new DropboxFile(f, localBaseFolder, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
         }
 
         return null;
@@ -188,12 +188,12 @@ public class DropboxProject extends SimpleProject {
         File f = new File(localBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name);
         if(!f.exists()) {
             if (f.mkdir()) {
-                DropboxFile dir = new DropboxFile(f, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
+                DropboxFile dir = new DropboxFile(f, localBaseFolder, dropboxBaseFolder+"/"+folder + (folder.length()>0?"/":"") + name, revisionHandler);
                 dir.saveContents(" ");      //Sync empty dir.
                 return dir;
             }
         }else{
-            return new DropboxFile(f, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
+            return new DropboxFile(f, localBaseFolder, dropboxBaseFolder+"/"+folder+(folder.length()>0?"/":"")+name, revisionHandler);
         }
 
         return null;
@@ -206,6 +206,6 @@ public class DropboxProject extends SimpleProject {
         }
 
         String syncLocation = dropboxBaseFolder+"/"+f.getPath().substring(localBaseFolder.length()+1);
-        return new DropboxFile(f, syncLocation, revisionHandler);
+        return new DropboxFile(f, localBaseFolder, syncLocation, revisionHandler);
     }
 }

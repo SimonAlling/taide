@@ -138,6 +138,12 @@ public class SimpleFileSystem implements FileSystem{
     }
 
     @Override
+    public CodeFile findFileByName(String name){
+        File f = new File(currentProject.getBaseFolder().getPath()+"/"+name);
+        return (f.exists()?currentProject.getCodeFile(f):null);
+    }
+
+    @Override
     public List<CodeFile> getFilesInCurrentDir() {
         List<CodeFile> files = new ArrayList<>();
         if(currentDir != null) {

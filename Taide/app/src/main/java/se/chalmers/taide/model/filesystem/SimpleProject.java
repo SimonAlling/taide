@@ -44,7 +44,7 @@ public class SimpleProject implements Project{
         File f = new File(baseFolder.getPath() + "/" +folder + (folder.length()>0?"/":"") + name);
         try {
             if (f.createNewFile()) {
-                return new SimpleCodeFile(f);
+                return new SimpleCodeFile(f, baseFolder.getPath());
             }
         }catch(IOException ioe){
             Log.e("Project", "Could not create file: "+ioe.getMessage());
@@ -64,7 +64,7 @@ public class SimpleProject implements Project{
         //Create stuff.
         File f = new File(baseFolder.getPath()+"/"+folder + (folder.length()>0?"/":"") + name);
         if(f.mkdir()){
-            return new SimpleCodeFile(f);
+            return new SimpleCodeFile(f, baseFolder.getPath());
         }else{
             return null;
         }
@@ -72,7 +72,7 @@ public class SimpleProject implements Project{
 
     @Override
     public CodeFile getCodeFile(File f) {
-        return new SimpleCodeFile(f);
+        return new SimpleCodeFile(f, baseFolder.getPath());
     }
 
     @Override

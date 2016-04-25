@@ -19,9 +19,11 @@ public class SimpleCodeFile implements CodeFile {
     private static List<String> deniedFileFormats = Arrays.asList(new String[]{"jpg", "jpeg", "png", "gif", "psd", "zip", "gz", "tar"});
 
     private File source;
+    private String initialPath;
 
-    protected SimpleCodeFile(File source){
+    protected SimpleCodeFile(File source, String initialPath){
         this.source = source;
+        this.initialPath = initialPath;
     }
 
     @Override
@@ -31,7 +33,12 @@ public class SimpleCodeFile implements CodeFile {
 
     @Override
     public String getUniqueName() {
-        return source.getPath()+"/"+source.getName();
+        //Remove initial part (most often project path) if neccessary, return entire file path
+        if(source.getPath().toLowerCase().startsWith(initialPath.toLowerCase())){
+            return source.getPath().substring(initialPath.length());
+        }else {
+            return source.getPath();
+        }
     }
 
     @Override
@@ -110,7 +117,7 @@ public class SimpleCodeFile implements CodeFile {
             boolean success = true;
             //Delete recursively down.
             for(File f : source.listFiles()){
-                success = success && new SimpleCodeFile(f).remove();
+                success = success && new SimpleCodeFile(f, initialPath).remove();
             }
             if(success){
                 if(source.delete()){
