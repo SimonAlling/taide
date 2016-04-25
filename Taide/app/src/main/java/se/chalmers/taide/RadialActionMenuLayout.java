@@ -22,6 +22,15 @@ public class RadialActionMenuLayout extends RelativeLayout{
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200;
     private static final String DEFAULT_MAIN_BUTTON_TEXT = "";
 
+    // Configure the angles of the thumb buttons:
+    // The values are in degrees.
+    // 0 is straight out from the motherbutton/screen edge toward the opposite screen edge.
+    // 90 is straight up toward the top of the screen.
+    private static final int LEFT_LOWERMOST_BUTTON_ANGLE = -5;
+    private static final int LEFT_UPPERMOST_BUTTON_ANGLE = 95;
+    private static final int RIGHT_LOWERMOST_BUTTON_ANGLE = -5;
+    private static final int RIGHT_UPPERMOST_BUTTON_ANGLE = 95;
+
     private View mainView;
     private Button mainButton;
 
@@ -212,14 +221,22 @@ public class RadialActionMenuLayout extends RelativeLayout{
         this.buttonListeners = newButtonListeners;
     }
 
-    private void show(){
-        double radius = mainButton.getWidth()*1.5d;
-        double angleChange = 100d/(buttons.length-1);
-        for(int i = 0; i<buttons.length; i++){
-            double angle = (alignment==Alignment.LEFT?265+i*angleChange:275-i*angleChange);
-            double radians = angle * Math.PI / 180d;
-            float x = (float)(radius * Math.cos(radians));
-            float y = (float)(radius * Math.sin(radians));
+    private void show() {
+        final double radius = mainButton.getWidth()*1.5d;
+        // The angle between the lowermost and the uppermost button:
+        final double totalAngle = alignment == Alignment.LEFT
+                          ?  LEFT_UPPERMOST_BUTTON_ANGLE -  LEFT_LOWERMOST_BUTTON_ANGLE
+                          : RIGHT_UPPERMOST_BUTTON_ANGLE - RIGHT_LOWERMOST_BUTTON_ANGLE;
+        // The angle between two adjacent buttons:
+        final double angleChange = totalAngle / (buttons.length-1);
+        // The angle of the first button in clockwise order:
+        // Note that 0 deg is an angle pointing to the right and angles increase CLOCKWISE!
+        final double startAngle = alignment == Alignment.LEFT ? 0 - LEFT_UPPERMOST_BUTTON_ANGLE : 180 + RIGHT_LOWERMOST_BUTTON_ANGLE;
+        for (int i = 0; i < buttons.length; i++) {
+            double angle = startAngle + i*angleChange;
+            double radians = Math.toRadians(angle);
+            float x = (float) (radius * Math.cos(radians));
+            float y = (float) (radius * Math.sin(radians));
             buttons[i].setVisibility(View.VISIBLE);
             buttons[i].animate().setDuration(animationDuration).translationX(x).translationY(y).start();
         }
