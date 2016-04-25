@@ -17,20 +17,20 @@
     <!-- Filesystem nav strings -->
     <string-array name="filesystem_default_menuitems">
         <item>New project</item>
-        <item>Load project</item>
-        <item>Import from dropbox</item>
+        <item>Open project</item>
+        <item>Import from Dropbox</item>
         <item>New file</item>
         <item>New folder</item>
     </string-array>
     <string name="upOneLevel">Up one level</string>
-    <string name="add_new_project_description">Enter the name of the new project</string>
-    <string name="load_project_description">Choose the project you wish to open</string>
-    <string name="load_project_loading">Wait while the project is loaded...</string>
-    <string name="add_new_file_description">Enter the name of the new file</string>
-    <string name="add_new_folder_description">Enter the name of the new folder</string>
+    <string name="add_new_project_description">Project name:</string>
+    <string name="load_project_description">Open project:</string>
+    <string name="load_project_loading">Opening project...</string>
+    <string name="add_new_file_description">File name:</string>
+    <string name="add_new_folder_description">Folder name:</string>
     <string name="rename_file">Rename</string>
-    <string name="rename_file_description">Enter the new name of the file</string>
-    <string name="remove_file_description">This will remove the file permanently. Proceed?</string>
+    <string name="rename_file_description">New file name:</string>
+    <string name="remove_file_description">Are you sure?</string>
 
     <!-- Dropbox stuff -->
     <string name="dropbox_app_key">o4m52bd67whe1js</string>
