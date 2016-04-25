@@ -60,5 +60,13 @@
             actionmenu:menuTitle="@string/actionmenu_right_title"
             actionmenu:buttonColor="@color/forestGreen"
             android:layout_alignParentBottom="true" />
+
+
+        <TextView
+            android:id="@+id/cursorAnchor"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@android:color/holo_red_dark"
+            android:visibility="gone" />
     </RelativeLayout>
 </FrameLayout>
