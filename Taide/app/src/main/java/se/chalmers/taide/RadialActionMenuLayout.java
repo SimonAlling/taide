@@ -22,6 +22,10 @@ public class RadialActionMenuLayout extends RelativeLayout{
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200;
     private static final String DEFAULT_MAIN_BUTTON_TEXT = "";
 
+    // Configure the distance from the center of the mother button to the center of each of its child buttons:
+    // The factor is multiplied by the RADIUS of the mother button to get the final value.
+    private static final double CHILD_BUTTON_DISTANCE_FACTOR = 3d;
+
     // Configure the angles of the thumb buttons:
     // The values are in degrees.
     // 0 is straight out from the motherbutton/screen edge toward the opposite screen edge.
@@ -222,7 +226,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
     }
 
     private void show() {
-        final double radius = mainButton.getWidth() * 1.5d;
+        final double childButtonDistance = mainButton.getWidth()/2 * CHILD_BUTTON_DISTANCE_FACTOR; // divide by 2 to get mother button radius
         // The angle between the lowermost and the uppermost button:
         final double totalAngle = alignment == Alignment.LEFT
                           ?  LEFT_UPPERMOST_BUTTON_ANGLE -  LEFT_LOWERMOST_BUTTON_ANGLE
@@ -235,8 +239,8 @@ public class RadialActionMenuLayout extends RelativeLayout{
         for (int i = 0; i < buttons.length; i++) {
             double angle = startAngle + i*angleChange;
             double radians = Math.toRadians(angle);
-            float x = (float) (radius * Math.cos(radians));
-            float y = (float) (radius * Math.sin(radians));
+            float x = (float) (childButtonDistance * Math.cos(radians));
+            float y = (float) (childButtonDistance * Math.sin(radians));
             buttons[i].setVisibility(View.VISIBLE);
             buttons[i].animate().setDuration(animationDuration).translationX(x).translationY(y).start();
         }
