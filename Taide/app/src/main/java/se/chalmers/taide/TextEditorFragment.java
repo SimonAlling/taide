@@ -2,27 +2,16 @@ package se.chalmers.taide;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.Layout;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import java.util.zip.Inflater;
 
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
@@ -31,6 +20,14 @@ import se.chalmers.taide.util.Clipboard;
 
 public class TextEditorFragment extends Fragment {
 
+    public final TextSource.TextSourceListener cursorAnchorUpdateListener = new TextSource.TextSourceListener() {
+        @Override
+        public void onTextChanged(String s, int start, int before, int count) {
+            updateCursorAnchor();
+        }
+    };
+
+    private TextSource editorAsTextSource;
     private EditText codeEditor;
     private EditorModel model;
 
@@ -59,7 +56,6 @@ public class TextEditorFragment extends Fragment {
             public void actionButtonTriggered(int index) {
                 switch (index) {
                     case 0: View v = getActivity().findViewById(R.id.markup);
-
                             v.setVisibility(v.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                             break;
                     default: break;
@@ -83,18 +79,19 @@ public class TextEditorFragment extends Fragment {
     }
 
     private void updateCursorAnchor(){
-        int pos = codeEditor.getSelectionStart();
-        Layout layout = codeEditor.getLayout();
-        int line = layout.getLineForOffset(pos);
-        int baseline = layout.getLineBaseline(line);
-        int ascent = layout.getLineAscent(line);
-        float x = layout.getPrimaryHorizontal(pos);
-        float y = baseline + ascent;
-        Log.d("debug", "Coordinates: (" + x + ", " + y + ")");
-        View cursorAnchor = getView().findViewById(R.id.cursorAnchor);
-        cursorAnchor.setX(x);
-        cursorAnchor.setY(y);
-        cursorAnchor.setVisibility(View.VISIBLE);
+        if(codeEditor != null) {
+            int pos = codeEditor.getSelectionStart();
+            Layout layout = codeEditor.getLayout();
+            int line = layout.getLineForOffset(pos);
+            int baseline = layout.getLineBaseline(line);
+            int ascent = layout.getLineAscent(line);
+            float x = layout.getPrimaryHorizontal(pos);
+            float y = baseline + ascent;
+            View cursorAnchor = getView().findViewById(R.id.cursorAnchor);
+            cursorAnchor.setX(x);
+            cursorAnchor.setY(y);
+            cursorAnchor.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -153,29 +150,23 @@ public class TextEditorFragment extends Fragment {
     private void initModel(){
         if(model == null) {
             model = ModelFactory.getCurrentEditorModel();
-            TextSource textSource = ModelFactory.editTextToTextSource(codeEditor);
-            initAutofill(textSource);
+            if(editorAsTextSource != null){
+                editorAsTextSource.removeListener(cursorAnchorUpdateListener);
+            }
+            editorAsTextSource = ModelFactory.editTextToTextSource(codeEditor);
+            editorAsTextSource.addListener(cursorAnchorUpdateListener);
             if (model == null) {
                 if(codeEditor != null) {
-                    model = ModelFactory.createEditorModel(getActivity(), textSource);
+                    model = ModelFactory.createEditorModel(getActivity(), editorAsTextSource);
                     Log.d("TextEditor", "Started model for text editor.");
                 }else{
                     Log.w("TextEditor", "WARNING: No functional model in use!");
                 }
             }else{
-                model.setTextSource(textSource);
+                model.setTextSource(editorAsTextSource);
                 Log.d("TextEditor", "Fetched existing model and setup editor.");
             }
         }
-    }
-
-    private void initAutofill(TextSource textSource){
-        textSource.addListener(new TextSource.TextSourceListener() {
-            @Override
-            public void onTextChanged(String s, int start, int before, int count) {
-                updateCursorAnchor();
-            }
-        });
     }
 
     private void insertStringToCodeEditor(String insertString){
