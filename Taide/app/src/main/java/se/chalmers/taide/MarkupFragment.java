@@ -71,47 +71,22 @@ public class MarkupFragment extends Fragment {
                     case MotionEvent.ACTION_DOWN:
                         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
+                        leftMostPointer = getLeftMostPointerIndex();
                         area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
                         startPos = TEXT_AREA.getSelectionStart();
 
-                        if(area == Area.LEFT || area == Area.TOP_LEFT || area == Area.BOTTOM_LEFT) {
-                            if(LEFT_SCROLL_HANDLER == null) {
-                                LEFT_SCROLL_HANDLER = new Handler();
-                                LEFT_SCROLL_HANDLER.postDelayed(leftScroll, DELAY);
-                            }
-                        }
-                        if(area == Area.RIGHT || area == Area.TOP_RIGHT || area == Area.BOTTOM_RIGHT) {
-                            if(RIGHT_SCROLL_HANDLER == null) {
-                                RIGHT_SCROLL_HANDLER = new Handler();
-                                RIGHT_SCROLL_HANDLER.postDelayed(rightScroll, DELAY);
-                            }
-                        }
-                        if(area == Area.TOP || area == Area.TOP_LEFT || area == Area.TOP_RIGHT) {
-                            if(TOP_SCROLL_HANDLER == null) {
-                                TOP_SCROLL_HANDLER = new Handler();
-                                TOP_SCROLL_HANDLER.postDelayed(topScroll, DELAY);
-                            }
-                        }
-                        if(area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
-                            if(BOTTOM_SCROLL_HANDLER == null) {
-                                BOTTOM_SCROLL_HANDLER = new Handler();
-                                BOTTOM_SCROLL_HANDLER.postDelayed(bottomScroll, DELAY);
-                            }
-                        }
+                        startRunnables(area);
 
                         break;
 
                     case MotionEvent.ACTION_POINTER_DOWN:
-
                         endPos = startPos;
-
                         ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
                         leftMostPointer = getLeftMostPointerIndex();
-                        Log.d("Pointers: ", ACTIVE_POINTERS.size() + "");
+                        area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
 
-                        if (getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) != Area.CENTER) {
-                            //TODO: Do stuff
-                        }
+                        startRunnables(area);
+
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -121,6 +96,8 @@ public class MarkupFragment extends Fragment {
                         leftMostPointer = getLeftMostPointerIndex();
                         if(area == Area.CENTER) {
                             moveHandle(event.getActionIndex());
+                        } else {
+                            startRunnables(area);
                         }
 
                         break;
@@ -327,16 +304,43 @@ public class MarkupFragment extends Fragment {
                 return getYMovement(Math.max(0, position - 1), pointerIndex);
 
             case TOP_RIGHT:
-                return getYMovement(Math.min(0, position + 1), pointerIndex);
+                return getYMovement(Math.min(TEXT_AREA.length(), position + 1), pointerIndex);
 
             case BOTTOM_LEFT:
                 return getYMovement(Math.max(0, position - 1), pointerIndex);
 
             case BOTTOM_RIGHT:
-                return getYMovement(Math.min(0, position + 1), pointerIndex);
+                return getYMovement(Math.min(TEXT_AREA.length(), position + 1), pointerIndex);
 
         }
         return position;
+    }
+
+    public void startRunnables(Area area) {
+        if(area == Area.LEFT) {
+            if(LEFT_SCROLL_HANDLER == null) {
+                LEFT_SCROLL_HANDLER = new Handler();
+                LEFT_SCROLL_HANDLER.postDelayed(leftScroll, DELAY);
+            }
+        }
+        if(area == Area.RIGHT) {
+            if(RIGHT_SCROLL_HANDLER == null) {
+                RIGHT_SCROLL_HANDLER = new Handler();
+                RIGHT_SCROLL_HANDLER.postDelayed(rightScroll, DELAY);
+            }
+        }
+        if(area == Area.TOP || area == Area.TOP_LEFT || area == Area.TOP_RIGHT) {
+            if(TOP_SCROLL_HANDLER == null) {
+                TOP_SCROLL_HANDLER = new Handler();
+                TOP_SCROLL_HANDLER.postDelayed(topScroll, DELAY);
+            }
+        }
+        if(area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
+            if(BOTTOM_SCROLL_HANDLER == null) {
+                BOTTOM_SCROLL_HANDLER = new Handler();
+                BOTTOM_SCROLL_HANDLER.postDelayed(bottomScroll, DELAY);
+            }
+        }
     }
 
     Runnable leftScroll = new Runnable() {
@@ -345,7 +349,7 @@ public class MarkupFragment extends Fragment {
             boolean updatedDelay = false;
             for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
-                if (area == Area.LEFT || area == Area.TOP_LEFT || area == Area.BOTTOM_LEFT) {
+                if (area == Area.LEFT) {
                     moveHandle(i);
                     LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
                     if(!updatedDelay) {
@@ -366,7 +370,7 @@ public class MarkupFragment extends Fragment {
             boolean updatedDelay = false;
             for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
-                if (area == Area.RIGHT || area == Area.TOP_RIGHT || area == Area.BOTTOM_RIGHT) {
+                if (area == Area.RIGHT) {
                     moveHandle(i);
                     RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
                     if(!updatedDelay) {
