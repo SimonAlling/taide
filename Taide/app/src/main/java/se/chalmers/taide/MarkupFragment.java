@@ -4,13 +4,16 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,30 +23,30 @@ public class MarkupFragment extends Fragment {
     /** Start constants */
     private final int DELAY = 100; //TODO: Replace with settings for sensitivity
     private EditText TEXT_AREA;
-    private final double LEFT_BORDER_PERCENTAGE = 0.10;
-    private final double RIGHT_BORDER_PERCENTAGE = 0.10;
-    private final double TOP_BORDER_PERCENTAGE = 0.10;
-    private final double BOTTOM_BORDER_PERCENTAGE = 0.10;
+    private final double BORDER_PERCENTAGE = 0.10;
+    private final double DRAWER_MARGIN = 0.01;
     private Handler LEFT_SCROLL_HANDLER = null;
     private Handler RIGHT_SCROLL_HANDLER = null;
     private Handler TOP_SCROLL_HANDLER = null;
     private Handler BOTTOM_SCROLL_HANDLER = null;
-    private final List<Integer> ACTIVE_POINTERS = new ArrayList<>();
+    private final List<Pointer> ACTIVE_POINTERS = new ArrayList<>();
+    private final int X_SENSIVITY = 75;
     /** End constants */
 
     /** Start private variables */
-    private int startPos = 0, endPos = 0, fragmentHeight = 0;
-    private float dX0 = 0, dX1 = 0, dY0 = 0, dY1 = 0;
-    private boolean marked = false, pointer0Left = true;
+    private int startPos = 0, endPos = 0, fragmentHeight = 0, fragmentWidth = 0, leftMostPointer = 0;
+    private boolean marked = false;
+    private Handler testHandler;
     /** End private variables */
 
     private enum Area{
-        LEFT, RIGHT, TOP, BOTTOM, CENTER
+        LEFT, RIGHT, TOP, BOTTOM, CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_markup, container, false);
+
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -52,367 +55,313 @@ public class MarkupFragment extends Fragment {
                 }
             }
         });
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        fragmentWidth = size.x;
 
         view.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                EditText TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
+                TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         startPos = TEXT_AREA.getSelectionStart();
-                        dX0 = event.getX();
-                        dY0 = event.getY();
-                        marked = false;
-                        if (!ACTIVE_POINTERS.contains(event.getActionIndex())) {
-                            ACTIVE_POINTERS.add(event.getActionIndex());
+
+                        ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
+                        if (getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) != Area.CENTER) {
+                            //TODO: Do stuff
                         }
+                        if (testHandler == null)
+                            testHandler = new Handler();
+                        if(getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) == Area.LEFT)
+                            testHandler.postDelayed(leftScroll, DELAY);
+
                         break;
 
                     case MotionEvent.ACTION_POINTER_DOWN:
-                        dX0 = event.getX(0);
-                        dY0 = event.getY(0);
-                        dX1 = event.getX(1);
-                        dY1 = event.getY(1);
 
-                        if (dX0 - dX1 < 0) {
-                            pointer0Left = true;
-                        } else {
-                            pointer0Left = false;
-                        }
-                        if (!marked)
-                            endPos = startPos;
-                        if (!ACTIVE_POINTERS.contains(event.getActionIndex())) {
-                            ACTIVE_POINTERS.add(event.getActionIndex());
+                        endPos = startPos;
+
+                        ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
+                        leftMostPointer = getLeftMostPointerIndex();
+                        Log.d("Pointers: ", ACTIVE_POINTERS.size() + "");
+
+                        if (getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) != Area.CENTER) {
+                            //TODO: Do stuff
                         }
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        if (event.getPointerCount() > 1) {
-                            float x0 = event.getX(0);
-                            float x1 = event.getX(1);
-                            int maxLength = TEXT_AREA.getText().length();
-                            if (pointer0Left) {
-                                int newStartPos = getNewHandlePosX(startPos, x0, dX0, maxLength);
-                                int newEndPos = getNewHandlePosX(endPos, x1, dX1, maxLength);
-                                if (newStartPos <= newEndPos) {
-                                    TEXT_AREA.setSelection(newStartPos, newEndPos);
-
-                                    if (newStartPos != startPos) {
-                                        startPos = newStartPos;
-                                        dX0 = x0;
-                                    }
-                                    if (newEndPos != endPos) {
-                                        endPos = newEndPos;
-                                        dX1 = x1;
-                                    }
-                                }
-                                float y0 = event.getY(0);
-                                float y1 = event.getY(1);
-                                int newStartPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y0, dY0);
-                                int newEndPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), endPos, y1, dY1);
-                                if (newStartPosY <= newEndPosY) {
-                                    TEXT_AREA.setSelection(newStartPosY, newEndPosY);
-
-                                    if (newStartPosY != startPos) {
-                                        startPos = newStartPosY;
-                                        dY0 = y0;
-                                    }
-                                    if (newEndPosY != endPos) {
-                                        endPos = newEndPosY;
-                                        dY1 = y1;
-                                    }
-                                }
-                            } else {
-                                int newStartPos = getNewHandlePosX(startPos, x1, dX1, maxLength);
-                                int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
-                                if (newStartPos <= newEndPos) {
-                                    TEXT_AREA.setSelection(newStartPos, newEndPos);
-
-                                    if (newStartPos != startPos) {
-                                        startPos = newStartPos;
-                                        dX1 = x1;
-                                    }
-                                    if (newEndPos != endPos) {
-                                        endPos = newEndPos;
-                                        dX0 = x0;
-                                    }
-                                }
-                                float y0 = event.getY(0);
-                                float y1 = event.getY(1);
-                                int newStartPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y1, dY1);
-                                int newEndPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), endPos, y0, dY0);
-                                if (newStartPosY <= newEndPosY) {
-                                    TEXT_AREA.setSelection(newStartPosY, newEndPosY);
-
-                                    if (newStartPosY != startPos) {
-                                        startPos = newStartPosY;
-                                        dY1 = y1;
-                                    }
-                                    if (newEndPosY != endPos) {
-                                        endPos = newEndPosY;
-                                        dY0 = y0;
-                                    }
-                                }
-                            }
-                            if (startPos != endPos)
-                                marked = true;
-
-                        } else {
-                            if (!marked) {
-                                float x = event.getX();
-                                int maxLength = TEXT_AREA.getText().length();
-                                int newPos = getNewHandlePosX(startPos, x, dX0, maxLength);
-                                TEXT_AREA.setSelection(newPos);
-                                if (newPos != startPos) {
-                                    startPos = newPos;
-                                    dX0 = x;
-                                }
-                                float y = event.getY();
-                                int newPosY = getNewHandlePosY(TEXT_AREA.getText().toString(), startPos, y, dY0);
-                                TEXT_AREA.setSelection(newPosY);
-                                if (newPosY != startPos) {
-                                    startPos = newPosY;
-                                    dY0 = y;
-                                }
-                            } else {
-                                float x0 = event.getX(0);
-                                int maxLength = TEXT_AREA.getText().length();
-                                if (pointer0Left) {
-                                    int newStartPos = getNewHandlePosX(startPos, x0, dX0, maxLength);
-                                    if (newStartPos <= endPos) {
-                                        TEXT_AREA.setSelection(newStartPos, endPos);
-
-                                        if (newStartPos != startPos) {
-                                            startPos = newStartPos;
-                                            dX0 = x0;
-                                        }
-                                    }
-                                } else {
-                                    int newEndPos = getNewHandlePosX(endPos, x0, dX0, maxLength);
-                                    if (startPos <= newEndPos) {
-                                        TEXT_AREA.setSelection(startPos, newEndPos);
-
-                                        if (newEndPos != endPos) {
-                                            endPos = newEndPos;
-                                            dX0 = x0;
-                                        }
-                                    }
-                                }
-                                if (startPos != endPos)
-                                    marked = true;
-                            }
+                        ACTIVE_POINTERS.get(event.getActionIndex()).x = event.getX(event.getActionIndex());
+                        ACTIVE_POINTERS.get(event.getActionIndex()).y = event.getY(event.getActionIndex());
+                        Area area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
+                        if(area == Area.CENTER) {
+                            moveHandle(event.getActionIndex());
                         }
                         break;
 
                     case MotionEvent.ACTION_POINTER_UP:
-                        if (marked)
-                            TEXT_AREA.setSelection(startPos, endPos);
-                        if (ACTIVE_POINTERS.contains(event.getActionIndex()))
-                            ACTIVE_POINTERS.remove(event.getActionIndex());
+                        ACTIVE_POINTERS.remove(event.getActionIndex());
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        if (marked)
-                            TEXT_AREA.setSelection(startPos, endPos);
-                        if (ACTIVE_POINTERS.contains(event.getActionIndex()))
-                            ACTIVE_POINTERS.remove(event.getActionIndex());
+                        if (testHandler != null) {
+                            testHandler.removeCallbacks(leftScroll);
+                            testHandler = null;
+                        }
+                        ACTIVE_POINTERS.remove(event.getActionIndex());
                         break;
 
                     default:
                         return false;
                 }
-                if (pointerInArea(Area.LEFT) && LEFT_SCROLL_HANDLER != null) {
-                    contScroll(Area.LEFT);
-                } else if (pointerInArea(Area.RIGHT) && RIGHT_SCROLL_HANDLER != null) {
-                    contScroll(Area.RIGHT);
-                }
                 return true;
-            }
-
-            public int getNewHandlePosX(int pointer, float x, float dX, int maxLength) {
-                Point size = new Point();
-                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-                int width = size.x;
-                if (Math.abs(x - dX) >= width / 75) {
-                    if (x - dX < 0 && pointer > 0) {
-                        return Math.max((pointer - (int) Math.abs((x - dX) / (width / 75))), 0);
-                    } else if (x - dX > 0 && pointer < maxLength) {
-                        return Math.min((pointer + (int) Math.abs((x - dX) / (width / 75))), maxLength);
-                    }
-                }
-                return pointer;
-            }
-
-            public int getNewHandlePosY(String text, int pointer, float y, float dY) {
-                if (Math.abs(y - dY) > fragmentHeight / 10) {
-                    if (y - dY > 0) {
-                        int nextEnter = text.indexOf('\n', pointer);
-                        int prevEnter = text.lastIndexOf('\n', pointer);
-                        if (prevEnter == pointer)
-                            prevEnter = text.lastIndexOf('\n', pointer - 1);
-
-                        if (nextEnter >= 0) {
-                            int nextRowEnter = text.indexOf('\n', nextEnter + 1);
-                            if (nextRowEnter >= 0) {
-                                if (nextRowEnter >= nextEnter + (pointer - prevEnter)) {
-                                    return (nextEnter + (pointer - prevEnter));
-                                } else {
-                                    return nextRowEnter;
-                                }
-                            } else {
-                                if (nextRowEnter < 0 && text.length() <= nextEnter + (pointer - prevEnter)) {
-                                    return text.length();
-                                }
-                                return (nextEnter + (pointer - prevEnter));
-                            }
-                        } else {
-                            return text.length();
-                        }
-                    } else {
-                        int prevEnter = text.lastIndexOf('\n', pointer);
-                        if (prevEnter == pointer)
-                            prevEnter = text.lastIndexOf('\n', pointer - 1);
-
-                        if (prevEnter >= 0) {
-                            int prevRowEnter = text.lastIndexOf('\n', prevEnter - 1);
-                            if (prevRowEnter >= 0) {
-                                if (prevEnter >= prevRowEnter + (pointer - prevEnter)) {
-                                    return (prevRowEnter + (pointer - prevEnter));
-                                } else {
-                                    return prevEnter;
-                                }
-                            } else {
-                                if (prevEnter > (pointer - prevEnter)) {
-                                    return (pointer - prevEnter - 1);
-                                }
-                            }
-                        } else {
-                            return 0;
-                        }
-                    }
-                }
-                return pointer;
-            }
-
-            /** Starts a continuous scrolling towards a given direction.
-             * @param direction The direction to continuously scroll towards. Sending a CENTER here does nothing.
-             * @return The handler issued for the continuous scroll. Null if asked to scroll towards CENTER
-             */
-            private Handler contScroll(Area direction) {
-                Handler scrollHandler = new Handler();
-                switch (direction) {
-                    case LEFT:
-                        LEFT_SCROLL_HANDLER.removeCallbacks(scrollLeftAction);
-                        scrollHandler.postDelayed(scrollLeftAction, DELAY);
-                        break;
-                    case RIGHT:
-                        RIGHT_SCROLL_HANDLER.removeCallbacks(scrollRightAction);
-                        scrollHandler.postDelayed(scrollRightAction, DELAY);
-                        break;
-                    case TOP:
-                        break;
-                    case BOTTOM:
-                        break;
-                    default:
-                        return null;
-                }
-                return scrollHandler;
-            }
-
-            /** Start Runnables */
-            private final Runnable scrollRightAction = new Runnable() {
-                @Override
-                public void run() {
-                    if (pointerInArea(Area.RIGHT)) {
-                        int end = TEXT_AREA.getSelectionEnd();
-                        if (marked) {
-                            int start = TEXT_AREA.getSelectionStart();
-                            TEXT_AREA.setSelection(start, Math.min(end + 1, TEXT_AREA.length()));
-                        } else {
-                            TEXT_AREA.setSelection(Math.min(end + 1, TEXT_AREA.length()));
-                        }
-                        RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
-                    } else {
-                        RIGHT_SCROLL_HANDLER = null;
-                    }
-                }
-            };
-
-            private final Runnable scrollLeftAction = new Runnable() {
-                @Override
-                public void run() {
-                    if (pointerInArea(Area.LEFT)) {
-                        int start = TEXT_AREA.getSelectionStart();
-                        if (marked) {
-                            int end = TEXT_AREA.getSelectionEnd();
-                            TEXT_AREA.setSelection(Math.max(start - 1, 0), end);
-                        } else {
-                            TEXT_AREA.setSelection(Math.max(start - 1, 0));
-                        }
-                        LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
-                    } else {
-                        LEFT_SCROLL_HANDLER = null;
-                    }
-                }
-            };
-            /** End Runnables */
-
-            /** Checks if there is a pointer present in one of the five areas within the markup fragment
-             * @param area the area we want to check whatever or not there is a pointer in
-             * @return
-             */
-            private boolean pointerInArea(Area area) {
-                Log.d("MarkupFragment", "Pointers active: " + ACTIVE_POINTERS.size());
-                if (ACTIVE_POINTERS.size() == 0) {
-                    return false;
-                }
-                Point size = new Point();
-                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-                int width = size.x;
-                int height = fragmentHeight;
-
-
-                switch (area) {
-                    case LEFT:
-                        if ((dX0 < width * LEFT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
-                                || (dX1 < width * LEFT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
-                            return true;
-                        break;
-                    case RIGHT:
-                        if ((dX0 > width - width * RIGHT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
-                                || (dX1 > width - width * RIGHT_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
-                            return true;
-                        break;
-                    case TOP:
-                        if ((dX0 > height - height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
-                                || (dX1 > height - height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
-                            return true;
-                        break;
-                    case BOTTOM:
-                        if ((dX0 < height * TOP_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(0))
-                                || (dX1 < height * BOTTOM_BORDER_PERCENTAGE && ACTIVE_POINTERS.contains(1)))
-                            return true;
-                        break;
-                    case CENTER:
-                        if ((dX0 > width * LEFT_BORDER_PERCENTAGE
-                                && dX0 < width - width * RIGHT_BORDER_PERCENTAGE
-                                && dX0 > height * TOP_BORDER_PERCENTAGE
-                                && dX0 < height - height * BOTTOM_BORDER_PERCENTAGE
-                                && ACTIVE_POINTERS.contains(0))
-                                && (dX1 > width * LEFT_BORDER_PERCENTAGE
-                                && dX1 < width - width * RIGHT_BORDER_PERCENTAGE
-                                && dX1 > height * TOP_BORDER_PERCENTAGE
-                                && dX1 < height - height * BOTTOM_BORDER_PERCENTAGE
-                                && ACTIVE_POINTERS.contains(1)))
-                            return true;
-                        break;
-                    default:
-                        break;
-                }
-                return false;
             }
         });
         return view;
+    }
+
+    public int getXMovement(int pointerIndex) {
+        float x = ACTIVE_POINTERS.get(pointerIndex).x;
+        float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
+
+        if (Math.abs(x - dX) >= fragmentWidth / X_SENSIVITY) {
+            return (int) (x - dX) / X_SENSIVITY;
+        }
+        return 0;
+    }
+
+    /*public int getYMovement(int pointer, int pointerIndex) {
+        if (Math.abs(y - dY) > fragmentHeight / 10) {
+            if (y - dY > 0) {
+                int nextEnter = TEXT_AREA.getText().toString().indexOf('\n', pointer);
+                int prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer);
+                if (prevEnter == pointer)
+                    prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer - 1);
+
+                if (nextEnter >= 0) {
+                    int nextRowEnter = TEXT_AREA.getText().toString().indexOf('\n', nextEnter + 1);
+                    if (nextRowEnter >= 0) {
+                        if (nextRowEnter >= nextEnter + (pointer - prevEnter)) {
+                            return (nextEnter + (pointer - prevEnter));
+                        } else {
+                            return nextRowEnter;
+                        }
+                    } else {
+                        if (nextRowEnter < 0 && TEXT_AREA.length() <= nextEnter + (pointer - prevEnter)) {
+                            return TEXT_AREA.length();
+                        }
+                        return (nextEnter + (pointer - prevEnter));
+                    }
+                } else {
+                    return TEXT_AREA.length();
+                }
+            } else {
+                int prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer);
+                if (prevEnter == pointer)
+                    prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer - 1);
+
+                if (prevEnter >= 0) {
+                    int prevRowEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', prevEnter - 1);
+                    if (prevRowEnter >= 0) {
+                        if (prevEnter >= prevRowEnter + (pointer - prevEnter)) {
+                            return (prevRowEnter + (pointer - prevEnter));
+                        } else {
+                            return prevEnter;
+                        }
+                    } else {
+                        if (prevEnter > (pointer - prevEnter)) {
+                            return (pointer - prevEnter - 1);
+                        }
+                    }
+                } else {
+                    return 0;
+                }
+            }
+        }
+        return pointer;
+    }*/
+
+    public Area getPointerArea (Pointer pointer) {
+        float x = pointer.x, y = pointer.y;
+        if(x < fragmentWidth * BORDER_PERCENTAGE) {
+            if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+                return Area.BOTTOM_LEFT;
+            } else if(y < fragmentHeight * BORDER_PERCENTAGE) {
+                return Area.TOP_LEFT;
+            } else {
+                return Area.LEFT;
+            }
+
+        } else if(x > fragmentWidth - fragmentWidth * BORDER_PERCENTAGE) {
+            if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+                return Area.BOTTOM_RIGHT;
+            } else if(y < fragmentHeight * BORDER_PERCENTAGE) {
+                return Area.TOP_RIGHT;
+            } else {
+                return Area.RIGHT;
+            }
+
+        } else if (y < fragmentHeight * BORDER_PERCENTAGE) {
+            return Area.TOP;
+
+        } else if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+            return Area.BOTTOM;
+
+        } else {
+            return Area.CENTER;
+        }
+    }
+
+    /**
+     * Method to calculate which pointer is to furthest to the left
+     * @return the index of the leftmost pointer, -1 if no pointers are active
+     */
+    public int getLeftMostPointerIndex() {
+        int index = -1;
+        float smallestX = fragmentWidth + 1;
+        for(int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+            if(ACTIVE_POINTERS.get(i).x < smallestX) {
+                smallestX = ACTIVE_POINTERS.get(i).x;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Move the selection handle associated to a pointer
+     * @param pointerIndex index of the pointer
+     */
+    public void moveHandle(int pointerIndex) {
+        int oldPos = startPos;
+        if(pointerIndex == leftMostPointer) {
+            startPos = getNewPosition(startPos, pointerIndex);
+            if(oldPos != startPos) {
+                ACTIVE_POINTERS.get(pointerIndex).dX = ACTIVE_POINTERS.get(pointerIndex).x;
+            }
+        } else {
+            endPos = getNewPosition(endPos, pointerIndex);
+            if(oldPos != endPos) {
+                ACTIVE_POINTERS.get(pointerIndex).dX = ACTIVE_POINTERS.get(pointerIndex).x;
+            }
+        }
+        if(ACTIVE_POINTERS.size() > 1) {
+            TEXT_AREA.setSelection(startPos, endPos);
+        } else {
+            TEXT_AREA.setSelection(startPos);
+        }
+    }
+
+    public int getNewPosition(int position, int pointerIndex){
+        Area area = getPointerArea(ACTIVE_POINTERS.get(pointerIndex));
+        switch(area) {
+            case LEFT:
+                return Math.max(0, position - 1);
+
+            case RIGHT:
+                return Math.min(TEXT_AREA.length(), position + 1);
+
+            case TOP:
+                break;
+            case BOTTOM:
+                break;
+            case CENTER:
+                return (getXMovement(pointerIndex) > 0)?
+                        Math.min(TEXT_AREA.length(), getXMovement(pointerIndex) + position):
+                        Math.max(0, getXMovement(pointerIndex) + position);
+            case TOP_LEFT:
+                break;
+            case TOP_RIGHT:
+                break;
+            case BOTTOM_LEFT:
+                break;
+            case BOTTOM_RIGHT:
+                break;
+        }
+        return position;
+    }
+
+    Runnable leftScroll = new Runnable() {
+        @Override
+        public void run() {
+            boolean updatedDelay = false;
+            for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+                Area area = getPointerArea(ACTIVE_POINTERS.get(i));
+                if (area == Area.LEFT || area == Area.TOP_LEFT || area == Area.BOTTOM_LEFT) {
+                    moveHandle(i);
+                    testHandler.postDelayed(this, DELAY);
+                    if(!updatedDelay) {
+                        updatedDelay = true;
+                    }
+                }
+            }
+            if(!updatedDelay) {
+                testHandler.removeCallbacks(this);
+                testHandler = null;
+            }
+        }
+    };
+
+    Runnable rightScroll = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+                boolean updatedDelay = false;
+                Area area = getPointerArea(ACTIVE_POINTERS.get(i));
+                if (area == Area.RIGHT || area == Area.TOP_RIGHT || area == Area.BOTTOM_RIGHT) {
+                    moveHandle(i);
+                    testHandler.postDelayed(this, DELAY);
+                    updatedDelay = true;
+                }
+            }
+        }
+    };
+
+    Runnable topScroll = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+                boolean updatedDelay = false;
+                Area area = getPointerArea(ACTIVE_POINTERS.get(i));
+                if (area == Area.TOP || area == Area.TOP_RIGHT || area == Area.TOP_LEFT) {
+                    moveHandle(i);
+                    testHandler.postDelayed(this, DELAY);
+                    updatedDelay = true;
+                }
+            }
+        }
+    };
+
+    Runnable bottomScroll = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+                boolean updatedDelay = false;
+                Area area = getPointerArea(ACTIVE_POINTERS.get(i));
+                if (area == Area.BOTTOM || area == Area.BOTTOM_RIGHT || area == Area.BOTTOM_LEFT) {
+                    moveHandle(i);
+                    testHandler.postDelayed(this, DELAY);
+                    updatedDelay = true;
+                }
+            }
+        }
+    };
+
+    /**
+     * Simple class to group pointer information
+     */
+    public class Pointer {
+        float x, y, dX, dY;
+        Area lastArea;
+        public Pointer(float x, float y) {
+            this.x = x;
+            this.y = y;
+            dY = y;
+            dX = x;
+            lastArea = getPointerArea(this);
+        }
     }
 }
