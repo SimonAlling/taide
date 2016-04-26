@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,13 @@ public class MarkupFragment extends Fragment {
     private Handler TOP_SCROLL_HANDLER = null;
     private Handler BOTTOM_SCROLL_HANDLER = null;
     private final List<Pointer> ACTIVE_POINTERS = new ArrayList<>();
-    private final int X_SENSIVITY = 75;
+    private final int X_SENSITIVITY = 75;
+    private final int Y_SENSITIVITY = 5;
     /** End constants */
 
     /** Start private variables */
     private int startPos = 0, endPos = 0, fragmentHeight = 0, fragmentWidth = 0, leftMostPointer = 0;
-    private boolean marked = false;
+    private boolean marked = false, yChanged = false;
     private Handler testHandler;
     /** End private variables */
 
@@ -66,20 +66,38 @@ public class MarkupFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
                 DrawerLayout drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
+                Area area;
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
-
                         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
+                        area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
                         startPos = TEXT_AREA.getSelectionStart();
 
-                        ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
-                        if (getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) != Area.CENTER) {
-                            //TODO: Do stuff
+                        if(area == Area.LEFT || area == Area.TOP_LEFT || area == Area.BOTTOM_LEFT) {
+                            if(LEFT_SCROLL_HANDLER == null) {
+                                LEFT_SCROLL_HANDLER = new Handler();
+                                LEFT_SCROLL_HANDLER.postDelayed(leftScroll, DELAY);
+                            }
                         }
-                        if (testHandler == null)
-                            testHandler = new Handler();
-                        if(getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex())) == Area.LEFT)
-                            testHandler.postDelayed(leftScroll, DELAY);
+                        if(area == Area.RIGHT || area == Area.TOP_RIGHT || area == Area.BOTTOM_RIGHT) {
+                            if(RIGHT_SCROLL_HANDLER == null) {
+                                RIGHT_SCROLL_HANDLER = new Handler();
+                                RIGHT_SCROLL_HANDLER.postDelayed(rightScroll, DELAY);
+                            }
+                        }
+                        if(area == Area.TOP || area == Area.TOP_LEFT || area == Area.TOP_RIGHT) {
+                            if(TOP_SCROLL_HANDLER == null) {
+                                TOP_SCROLL_HANDLER = new Handler();
+                                TOP_SCROLL_HANDLER.postDelayed(topScroll, DELAY);
+                            }
+                        }
+                        if(area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
+                            if(BOTTOM_SCROLL_HANDLER == null) {
+                                BOTTOM_SCROLL_HANDLER = new Handler();
+                                BOTTOM_SCROLL_HANDLER.postDelayed(bottomScroll, DELAY);
+                            }
+                        }
 
                         break;
 
@@ -99,10 +117,12 @@ public class MarkupFragment extends Fragment {
                     case MotionEvent.ACTION_MOVE:
                         ACTIVE_POINTERS.get(event.getActionIndex()).x = event.getX(event.getActionIndex());
                         ACTIVE_POINTERS.get(event.getActionIndex()).y = event.getY(event.getActionIndex());
-                        Area area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
+                        area = getPointerArea(ACTIVE_POINTERS.get(event.getActionIndex()));
+                        leftMostPointer = getLeftMostPointerIndex();
                         if(area == Area.CENTER) {
                             moveHandle(event.getActionIndex());
                         }
+
                         break;
 
                     case MotionEvent.ACTION_POINTER_UP:
@@ -131,62 +151,78 @@ public class MarkupFragment extends Fragment {
         float x = ACTIVE_POINTERS.get(pointerIndex).x;
         float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
 
-        if (Math.abs(x - dX) >= fragmentWidth / X_SENSIVITY) {
-            return (int) (x - dX) / X_SENSIVITY;
+        if (Math.abs(x - dX) >= fragmentWidth / X_SENSITIVITY) {
+            return (int) (x - dX) / X_SENSITIVITY;
         }
         return 0;
     }
 
-    /*public int getYMovement(int pointer, int pointerIndex) {
-        if (Math.abs(y - dY) > fragmentHeight / 10) {
-            if (y - dY > 0) {
-                int nextEnter = TEXT_AREA.getText().toString().indexOf('\n', pointer);
-                int prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer);
+    public int getYMovement(int pointer, int pointerIndex) {
+        float y = ACTIVE_POINTERS.get(pointerIndex).y;
+        float dY = ACTIVE_POINTERS.get(pointerIndex).dY;
+        Area area = getPointerArea(ACTIVE_POINTERS.get(pointerIndex));
+        String text = TEXT_AREA.getText().toString();
+
+        if (Math.abs(y - dY) >= fragmentHeight / Y_SENSITIVITY
+                || (area != Area.CENTER && area != Area.RIGHT && area != Area.LEFT)) {
+            if (y - dY > 0 || area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
+                int nextEnter = text.indexOf('\n', pointer);
+                int prevEnter = text.lastIndexOf('\n', pointer);
                 if (prevEnter == pointer)
-                    prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer - 1);
+                    prevEnter = text.lastIndexOf('\n', pointer - 1);
 
                 if (nextEnter >= 0) {
-                    int nextRowEnter = TEXT_AREA.getText().toString().indexOf('\n', nextEnter + 1);
+                    int nextRowEnter = text.indexOf('\n', nextEnter + 1);
                     if (nextRowEnter >= 0) {
                         if (nextRowEnter >= nextEnter + (pointer - prevEnter)) {
+                            if(area == Area.CENTER) yChanged = true;
                             return (nextEnter + (pointer - prevEnter));
                         } else {
+                            if(area == Area.CENTER) yChanged = true;
                             return nextRowEnter;
                         }
                     } else {
-                        if (nextRowEnter < 0 && TEXT_AREA.length() <= nextEnter + (pointer - prevEnter)) {
+                        if (nextRowEnter < 0 && text.length() <= nextEnter + (pointer - prevEnter)) {
+                            if(area == Area.CENTER) yChanged = true;
                             return TEXT_AREA.length();
                         }
+                        if(area == Area.CENTER) yChanged = true;
                         return (nextEnter + (pointer - prevEnter));
                     }
                 } else {
+                    if(area == Area.CENTER) yChanged = true;
                     return TEXT_AREA.length();
                 }
-            } else {
-                int prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer);
+            } else if(y - dY < 0 || area == Area.TOP || area == Area.TOP_LEFT || area == Area.TOP_RIGHT){
+                int prevEnter = text.lastIndexOf('\n', pointer);
                 if (prevEnter == pointer)
-                    prevEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', pointer - 1);
+                    prevEnter = text.lastIndexOf('\n', pointer - 1);
 
                 if (prevEnter >= 0) {
-                    int prevRowEnter = TEXT_AREA.getText().toString().lastIndexOf('\n', prevEnter - 1);
+                    int prevRowEnter = text.lastIndexOf('\n', prevEnter - 1);
                     if (prevRowEnter >= 0) {
                         if (prevEnter >= prevRowEnter + (pointer - prevEnter)) {
+                            if(area == Area.CENTER) yChanged = true;
                             return (prevRowEnter + (pointer - prevEnter));
                         } else {
+                            if(area == Area.CENTER) yChanged = true;
                             return prevEnter;
                         }
                     } else {
                         if (prevEnter > (pointer - prevEnter)) {
+                            if(area == Area.CENTER) yChanged = true;
                             return (pointer - prevEnter - 1);
                         }
                     }
                 } else {
+                    if(area == Area.CENTER) yChanged = true;
                     return 0;
                 }
             }
+
         }
         return pointer;
-    }*/
+    }
 
     public Area getPointerArea (Pointer pointer) {
         float x = pointer.x, y = pointer.y;
@@ -245,11 +281,20 @@ public class MarkupFragment extends Fragment {
             startPos = getNewPosition(startPos, pointerIndex);
             if(oldPos != startPos) {
                 ACTIVE_POINTERS.get(pointerIndex).dX = ACTIVE_POINTERS.get(pointerIndex).x;
+                if(yChanged) {
+                    ACTIVE_POINTERS.get(pointerIndex).dY = ACTIVE_POINTERS.get(pointerIndex).y;
+                    yChanged = false;
+                }
             }
         } else {
+            oldPos = endPos;
             endPos = getNewPosition(endPos, pointerIndex);
             if(oldPos != endPos) {
                 ACTIVE_POINTERS.get(pointerIndex).dX = ACTIVE_POINTERS.get(pointerIndex).x;
+                if(yChanged) {
+                    ACTIVE_POINTERS.get(pointerIndex).dY = ACTIVE_POINTERS.get(pointerIndex).y;
+                    yChanged = false;
+                }
             }
         }
         if(ACTIVE_POINTERS.size() > 1) {
@@ -269,21 +314,27 @@ public class MarkupFragment extends Fragment {
                 return Math.min(TEXT_AREA.length(), position + 1);
 
             case TOP:
-                break;
+                return getYMovement(position, pointerIndex);
+
             case BOTTOM:
-                break;
+                return getYMovement(position, pointerIndex);
+
             case CENTER:
-                return (getXMovement(pointerIndex) > 0)?
-                        Math.min(TEXT_AREA.length(), getXMovement(pointerIndex) + position):
-                        Math.max(0, getXMovement(pointerIndex) + position);
+                return getYMovement(getXMovement(pointerIndex) > 0 ?
+                        Math.min(TEXT_AREA.length(), getXMovement(pointerIndex) + position) :
+                        Math.max(0, getXMovement(pointerIndex) + position), pointerIndex);
             case TOP_LEFT:
-                break;
+                return getYMovement(Math.max(0, position - 1), pointerIndex);
+
             case TOP_RIGHT:
-                break;
+                return getYMovement(Math.min(0, position + 1), pointerIndex);
+
             case BOTTOM_LEFT:
-                break;
+                return getYMovement(Math.max(0, position - 1), pointerIndex);
+
             case BOTTOM_RIGHT:
-                break;
+                return getYMovement(Math.min(0, position + 1), pointerIndex);
+
         }
         return position;
     }
@@ -296,15 +347,15 @@ public class MarkupFragment extends Fragment {
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
                 if (area == Area.LEFT || area == Area.TOP_LEFT || area == Area.BOTTOM_LEFT) {
                     moveHandle(i);
-                    testHandler.postDelayed(this, DELAY);
+                    LEFT_SCROLL_HANDLER.postDelayed(this, DELAY);
                     if(!updatedDelay) {
                         updatedDelay = true;
                     }
                 }
             }
             if(!updatedDelay) {
-                testHandler.removeCallbacks(this);
-                testHandler = null;
+                LEFT_SCROLL_HANDLER.removeCallbacks(this);
+                LEFT_SCROLL_HANDLER = null;
             }
         }
     };
@@ -312,14 +363,20 @@ public class MarkupFragment extends Fragment {
     Runnable rightScroll = new Runnable() {
         @Override
         public void run() {
+            boolean updatedDelay = false;
             for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
-                boolean updatedDelay = false;
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
                 if (area == Area.RIGHT || area == Area.TOP_RIGHT || area == Area.BOTTOM_RIGHT) {
                     moveHandle(i);
-                    testHandler.postDelayed(this, DELAY);
-                    updatedDelay = true;
+                    RIGHT_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    if(!updatedDelay) {
+                        updatedDelay = true;
+                    }
                 }
+            }
+            if(!updatedDelay) {
+                RIGHT_SCROLL_HANDLER.removeCallbacks(this);
+                RIGHT_SCROLL_HANDLER = null;
             }
         }
     };
@@ -327,14 +384,20 @@ public class MarkupFragment extends Fragment {
     Runnable topScroll = new Runnable() {
         @Override
         public void run() {
+            boolean updatedDelay = false;
             for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
-                boolean updatedDelay = false;
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
                 if (area == Area.TOP || area == Area.TOP_RIGHT || area == Area.TOP_LEFT) {
                     moveHandle(i);
-                    testHandler.postDelayed(this, DELAY);
-                    updatedDelay = true;
+                    TOP_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    if(!updatedDelay) {
+                        updatedDelay = true;
+                    }
                 }
+            }
+            if(!updatedDelay) {
+                TOP_SCROLL_HANDLER.removeCallbacks(this);
+                TOP_SCROLL_HANDLER = null;
             }
         }
     };
@@ -342,14 +405,20 @@ public class MarkupFragment extends Fragment {
     Runnable bottomScroll = new Runnable() {
         @Override
         public void run() {
+            boolean updatedDelay = false;
             for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
-                boolean updatedDelay = false;
                 Area area = getPointerArea(ACTIVE_POINTERS.get(i));
                 if (area == Area.BOTTOM || area == Area.BOTTOM_RIGHT || area == Area.BOTTOM_LEFT) {
                     moveHandle(i);
-                    testHandler.postDelayed(this, DELAY);
-                    updatedDelay = true;
+                    BOTTOM_SCROLL_HANDLER.postDelayed(this, DELAY);
+                    if(!updatedDelay) {
+                        updatedDelay = true;
+                    }
                 }
+            }
+            if(!updatedDelay) {
+                BOTTOM_SCROLL_HANDLER.removeCallbacks(this);
+                BOTTOM_SCROLL_HANDLER = null;
             }
         }
     };
