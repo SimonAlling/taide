@@ -9,7 +9,7 @@
     android:clickable="true"
     android:focusableInTouchMode="true"
 	android:fitsSystemWindows="true"
-	tools:context="se.chalmers.taide.MainActivity" >
+	tools:context="se.chalmers.taide.MainActivity">
 	
 	<RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"

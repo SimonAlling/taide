@@ -65,8 +65,11 @@ public class MarkupFragment extends Fragment {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
+                DrawerLayout drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
+
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         startPos = TEXT_AREA.getSelectionStart();
 
                         ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(), event.getY()));
@@ -107,6 +110,7 @@ public class MarkupFragment extends Fragment {
                         break;
 
                     case MotionEvent.ACTION_UP:
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                         if (testHandler != null) {
                             testHandler.removeCallbacks(leftScroll);
                             testHandler = null;
