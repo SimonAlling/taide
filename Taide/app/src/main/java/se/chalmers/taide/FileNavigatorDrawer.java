@@ -222,19 +222,19 @@ public class FileNavigatorDrawer {
             @Override
             public void create(SwipeMenu menu) {
                 if (menu.getViewType() == 0) {
-                    SwipeMenuItem openItem = new SwipeMenuItem(parentActivity.getApplicationContext());
-                    openItem.setBackground(new ColorDrawable(RENAME_BUTTON_BACKGROUND_COLOR));
-                    openItem.setTitleColor(RENAME_BUTTON_TEXT_COLOR);
-                    openItem.setTitleSize(RENAME_BUTTON_FONT_SIZE);
-                    openItem.setWidth((int) parentActivity.getResources().getDimension(R.dimen.drawer_action_button_width));
-                    openItem.setTitle(R.string.rename_file);
-                    menu.addMenuItem(openItem);
+                    SwipeMenuItem renameButton = new SwipeMenuItem(parentActivity.getApplicationContext());
+                    renameButton.setBackground(new ColorDrawable(RENAME_BUTTON_BACKGROUND_COLOR));
+                    renameButton.setTitleColor(RENAME_BUTTON_TEXT_COLOR);
+                    renameButton.setTitleSize(RENAME_BUTTON_FONT_SIZE);
+                    renameButton.setWidth((int) parentActivity.getResources().getDimension(R.dimen.drawer_action_button_width));
+                    renameButton.setTitle(R.string.rename_file);
+                    menu.addMenuItem(renameButton);
 
-                    SwipeMenuItem deleteItem = new SwipeMenuItem(parentActivity.getApplicationContext());
-                    deleteItem.setBackground(new ColorDrawable(parentActivity.getResources().getColor(R.color.drawer_action_delete)));
-                    deleteItem.setWidth((int) parentActivity.getResources().getDimension(R.dimen.drawer_action_button_width));
-                    deleteItem.setIcon(R.drawable.ic_delete_black);
-                    menu.addMenuItem(deleteItem);
+                    SwipeMenuItem deleteButton = new SwipeMenuItem(parentActivity.getApplicationContext());
+                    deleteButton.setBackground(new ColorDrawable(parentActivity.getResources().getColor(R.color.drawer_action_delete)));
+                    deleteButton.setWidth((int) parentActivity.getResources().getDimension(R.dimen.drawer_action_button_width));
+                    deleteButton.setIcon(R.drawable.ic_delete_black);
+                    menu.addMenuItem(deleteButton);
                 }
             }
         };
