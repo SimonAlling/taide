@@ -21,20 +21,20 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
     private static final int COUNTDOWN_TIME = 1000;
     private boolean hasPendingTask = false;
 
-    protected TimeTextHistoryHandler(){
+    protected TimeTextHistoryHandler() {
         super();
         timer = new Timer("TextHistoryHandler");
     }
 
     @Override
-    public void registerInputField(TextSource input){
+    public void registerInputField(TextSource input) {
         super.registerInputField(input);
-        currentInputContent = (input==null?"":input.getText().toString());
+        currentInputContent = (input == null ? "" : input.getText().toString());
     }
 
     @Override
-    public boolean undoAction(){
-        if(currentTextAction != null){
+    public boolean undoAction() {
+        if (currentTextAction != null) {
             insertCurrentData();
         }
 
@@ -42,12 +42,12 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
     }
 
     @Override
-    public String peekUndoAction(){
-        if(currentTextAction != null){
-            List<TextAction> a = new LinkedList<>();
-            a.add(new TextAction(currentTextAction, currentTextInput, currentTextPos));
-            return actionListToString(a);
-        }else {
+    public String peekUndoAction() {
+        if (currentTextAction != null) {
+            List<TextAction> actions = new LinkedList<>();
+            actions.add(new TextAction(currentTextAction, currentTextInput, currentTextPos));
+            return actionListToString(actions);
+        } else {
             return super.peekUndoAction();
         }
     }
@@ -56,14 +56,14 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
         return new TimerTask() {
             @Override
             public void run() {
-                if(currentTextAction != null) {
+                if (currentTextAction != null) {
                     insertCurrentData();
                 }
             }
         };
     }
 
-    private void insertCurrentData(){
+    private void insertCurrentData() {
         insertAction(new TextAction(currentTextAction, currentTextInput, currentTextPos));
         currentTextAction = null;
         currentTextInput = null;
@@ -74,23 +74,24 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
 
     @Override
     public void onTextChanged(String s, int start, int before, int count) {
-        if(s.equals(currentInputContent)){
-            //Ignore change.
+        if (s.equals(currentInputContent)) {
+            // Ignore change.
             return;
         }
 
-        //Handle normal events.
+        // Handle normal events.
         timer.cancel();
         timer.purge();
         timer = new Timer("TextHistoryHandler");
-        if(!hasPendingTask) {
-            if (Math.abs(before-count) != 1 || (s.length()>start+before && currentInputContent.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {  //Text replaced. (not only letter written)
-                if(before > 0 && count > 0){
+        if (!hasPendingTask) {
+            if (Math.abs(before-count) != 1 || (s.length() > start+before && currentInputContent.length() > start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {
+                //Text replaced (not only letter written)
+                if (before > 0 && count > 0) {
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start),
                                  new TextAction(Action.ADD, s.substring(start, start+count), start));
-                }else if(before > 0){
+                } else if (before > 0) {
                     insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before), start));
-                }else{
+                } else {
                     insertAction(new TextAction(Action.ADD, s.substring(start, start+count), start));
                 }
                 hasPendingTask = false;
@@ -107,51 +108,51 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
                 timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                 hasPendingTask = true;
             }
-        }else{
-            if(Math.abs(before-count) != 1 || (s.length()>start+before && currentInputContent.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))){
-                if(currentTextAction == Action.ADD && count>before && (start == currentTextPos || start+before == currentTextPos+currentTextInput.length())){
-                    if(start+before == currentTextPos+currentTextInput.length() && before>0){
-                        if(currentTextInput.length()>=before){
+        } else {
+            if (Math.abs(before-count) != 1 || (s.length()>start+before && currentInputContent.length()>start+before && !currentInputContent.substring(start, start+before).equals(s.substring(start, start+before)))) {
+                if (currentTextAction == Action.ADD && count > before && (start == currentTextPos || start+before == currentTextPos+currentTextInput.length())) {
+                    if (start+before == currentTextPos+currentTextInput.length() && before > 0) {
+                        if (currentTextInput.length() >= before) {
                             currentTextInput = currentTextInput.substring(0, currentTextInput.length()-before)+s.substring(start, start+count);
-                        }else{
+                        } else {
                             insertAction(new TextAction(Action.REMOVE, currentInputContent.substring(start, start+before-currentTextInput.length()), start));
                             currentTextPos = start;
                             currentTextInput = s.substring(start, start+count);
                         }
-                    }else{
+                    } else {
                         currentTextInput += s.substring(start, start+count);
                     }
                     timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                     hasPendingTask = true;
-                }else {
-                    //Save old state
+                } else {
+                    // Save old state
                     insertCurrentData();
-                    //Handle it as no task were found
+                    // Handle it as no task were found
                     onTextChanged(s, start, before, count);
                 }
-            }else{
-                if(currentTextAction == Action.ADD){
-                    if(before>count || start+before != currentTextPos+currentTextInput.length()){
-                        //Change happens somewhere completely elsewhere. (or add -> remove)
+            } else {
+                if (currentTextAction == Action.ADD) {
+                    if (before > count || start+before != currentTextPos+currentTextInput.length()) {
+                        // Change happens somewhere completely elsewhere. (or add -> remove)
                         insertCurrentData();
                         onTextChanged(s, start, before, count);
-                    }else{
+                    } else {
                         currentTextInput += s.substring(start+before, start+count);
                         timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                         hasPendingTask = true;
                     }
-                }else if(currentTextAction == Action.REMOVE){
-                    if(before<count || currentTextPos != start+count+1){
-                        //Change happens somewhere completely elsewhere. (or remove -> add)
+                } else if (currentTextAction == Action.REMOVE) {
+                    if (before < count || currentTextPos != start+count+1) {
+                        // Change happens somewhere completely elsewhere (or remove -> add)
                         insertCurrentData();
                         onTextChanged(s, start, before, count);
-                    }else{
+                    } else {
                         currentTextPos -= 1;
                         currentTextInput = currentInputContent.charAt(start+count)+currentTextInput;
                         timer.schedule(getCountdownTask(), COUNTDOWN_TIME);
                         hasPendingTask = true;
                     }
-                }else{
+                } else {
                     throw new UnsupportedOperationException("Cannot change a state that is not ADD or REMOVE");
                 }
             }
