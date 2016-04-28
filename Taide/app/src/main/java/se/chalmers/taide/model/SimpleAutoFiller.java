@@ -69,17 +69,19 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     }
 
     /**
-     * Checks whether this shortFormat string has any auto fill and retrieves its
-     * replacer if such exists.
-     * @param shortFormat The short format for the auto fill (the trigger)
+     * Checks whether an autofill will be activated on space input.
      * @param source The current source code
      * @param index The current location of the selection in the code
      * @return The replacer of the shortFormat, or null if not existing
      */
-    public String getAutoFillReplacement(String shortFormat, String source, int index){
+    public String getAutoFillReplacement(String source, int index){
+        String sourceUntilIndex = source.substring(0, index).toLowerCase();
         for(AutoFill autoFill : autoFills){
-            if(autoFill.getTrigger().equalsIgnoreCase(shortFormat)){
-                return autoFill.getPrefix(source, index)+autoFill.getSuffix(source, index);
+            if(autoFill.getTrigger().endsWith(" ")) {
+                String autoFillTrigger = autoFill.getTrigger().trim().toLowerCase();
+                if (sourceUntilIndex.endsWith(autoFillTrigger)) {
+                    return autoFill.getPrefix(source, index) + autoFill.getSuffix(source, index);
+                }
             }
         }
         return null;

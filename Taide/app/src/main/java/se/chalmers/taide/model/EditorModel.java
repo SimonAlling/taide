@@ -39,12 +39,10 @@ public interface EditorModel {
     void manuallyTriggerFilter(String filterName);
 
     /**
-     * Checks whether this shortFormat string has any auto fill and retrieves its
-     * replacer if such exists.
-     * @param shortFormat The short format for the auto fill (the trigger)
-     * @return The replacer of the shortFormat, or null if not existing
+     * Checks whether the model wants to exchange any word on space input.
+     * @return The replacer, or null if not existing
      */
-    String getAutoFillReplacement(String shortFormat);
+    String getAutoFillReplacement();
 
     /**
      * Performs undo on the text field (according to the recorded history).
