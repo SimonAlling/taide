@@ -19,8 +19,8 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
     private final Context context;
     private boolean canStepUpOneLevel;
 
-    public FileViewAdapter(Context context, CodeFile[] values, boolean canStepUpOneLevel) {
-        super(context, android.R.layout.simple_list_item_1, prepareArray(values));
+    public FileViewAdapter(Context context, CodeFile[] codeFiles, boolean canStepUpOneLevel) {
+        super(context, android.R.layout.simple_list_item_1, prepareCodeFiles(codeFiles));
         this.context = context;
         this.canStepUpOneLevel = canStepUpOneLevel;
     }
@@ -30,7 +30,7 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         Context context;
         View view;
         if (convertView == null) {
-            context = (parent != null ? parent.getContext() : this.context);
+            context = parent != null ? parent.getContext() : this.context;
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.icon_text_item_view_files, parent, false);
         } else {
@@ -45,17 +45,17 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
             textView.setEnabled(canStepUpOneLevel);
             icon.setImageResource(getReferenceFromStyle(context, R.attr.iconUpOneFileLevel, R.drawable.ic_up_one_file_level_white));
         } else {
-            CodeFile f = getItem(position);
-            textView.setText(f.getName());
-            if (f.isDirectory()) {
+            CodeFile codeFile = getItem(position);
+            textView.setText(codeFile.getName());
+            if (codeFile.isDirectory()) {
                 icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFolder, R.drawable.ic_folder_white));
             } else {
-                textView.setEnabled(f.isOpenable());
+                textView.setEnabled(codeFile.isOpenable());
                 icon.setImageResource(getReferenceFromStyle(context, R.attr.iconFile, R.drawable.ic_file_white));
             }
         }
 
-        int textColor = getReferenceFromStyle(context, textView.isEnabled() ? android.R.attr.textColorPrimary : android.R.attr.textColorSecondary, android.R.color.black);
+        int textColor = getReferenceFromStyle(context, (textView.isEnabled() ? android.R.attr.textColorPrimary : android.R.attr.textColorSecondary), android.R.color.black);
         textView.setTextColor(context.getResources().getColor(textColor));
 
         return view;
@@ -72,10 +72,10 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         return position == 0 ? 1 : 0;
     }
 
-    private static CodeFile[] prepareArray(CodeFile[] array) {
-        CodeFile[] arr = new CodeFile[array.length+1];
-        arr[0] = null;
-        System.arraycopy(array, 0, arr, 1, array.length);
-        return arr;
+    private static CodeFile[] prepareCodeFiles(CodeFile[] codeFiles) {
+        CodeFile[] preparedCodeFiles = new CodeFile[codeFiles.length+1];
+        preparedCodeFiles[0] = null;
+        System.arraycopy(codeFiles, 0, preparedCodeFiles, 1, codeFiles.length);
+        return preparedCodeFiles;
     }
 }
