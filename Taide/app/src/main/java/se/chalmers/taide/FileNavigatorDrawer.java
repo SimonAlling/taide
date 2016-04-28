@@ -45,6 +45,7 @@ public class FileNavigatorDrawer {
     private static final String CURRENT_FILE_KEYNAME = "currentOpenedFile";
     private static final int RENAME_BUTTON_BACKGROUND_COLOR = Color.parseColor("#C9C9CE");
     private static final int RENAME_BUTTON_TEXT_COLOR = Color.BLACK;
+    private static final int RENAME_BUTTON_FONT_SIZE = 14;
 
     private AppCompatActivity parentActivity;
     private EditorModel model;
@@ -224,9 +225,9 @@ public class FileNavigatorDrawer {
                     SwipeMenuItem openItem = new SwipeMenuItem(parentActivity.getApplicationContext());
                     openItem.setBackground(new ColorDrawable(RENAME_BUTTON_BACKGROUND_COLOR));
                     openItem.setTitleColor(RENAME_BUTTON_TEXT_COLOR);
+                    openItem.setTitleSize(RENAME_BUTTON_FONT_SIZE);
                     openItem.setWidth((int) parentActivity.getResources().getDimension(R.dimen.drawer_action_button_width));
                     openItem.setTitle(R.string.rename_file);
-                    openItem.setTitleSize(14);
                     menu.addMenuItem(openItem);
 
                     SwipeMenuItem deleteItem = new SwipeMenuItem(parentActivity.getApplicationContext());
