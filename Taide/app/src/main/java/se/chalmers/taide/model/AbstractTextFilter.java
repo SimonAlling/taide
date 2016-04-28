@@ -120,4 +120,9 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
         }
     }
 
+    @Override
+    public int getPriority(){
+        return 10;
+    }
+
 }

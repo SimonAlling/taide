@@ -116,17 +116,38 @@ public class SimpleEditorModel implements EditorModel {
     }
 
     /**
-     * Checks whether this shortFormat string has any auto fill and retrieves its
-     * replacer if such exists.
-     * @param shortFormat The short format for the auto fill (the trigger)
-     * @return The replacer of the shortFormat, or null if not existing
+     * Retrieves the TextSource that is currently attached to the model
+     * @return The text source attached to the model
      */
-    public String getAutoFillReplacement(String shortFormat){
+    @Override
+    public TextSource getTextSource(){
+        return textSource;
+    }
+
+    /**
+     * Checks whether the model wants to exchange any word on space input.
+     * @return The autofill, or null if not existing
+     */
+    public AutoFill getAutoFillReplacement(){
         if(textFilters.containsKey(FILTER_KEY_AUTOFILL) && textSource != null){
             SimpleAutoFiller autoFill = (SimpleAutoFiller)textFilters.get(FILTER_KEY_AUTOFILL);
-            return autoFill.getAutoFillReplacement(shortFormat, textSource.getText().toString(), textSource.getSelectionStart());
+            return autoFill.getAutoFillReplacement(textSource.getText().toString(), textSource.getSelectionStart());
         }
         return null;
+    }
+
+    /**
+     * Enables or disables a certain autofill word so that this does/does not
+     * trigger on data input
+     * @param word The word to apply the change on
+     * @param enabled <code>true</code> to enable autofill on the word, <code>false</code> otherwise
+     */
+    @Override
+    public void setAutofillWordEnabled(String word, boolean enabled){
+        if(textFilters.containsKey(FILTER_KEY_AUTOFILL) && textSource != null){
+            SimpleAutoFiller autoFill = (SimpleAutoFiller)textFilters.get(FILTER_KEY_AUTOFILL);
+            autoFill.setWordEnabled(word, enabled);
+        }
     }
 
     /**

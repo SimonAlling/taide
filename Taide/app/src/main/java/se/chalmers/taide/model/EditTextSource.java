@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -133,11 +134,24 @@ public class EditTextSource implements TextSource {
      public void addListener(TextSourceListener tsl, boolean allowEventChaining) {
         if (tsl != null) {
             if(allowEventChaining){
-                listenersAllowChains.add(tsl);
+                insertListenerIntoList(tsl, listenersAllowChains);
             }else {
-                listeners.add(tsl);
+                insertListenerIntoList(tsl, listeners);
             }
         }
+    }
+
+    private void insertListenerIntoList(TextSourceListener tsl, List<TextSourceListener> list){
+        int index = 0;
+        for(TextSourceListener listener : list){
+            if(listener.getPriority()<tsl.getPriority()){
+                index++;
+            }else{
+                break;
+            }
+        }
+
+        list.add(index, tsl);
     }
 
     @Override
