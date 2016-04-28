@@ -8,6 +8,20 @@ public class StringUtil {
     public static final String WHITESPACE_CHARACTERS = " \n\t";
 
     /**
+     * Repeats a string a specified number of times.
+     * @param string The string to repeat
+     * @param repetitions The number of repetitions
+     * @return <code>string</code> repeated <code>repetitions</code> times.
+     */
+    public static String repeat(String string, int repetitions) {
+        String result = "";
+        for (int i = 0; i < repetitions; i++) {
+            result += string;
+        }
+        return result;
+    }
+
+    /**
      * Checks if an index is within the bounds of a string
      * @param string The string to check against
      * @param index The index to check
