@@ -48,7 +48,6 @@ import se.chalmers.taide.model.history.HistoryHandlerFactory;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-
     public static final String PREF_USE_SYNC = "pref_key_use_sync";
     public static final String PREF_SYNC_FORMATS = "pref_key_sync_formats";
     public static final String PREF_HISTORY_HANDLER_TYPE = "pref_key_history_handler_type";
@@ -62,26 +61,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Add preferences menu
+        // Add preferences menu
         addPreferencesFromResource(R.xml.preferences);
         updateSyncPreferences(sharedPreferences);
         updateHistorySettings(sharedPreferences);
-//        setHasOptionsMenu(true);
     }
 
 
-    private void onPreferenceChange(SharedPreferences preferences, String key){
-        switch(key){
-            case PREF_USE_SYNC: case PREF_SYNC_FORMATS:  updateSyncPreferences(preferences); break;
-            case PREF_HISTORY_HANDLER_TYPE:                    updateHistorySettings(preferences);break;
+    private void onPreferenceChange(SharedPreferences preferences, String key) {
+        switch (key) {
+            case PREF_USE_SYNC: case PREF_SYNC_FORMATS:
+                updateSyncPreferences(preferences); break;
+            case PREF_HISTORY_HANDLER_TYPE:
+                updateHistorySettings(preferences); break;
         }
     }
 
-    private void updateSyncPreferences(SharedPreferences preferences){
-        if(preferences != null) {
-            //Sync formats stuff
+    private void updateSyncPreferences(SharedPreferences preferences) {
+        if (preferences != null) {
+            // Sync formats stuff
             // We'll start out with the assumption that no resource types are selected:
             int stringRef = R.string.pref_summary_sync_formats_none;
             int allowedResourceTypeCount = preferences.getStringSet(PREF_SYNC_FORMATS, Collections.EMPTY_SET).size();
@@ -97,16 +97,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    private void updateHistorySettings(SharedPreferences preferences){
-        if(preferences != null){
+    private void updateHistorySettings(SharedPreferences preferences) {
+        if (preferences != null) {
             String type = preferences.getString(PREF_HISTORY_HANDLER_TYPE, "time");
-            switch(type){
-                case "word":    HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.WORD);break;
-                case "time":
-                default:        HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.TIME);break;
+            switch (type) {
+                case "word":
+                    HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.WORD); break;
+                case "time": default:
+                    HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.TIME); break;
             }
             Preference p = findPreference(PREF_HISTORY_HANDLER_TYPE);
-            if(p != null){
+            if (p != null) {
                 p.setSummary("Current mode is " + type);
             }
         }
