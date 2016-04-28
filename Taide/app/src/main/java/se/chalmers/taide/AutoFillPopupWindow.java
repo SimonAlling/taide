@@ -24,7 +24,7 @@ import se.chalmers.taide.util.StringUtil;
 /**
  * Created by Matz on 2016-04-28.
  */
-public class AutoFillPopupWindow implements TextSource.TextSourceListener{
+public class AutoFillPopupWindow implements TextSource.TextSourceListener {
 
     public static final String AUTOFILL_SUFFIX = "×"; // string to display at the end of the autofill popup
     public static final int AUTOFILL_SUFFIX_SPACING = 3; // number of spaces before suffix
@@ -37,18 +37,18 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
     private EditorModel model;
     private EditText codeEditor;
 
-    public AutoFillPopupWindow(Activity activity, EditorModel model, EditText codeEditor){
+    public AutoFillPopupWindow(Activity activity, EditorModel model, EditText codeEditor) {
         this.currentActivity = activity;
         this.model = model;
         this.codeEditor = codeEditor;
-        if(model != null && model.getTextSource() != null){
+        if (model != null && model.getTextSource() != null) {
             model.getTextSource().addListener(this);
         }
         initAutoFillBox();
     }
 
-    public void detach(){
-        if(model != null && model.getTextSource() != null){
+    public void detach() {
+        if (model != null && model.getTextSource() != null) {
             model.getTextSource().removeListener(this);
         }
     }
@@ -58,10 +58,10 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
         updateAutoFillBox();
     }
     @Override
-    public int getPriority(){ return 100; }
+    public int getPriority() { return 100; }
 
 
-    private void initAutoFillBox(){
+    private void initAutoFillBox() {
         autofillBox = new ListPopupWindow(currentActivity);
         autofillBox.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         autofillBox.setPromptPosition(ListPopupWindow.POSITION_PROMPT_BELOW);
@@ -71,7 +71,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 AutoFill currentAutofill = (model==null?null:model.getAutoFillReplacement());
-                if(currentAutofill != null){
+                if (currentAutofill != null) {
                     currentDisabledAutofillWord = currentAutofill.getTrigger();
                     model.setAutofillWordEnabled(currentDisabledAutofillWord, false);
                     autofillBox.dismiss();
@@ -80,8 +80,8 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
         });
     }
 
-    private void updateAutoFillBox(){
-        if(codeEditor != null) {
+    private void updateAutoFillBox() {
+        if (codeEditor != null) {
             int pos = codeEditor.getSelectionStart();
             Layout layout = codeEditor.getLayout();
             int line = layout.getLineForOffset(pos);
@@ -94,43 +94,43 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
             cursorAnchor.setY(y);
             cursorAnchor.setVisibility(View.VISIBLE);
 
-            //Update UI
+            // Update UI:
             updateAutoFillWindowState(cursorAnchor);
 
-            //Reset disabled word
-            if(currentDisabledAutofillWord != null){
+            // Reset disabled word:
+            if (currentDisabledAutofillWord != null) {
                 model.setAutofillWordEnabled(currentDisabledAutofillWord, true);
                 currentDisabledAutofillWord = null;
             }
         }
     }
 
-    private void updateAutoFillWindowState(View anchorView){
-        List<String> values = getSuffixedAutoFillValues();
-        if(values != null) {
+    private void updateAutoFillWindowState(View anchorView) {
+        List<String> values = getProcessedAutoFillValues();
+        if (values != null) {
             ListAdapter adapter = new ArrayAdapter<>(currentActivity.getApplicationContext(), android.R.layout.simple_list_item_1, values);
             autofillBox.setAdapter(adapter);
             autofillBox.setContentWidth(measureContentWidth(adapter));
-            if(!autofillBox.isShowing()){
+            if (!autofillBox.isShowing()) {
                 autofillBox.show();
             }
-        }else if(autofillBox.isShowing()) {
+        } else if (autofillBox.isShowing()) {
             autofillBox.dismiss();
         }
 
-        //Set anchor
+        // Set anchor:
         autofillBox.setAnchorView(anchorView);
     }
 
-    private ArrayList<String> getAutoFillValues(){
-        AutoFill autofill = (model != null?model.getAutoFillReplacement():null);
-        if(autofill != null && model != null && model.getTextSource() != null){
+    private ArrayList<String> getAutoFillValues() {
+        AutoFill autofill = (model != null ? model.getAutoFillReplacement() : null);
+        if (autofill != null && model != null && model.getTextSource() != null) {
             ArrayList<String> list = new ArrayList<>();
             String source = model.getTextSource().getText().toString();
             int index = model.getTextSource().getSelectionStart();
             list.add(autofill.getPrefix(source, index) + autofill.getSuffix(source, index));
             return list;
-        }else{
+        } else {
             return null;
         }
     }
