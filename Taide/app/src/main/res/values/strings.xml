@@ -22,7 +22,7 @@
         <item>New file</item>
         <item>New folder</item>
     </string-array>
-    <string name="upOneLevel">Up one level</string>
+    <string name="upOneLevel">..</string>
     <string name="add_new_project_description">Project name:</string>
     <string name="load_project_description">Open project:</string>
     <string name="load_project_loading">Opening project...</string>
