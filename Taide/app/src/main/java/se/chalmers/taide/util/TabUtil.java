@@ -21,17 +21,11 @@ public class TabUtil {
      * @return A representation of the given number of "tabs"
      */
     public static String getTabs(int numberOfTabs) {
-        String result = "";
         if (useTabs) {
-            for (int i = 0; i < numberOfTabs; i++) {
-                result += "\t";
-            }
+            return StringUtil.repeat("\t", numberOfTabs);
         } else {
-            for (int i = 0; i < numberOfTabs*spacesPerTab; i++) {
-                result += " ";
-            }
+            return StringUtil.repeat(" ", numberOfTabs * spacesPerTab);
         }
-        return result;
     }
 
     /**
