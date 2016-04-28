@@ -266,11 +266,9 @@ public class FileNavigatorDrawer {
                             }, false);
                             break;
                     }
-                    // false : close the menu; true : not close the menu
-                    return false;
-                } else {
-                    return false;
                 }
+                // false = close the menu; true = not close the menu
+                return false;
             }
         });
 
