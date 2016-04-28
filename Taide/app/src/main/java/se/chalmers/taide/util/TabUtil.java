@@ -15,32 +15,22 @@ public class TabUtil {
      * Retrieves the string representing the given amount of "tabs". Exactly what
      * this consists of is derived from the useTabs and spacesPerTab variables. See
      * getters and setters to modify these parameters.
+     *
+     * A negative number of tabs is OK; it will give the same result as requesting zero tabs.
      * @param numberOfTabs The number of "tabs" to generate
      * @return A representation of the given number of "tabs"
      */
     public static String getTabs(int numberOfTabs) {
-        if (numberOfTabs <= 0) {
-            return "";
-        }
-
         String result = "";
-        if (numberOfTabs > 0) {
-            if (useTabs) {
-                for (int i = 0; i < numberOfTabs; i++) {
-                    result += "\t";
-                }
-            } else {
-                String tabs = "";
-                for (int i = 0; i < spacesPerTab; i++) {
-                    tabs += " ";
-                }
-
-                for (int i = 0; i < numberOfTabs; i++) {
-                    result += tabs;
-                }
+        if (useTabs) {
+            for (int i = 0; i < numberOfTabs; i++) {
+                result += "\t";
+            }
+        } else {
+            for (int i = 0; i < numberOfTabs*spacesPerTab; i++) {
+                result += " ";
             }
         }
-
         return result;
     }
 
