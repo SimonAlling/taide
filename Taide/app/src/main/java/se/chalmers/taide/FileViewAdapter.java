@@ -72,6 +72,10 @@ public class FileViewAdapter extends ArrayAdapter<CodeFile>{
         return position == 0 ? 1 : 0;
     }
 
+    // Offset the given CodeFile array by one index. Necessary because otherwise the first item will
+    // not be shown at all in the drawer. Not sure if this is an optimal solution since I didn't
+    // write it; I'm only writing this comment so that there is any clue whatsoever as to why this
+    // method exists. /Alling
     private static CodeFile[] prepareCodeFiles(CodeFile[] codeFiles) {
         CodeFile[] preparedCodeFiles = new CodeFile[codeFiles.length+1];
         preparedCodeFiles[0] = null;
