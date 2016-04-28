@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,17 +62,17 @@ public class EditTextSource implements TextSource {
                     currentInputContent = s.toString();
                 }
 
-                String str = s.toString();
+                String currentText = s.toString();
                 //Apply for all listeners that allow chaining
                 for (TextSourceListener listener : listenersAllowChains) {
-                    listener.onTextChanged(str, start, before, count);
+                    triggerListener(listener, currentText, start, before, count);
                 }
 
                 //Don't apply to normal unless it's an immediate event (from the edittext itself)
                 if (!applyingFilters) {
                     applyingFilters = true;
                     for (TextSourceListener listener : listeners) {
-                        listener.onTextChanged(str, start, before, count);
+                        triggerListener(listener, currentText, start, before, count);
                     }
                     applyingFilters = false;
                 }
@@ -83,6 +84,18 @@ public class EditTextSource implements TextSource {
         });
         this.listeners = new LinkedList<>();
         this.listenersAllowChains = new LinkedList<>();
+    }
+
+    private void triggerListener(TextSourceListener listener, String currentText, int start, int before, int count){
+        try{
+            listener.onTextChanged(currentText, start, before, count);
+        }catch(Exception e){
+            Log.e("TextSource", "Caught error on ["+listener.getClass().getName()+"] execution:");
+            e.printStackTrace();
+            if(mainTextView != null){
+                Toast.makeText(mainTextView.getContext(), "An error occured! See logs for more info", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
