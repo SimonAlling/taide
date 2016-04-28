@@ -14,6 +14,7 @@ import android.widget.ListPopupWindow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.model.EditorModel;
@@ -27,6 +28,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
 
     public static final String AUTOFILL_SUFFIX = "×"; // string to display at the end of the autofill popup
     public static final int AUTOFILL_SUFFIX_SPACING = 3; // number of spaces before suffix
+    public static final String MULTILINE_TRUNCATION_INDICATOR = "…"; // string to replace truncated lines with in multiline autofills
 
     private ListPopupWindow autofillBox;
     private String currentDisabledAutofillWord;
@@ -133,17 +135,29 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
         }
     }
 
-    // Gets a list with all autofill strings suffixed with for example a "×".
-    private ArrayList<String> getSuffixedAutoFillValues() {
+    // Returns only the first line of string, with a truncation suffix if string was multiline:
+    private static String truncateToSingleLine(String string) {
+        // string.trim() because we want to remove trailing whitespace BEFORE truncating.
+        // This has the desired implication that trailing newlines will NOT be replaced with MULTILINE_TRUNCATION_INDICATOR.
+        // The usual way of writing this would be:
+        // return string.replaceFirst(regex, replacement);
+        // I chose this seemingly clunky style instead of String.replaceFirst because I did not know how to apply Pattern.DOTALL otherwise.
+        // It is needed so that . matches newline characters; otherwise we would only replace the first of the extra lines.
+        final Pattern multilinePattern = Pattern.compile("\n.*", Pattern.DOTALL);
+        return multilinePattern.matcher(string.trim()).replaceFirst(MULTILINE_TRUNCATION_INDICATOR);
+    }
+
+    // Gets a list with all autofill strings truncated to one line and suffixed with a suffix:
+    private ArrayList<String> getProcessedAutoFillValues() {
         ArrayList<String> autoFillValues = getAutoFillValues();
-        ArrayList<String> suffixedAutoFillValues = null;
+        ArrayList<String> processedAutoFillValues = null;
         if (autoFillValues != null) {
-            suffixedAutoFillValues = new ArrayList<String>();
+            processedAutoFillValues = new ArrayList<String>();
             for (String value : autoFillValues) {
-                suffixedAutoFillValues.add(value + StringUtil.repeat(" ", AUTOFILL_SUFFIX_SPACING) + AUTOFILL_SUFFIX);
+                processedAutoFillValues.add(truncateToSingleLine(value) + StringUtil.repeat(" ", AUTOFILL_SUFFIX_SPACING) + AUTOFILL_SUFFIX);
             }
         }
-        return suffixedAutoFillValues;
+        return processedAutoFillValues;
     }
 
     private int measureContentWidth(ListAdapter listAdapter) {
