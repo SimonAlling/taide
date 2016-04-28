@@ -18,11 +18,15 @@ import java.util.List;
 import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.TextSource;
+import se.chalmers.taide.util.StringUtil;
 
 /**
  * Created by Matz on 2016-04-28.
  */
 public class AutoFillPopupWindow implements TextSource.TextSourceListener{
+
+    public static final String AUTOFILL_SUFFIX = "×"; // string to display at the end of the autofill popup
+    public static final int AUTOFILL_SUFFIX_SPACING = 3; // number of spaces before suffix
 
     private ListPopupWindow autofillBox;
     private String currentDisabledAutofillWord;
@@ -100,7 +104,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
     }
 
     private void updateAutoFillWindowState(View anchorView){
-        List<String> values = getAutoFillValues();
+        List<String> values = getSuffixedAutoFillValues();
         if(values != null) {
             ListAdapter adapter = new ArrayAdapter<>(currentActivity.getApplicationContext(), android.R.layout.simple_list_item_1, values);
             autofillBox.setAdapter(adapter);
@@ -127,6 +131,19 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener{
         }else{
             return null;
         }
+    }
+
+    // Gets a list with all autofill strings suffixed with for example a "×".
+    private ArrayList<String> getSuffixedAutoFillValues() {
+        ArrayList<String> autoFillValues = getAutoFillValues();
+        ArrayList<String> suffixedAutoFillValues = null;
+        if (autoFillValues != null) {
+            suffixedAutoFillValues = new ArrayList<String>();
+            for (String value : autoFillValues) {
+                suffixedAutoFillValues.add(value + StringUtil.repeat(" ", AUTOFILL_SUFFIX_SPACING) + AUTOFILL_SUFFIX);
+            }
+        }
+        return suffixedAutoFillValues;
     }
 
     private int measureContentWidth(ListAdapter listAdapter) {
