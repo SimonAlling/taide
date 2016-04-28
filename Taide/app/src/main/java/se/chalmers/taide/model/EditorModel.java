@@ -33,6 +33,12 @@ public interface EditorModel {
     void setTextSource(TextSource textSource);
 
     /**
+     * Retrieves the TextSource that is currently attached to the model
+     * @return The text source attached to the model
+     */
+    TextSource getTextSource();
+
+    /**
      * Activates a text filter on the input manually
      * @param filterName The name of the filter
      */
@@ -40,9 +46,17 @@ public interface EditorModel {
 
     /**
      * Checks whether the model wants to exchange any word on space input.
-     * @return The replacer, or null if not existing
+     * @return The autofill, or null if not existing
      */
-    String getAutoFillReplacement();
+    AutoFill getAutoFillReplacement();
+
+    /**
+     * Enables or disables a certain autofill word so that this does/does not
+     * trigger on data input
+     * @param word The word to apply the change on
+     * @param enabled <code>true</code> to enable autofill on the word, <code>false</code> otherwise
+     */
+    void setAutofillWordEnabled(String word, boolean enabled);
 
     /**
      * Performs undo on the text field (according to the recorded history).

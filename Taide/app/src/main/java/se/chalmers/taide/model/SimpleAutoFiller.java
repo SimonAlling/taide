@@ -1,5 +1,8 @@
 package se.chalmers.taide.model;
 
+import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +17,7 @@ import se.chalmers.taide.model.languages.Language;
 public class SimpleAutoFiller extends AbstractTextFilter{
 
     private List<AutoFill> autoFills;
+    private List<AutoFill> disabledAutoFills;
 
     /**
      * Init the filter with a language
@@ -28,6 +32,8 @@ public class SimpleAutoFiller extends AbstractTextFilter{
      * @param autoFills The auto fills to use
      */
     protected SimpleAutoFiller(List<AutoFill> autoFills) {
+        this.disabledAutoFills = new ArrayList<>();
+
         this.autoFills = autoFills;
         String[] triggers = new String[autoFills.size()];
         for (int i = 0; i < autoFills.size(); i++){
@@ -58,12 +64,14 @@ public class SimpleAutoFiller extends AbstractTextFilter{
         for (AutoFill autoFill : autoFills) {
             // If it was this autofill that was triggered, apply it:
             if (matchingAutoFill(autoFill, trigger)) {
-                String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
-                String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
-                int triggerEndPosition = caretPosition + autoFill.selectionIncreaseCount(textView.getText().toString(), caretPosition);
+                if(!disabledAutoFills.contains(autoFill)) {
+                    String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
+                    String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
+                    int triggerEndPosition = caretPosition + autoFill.selectionIncreaseCount(textView.getText().toString(), caretPosition);
 
-                textView.getText().replace(triggerStartPosition, triggerEndPosition, prefix + suffix);
-                textView.setSelection(caretPosition + prefix.length() - trigger.length());
+                    textView.getText().replace(triggerStartPosition, triggerEndPosition, prefix + suffix);
+                    textView.setSelection(caretPosition + prefix.length() - trigger.length());
+                }
             }
         }
     }
@@ -72,18 +80,37 @@ public class SimpleAutoFiller extends AbstractTextFilter{
      * Checks whether an autofill will be activated on space input.
      * @param source The current source code
      * @param index The current location of the selection in the code
-     * @return The replacer of the shortFormat, or null if not existing
+     * @return The autofill, or null if not existing
      */
-    public String getAutoFillReplacement(String source, int index){
+    public AutoFill getAutoFillReplacement(String source, int index){
         String sourceUntilIndex = source.substring(0, index).toLowerCase();
         for(AutoFill autoFill : autoFills){
             if(autoFill.getTrigger().endsWith(" ")) {
                 String autoFillTrigger = autoFill.getTrigger().trim().toLowerCase();
                 if (sourceUntilIndex.endsWith(autoFillTrigger)) {
-                    return autoFill.getPrefix(source, index) + autoFill.getSuffix(source, index);
+                    return autoFill;
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Enables or disables a certain autofill word so that this does/does not
+     * trigger on data input
+     * @param word The word to apply the change on
+     * @param enabled <code>true</code> to enable autofill on the word, <code>false</code> otherwise
+     */
+    public void setWordEnabled(String word, boolean enabled){
+        for(AutoFill autofill : autoFills){
+            if(autofill.getTrigger().equalsIgnoreCase(word)){
+                if(enabled){
+                    disabledAutoFills.remove(autofill);
+                }else if(!disabledAutoFills.contains(autofill)) {
+                    disabledAutoFills.add(autofill);
+                }
+                break;
+            }
+        }
     }
 }

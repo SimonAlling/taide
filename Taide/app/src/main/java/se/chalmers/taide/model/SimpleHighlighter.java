@@ -29,6 +29,7 @@ public class SimpleHighlighter extends AbstractTextFilter {
      * NOTE: This requires a non-null language to work.
      * @param trigger The string that triggered the effect
      */
+    @Override
     protected void applyFilterEffect(String trigger) {
         //Retrieve data
         TextSource codeView = getTextView();
@@ -52,5 +53,10 @@ public class SimpleHighlighter extends AbstractTextFilter {
             // Reset text marker
             codeView.setSelection(start);
         }
+    }
+
+    @Override
+    public int getPriority(){
+        return super.getPriority()+1;
     }
 }

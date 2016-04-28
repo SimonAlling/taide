@@ -228,6 +228,11 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
     @Override
     public abstract void onTextChanged(String s, int start, int before, int count);
 
+    @Override
+    public int getPriority(){
+        return 8;
+    }
+
     protected enum Action{
         ADD, REMOVE;
 
