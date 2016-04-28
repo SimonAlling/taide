@@ -5,6 +5,27 @@ package se.chalmers.taide.util;
  */
 public class StringUtil {
 
+    public static final String WHITESPACE_CHARACTERS = " \n\t";
+
+    /**
+     * Checks if an index is within the bounds of a string
+     * @param string The string to check against
+     * @param index The index to check
+     * @return <code>true</code> iff <code>string[index]</code> is inside the bounds of <code>string</code>.
+     */
+    public static boolean isWithinBounds(String string, int index) {
+        return index > 0 && index < string.length();
+    }
+
+    /**
+     * Checks if a character is a whitespace character
+     * @param c The character to check
+     * @return <code>true</code> iff <code>c</code> is a whitespace character.
+     */
+    public static boolean isWhitespaceCharacter(char c) {
+        return WHITESPACE_CHARACTERS.indexOf(c) > -1;
+    }
+
     /**
      * Retrieves the next non-whitespace character from a string with an offset
      * @param source The string to use
@@ -12,11 +33,10 @@ public class StringUtil {
      * @return The first character after the offset that is not a whitespace character, or null
      * if not found.
      */
-    public static Character nextNonWSChar(String source, int offset){
-        while(offset>0 && source.length()>offset && (source.charAt(offset) == ' ' || source.charAt(offset) == '\t' || source.charAt(offset) == '\n')){
+    public static Character nextNonWSChar(String source, int offset) {
+        while (isWithinBounds(source, offset) && isWhitespaceCharacter(source.charAt(offset))) {
             offset++;
         }
-
-        return (source.length()<=offset?null:source.charAt(offset));
+        return isWithinBounds(source, offset) ? source.charAt(offset) : null;
     }
 }
