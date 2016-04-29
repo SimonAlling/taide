@@ -23,6 +23,15 @@ public class StringUtil {
     }
 
     /**
+     * Returns the empty string if the given string is null; otherwise just the string.
+     * @param string The string to parse
+     * @return <code>""</code> if <code>string == null</code>; otherwise <code>string</code>
+     */
+    public static String emptyIfNull(String string) {
+        return string == null ? "" : string;
+    }
+
+    /**
      * Checks if an index is within the bounds of a string
      * @param string The string to check against
      * @param index The index to check
