@@ -253,8 +253,9 @@ public class SimpleEditorModel implements EditorModel {
             return fileSystem.createDir(name);
         }else{
             CodeFile cf = fileSystem.createFile(name);
-            if(this.language != null){
-                cf.saveContents(this.language.getDefaultContent(name));
+            Language lang = LanguageFactory.getLanguageFromFileFormat(cf.getFileFormat(), context.getResources());
+            if(lang != null){
+                cf.saveContents(lang.getDefaultContent(name));
             }
             return cf;
         }
