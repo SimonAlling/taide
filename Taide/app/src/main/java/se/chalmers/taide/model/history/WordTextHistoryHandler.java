@@ -61,10 +61,10 @@ public class WordTextHistoryHandler extends AbstractTextHistoryHandler {
 
 
     @Override
-    public void onTextChanged(String s, int start, int before, int count) {
+    public boolean onTextChanged(String s, int start, int before, int count) {
         if (s.equals(currentInputContent)) {
-            // Ignore change.
-            return;
+            //Ignore change.
+            return false;
         }
 
         // Handle extreme case
@@ -73,7 +73,7 @@ public class WordTextHistoryHandler extends AbstractTextHistoryHandler {
                 onTextChanged(s, start, before, 0);
                 onTextChanged(s, start, 0, count);
             }
-            return;
+            return false;
         }
 
         if (hasMovedCursor(start, before, count) || (currentTextAction == Action.ADD && before > count) || (currentTextAction == Action.REMOVE && count > before)) {
@@ -142,5 +142,6 @@ public class WordTextHistoryHandler extends AbstractTextHistoryHandler {
         }
 
         currentInputContent = s;
+        return false;
     }
 }

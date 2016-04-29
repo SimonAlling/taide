@@ -226,7 +226,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
     }
 
     @Override
-    public abstract void onTextChanged(String s, int start, int before, int count);
+    public abstract boolean onTextChanged(String s, int start, int before, int count);
 
     @Override
     public int getPriority(){

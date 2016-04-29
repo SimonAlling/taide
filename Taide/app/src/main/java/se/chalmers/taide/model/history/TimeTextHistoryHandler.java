@@ -73,10 +73,10 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
 
 
     @Override
-    public void onTextChanged(String s, int start, int before, int count) {
+    public boolean onTextChanged(String s, int start, int before, int count) {
         if (s.equals(currentInputContent)) {
             // Ignore change.
-            return;
+            return false;
         }
 
         // Handle normal events.
@@ -159,5 +159,6 @@ public class TimeTextHistoryHandler extends AbstractTextHistoryHandler {
         }
 
         currentInputContent = s;
+        return false;
     }
 }

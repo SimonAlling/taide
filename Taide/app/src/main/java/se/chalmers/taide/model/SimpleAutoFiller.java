@@ -39,7 +39,7 @@ public class SimpleAutoFiller extends AbstractTextFilter{
         for (int i = 0; i < autoFills.size(); i++){
             triggers[i] = autoFills.get(i).getSuffixedTrigger();
         }
-        setTriggerText(triggers);
+        setTriggerText(generateTriggerStrings(triggers));
     }
 
     /**
@@ -55,9 +55,10 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     /**
      * This method is called when some trigger has been detected
      * @param trigger The string that triggered the effect
+     * @param isOnAdd <code>true</code> if the event was triggered by an addition to the text source
      */
     @Override
-    protected void applyFilterEffect(String trigger) {
+    protected boolean applyFilterEffect(String trigger, boolean isOnAdd) {
         TextSource textView = getTextView();
         int caretPosition = textView.getSelectionStart();
         int triggerStartPosition = caretPosition - trigger.length();
@@ -74,6 +75,8 @@ public class SimpleAutoFiller extends AbstractTextFilter{
                 }
             }
         }
+
+        return false;
     }
 
     /**

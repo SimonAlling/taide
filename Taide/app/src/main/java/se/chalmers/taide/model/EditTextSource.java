@@ -65,14 +65,18 @@ public class EditTextSource implements TextSource {
                 String currentText = s.toString();
                 //Apply for all listeners that allow chaining
                 for (TextSourceListener listener : listenersAllowChains) {
-                    triggerListener(listener, currentText, start, before, count);
+                    if(triggerListener(listener, currentText, start, before, count)){
+                        return;
+                    }
                 }
 
                 //Don't apply to normal unless it's an immediate event (from the edittext itself)
                 if (!applyingFilters) {
                     applyingFilters = true;
                     for (TextSourceListener listener : listeners) {
-                        triggerListener(listener, currentText, start, before, count);
+                        if(triggerListener(listener, currentText, start, before, count)){
+                            return;
+                        }
                     }
                     applyingFilters = false;
                 }
@@ -86,15 +90,16 @@ public class EditTextSource implements TextSource {
         this.listenersAllowChains = new LinkedList<>();
     }
 
-    private void triggerListener(TextSourceListener listener, String currentText, int start, int before, int count){
+    private boolean triggerListener(TextSourceListener listener, String content, int start, int before, int count){
         try{
-            listener.onTextChanged(currentText, start, before, count);
+            return listener.onTextChanged(content, start, before, count);
         }catch(Exception e){
             Log.e("TextSource", "Caught error on ["+listener.getClass().getName()+"] execution:");
             e.printStackTrace();
             if(mainTextView != null){
                 Toast.makeText(mainTextView.getContext(), "An error occured! See logs for more info", Toast.LENGTH_LONG).show();
             }
+            return false;
         }
     }
 

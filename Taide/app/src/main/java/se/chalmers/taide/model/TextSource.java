@@ -27,7 +27,7 @@ public interface TextSource {
 
 
     interface TextSourceListener {
-        void onTextChanged(String s, int start, int before, int count);
+        boolean onTextChanged(String s, int start, int before, int count);
         int getPriority();
     }
 }

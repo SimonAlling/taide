@@ -11,11 +11,12 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
 
     private Language language;
     private TextSource textSource;
-    private String[] triggerTexts;
+    private String previousInput = null;
+    private TriggerString[] triggerTexts;
     private boolean allowChainingEvents = false;
 
-    protected AbstractTextFilter(String... triggerTexts){
-        this.triggerTexts = triggerTexts;
+    protected AbstractTextFilter(TriggerString... triggerTexts){
+        setTriggerText(triggerTexts);
     }
 
     protected void setAllowChainingEvents(boolean allowChainingEvents){
@@ -29,10 +30,24 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
     }
 
     /**
+     * Convert string array to a TriggerString array, with only onAdd properties.
+     * @param texts The strings that should be converted
+     */
+    protected static TriggerString[] generateTriggerStrings(String... texts){
+        TriggerString[] triggerTexts = new TriggerString[texts.length];
+        for(int i = 0; i<triggerTexts.length; i++){
+            triggerTexts[i] = new TriggerString(texts[i], true);
+        }
+
+        return triggerTexts;
+    }
+
+    /**
      * Perform the functionality of this specific filter.
      * @param trigger The string that triggered the effect
+     * @param isOnAdd <code>true</code> if the event was triggered by an addition to the text source
      */
-    protected abstract void applyFilterEffect(String trigger);
+    protected abstract boolean applyFilterEffect(String trigger, boolean isOnAdd);
 
     /**
      * Retrieve the text view that has been attached to this filter.
@@ -89,13 +104,11 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
     }
 
     /**
-     * Set the strings that should trigger the filter to be applied.
-     * NOTE that if you use multi-letter word, it will only trigger if the entire
-     * word is entered at the exactly same time (if you paste it etc.)
-     * @param triggerTexts The strings that should trigger the effect.
+     * Set the trigger strings that should trigger the filter to be applied.
+     * @param texts The strings that should trigger the effect.
      */
-    protected void setTriggerText(String... triggerTexts){
-        this.triggerTexts = triggerTexts;
+    protected void setTriggerText(TriggerString... texts){
+        this.triggerTexts = texts;
     }
 
 
@@ -108,16 +121,27 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
      * @param count The new length of the data (starting at start)
      */
     @Override
-    public void onTextChanged(String textFieldContent, int start, int before, int count) {
+    public boolean onTextChanged(String textFieldContent, int start, int before, int count) {
         // Update filter if correct input received
-        if (count >= before) {
-            String input = textFieldContent.substring(0, start + count);
-            for (String triggerText : triggerTexts) {
-                if (input.endsWith(triggerText)) {
-                    applyFilterEffect(triggerText);
+        String input = textFieldContent.substring(0, start+count);
+        String prevInput = (previousInput==null?"":previousInput.substring(0, Math.min(start+before, previousInput.length())));
+        for (TriggerString triggerText : triggerTexts) {
+            if((count>=before && triggerText.isOnAdd())) {
+                if (input.endsWith(triggerText.getTrigger())) {
+                    if(applyFilterEffect(triggerText.getTrigger(), triggerText.isOnAdd())){
+                        return true;
+                    }
+                }
+            }else if((count<before && !triggerText.isOnAdd())){
+                if(prevInput.endsWith(triggerText.getTrigger())){
+                    if(applyFilterEffect(triggerText.getTrigger(), triggerText.isOnAdd())){
+                        return true;
+                    }
                 }
             }
         }
+        previousInput = textFieldContent;
+        return false;
     }
 
     @Override
@@ -125,4 +149,19 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
         return 10;
     }
 
+
+    public static class TriggerString{
+        private String trigger;
+        private boolean isOnAdd;
+        public TriggerString(String trigger, boolean isOnAdd){
+            this.trigger = trigger;
+            this.isOnAdd = isOnAdd;
+        }
+        public String getTrigger(){
+            return trigger;
+        }
+        public boolean isOnAdd(){
+            return isOnAdd;
+        }
+    }
 }

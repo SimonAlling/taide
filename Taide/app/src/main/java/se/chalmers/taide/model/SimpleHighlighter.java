@@ -20,7 +20,7 @@ public class SimpleHighlighter extends AbstractTextFilter {
      * @param lang The language to use
      */
     protected SimpleHighlighter(Language lang) {
-        super(" ", "\n", "(", ")", "\"");
+        super(generateTriggerStrings(" ", "\n", "(", ")", "\""));
         this.setLanguage(lang);
     }
 
@@ -28,9 +28,10 @@ public class SimpleHighlighter extends AbstractTextFilter {
      * Applies the actual effect on the text view.
      * NOTE: This requires a non-null language to work.
      * @param trigger The string that triggered the effect
+     * @param isOnAdd <code>true</code> if the event was triggered by an addition to the text source
      */
     @Override
-    protected void applyFilterEffect(String trigger) {
+    protected boolean applyFilterEffect(String trigger, boolean isOnAdd) {
         //Retrieve data
         TextSource codeView = getTextView();
         Language language = getLanguage();
@@ -53,6 +54,8 @@ public class SimpleHighlighter extends AbstractTextFilter {
             // Reset text marker
             codeView.setSelection(start);
         }
+
+        return false;
     }
 
     @Override

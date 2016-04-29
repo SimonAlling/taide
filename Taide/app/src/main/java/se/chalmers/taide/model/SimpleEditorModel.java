@@ -157,7 +157,7 @@ public class SimpleEditorModel implements EditorModel {
     @Override
     public void manuallyTriggerFilter(String filterName){
         if(textFilters.containsKey(filterName)){
-            ((AbstractTextFilter)textFilters.get(filterName)).applyFilterEffect("");
+            ((AbstractTextFilter)textFilters.get(filterName)).applyFilterEffect("", true);
         }
     }
 
