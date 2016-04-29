@@ -1,6 +1,7 @@
 package se.chalmers.taide.model.languages;
 
 import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.util.StringUtil;
 
 /**
  * Created by Matz on 2016-03-10.
@@ -40,7 +41,7 @@ public class IgnoreInputAutoFill implements AutoFill{
         return null;
     }
 
-    public String getSuffixedTrigger() { return getTrigger() + (getTriggerSuffix() == null ? "" : getTriggerSuffix()); };
+    public String getSuffixedTrigger() { return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix()); };
 
     /**
      * Retrieves the text that should be placed before the selection marker

@@ -1,6 +1,7 @@
 package se.chalmers.taide.model.languages;
 
 import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.util.StringUtil;
 
 /**
  * Created by Matz on 2016-02-29.
@@ -44,7 +45,7 @@ public class MultiLineAutoFill implements AutoFill {
     public String getTriggerSuffix() { return null; }
 
     @Override
-    public String getSuffixedTrigger() { return getTrigger() + (getTriggerSuffix() == null ? "" : getTriggerSuffix()); }
+    public String getSuffixedTrigger() { return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix()); }
 
     /**
      * Retrieves the text that should be placed before the selection marker
