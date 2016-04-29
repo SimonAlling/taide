@@ -84,7 +84,7 @@ public class WordTextHistoryHandler extends AbstractTextHistoryHandler {
 
         if (Math.abs(count - before) == 1) {
             if (before > count) {
-                if (currentInputContent.charAt(start+before-1) == ' ') {
+                if (start+before-1<currentInputContent.length() && currentInputContent.charAt(start+before-1) == ' ') {
                     currentTextPos = start+1;
                     insertCurrentData();
                 }
