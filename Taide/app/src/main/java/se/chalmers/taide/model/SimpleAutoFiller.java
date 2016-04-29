@@ -37,7 +37,7 @@ public class SimpleAutoFiller extends AbstractTextFilter{
         this.autoFills = autoFills;
         String[] triggers = new String[autoFills.size()];
         for (int i = 0; i < autoFills.size(); i++){
-            triggers[i] = autoFills.get(i).getTrigger();
+            triggers[i] = autoFills.get(i).getSuffixedTrigger();
         }
         setTriggerText(triggers);
     }
@@ -45,11 +45,11 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     /**
      * [FUNCTIONAL] Checks whether a matching autofill was found.
      * @param autoFill The autofill we want to check for
-     * @param trigger The string that triggered an autofill
+     * @param suffixedTrigger The string that triggered an autofill
      * @return <code>true</code> if it was a match
      */
-    private static boolean matchingAutoFill(AutoFill autoFill, String trigger) {
-        return autoFill.getTrigger().equals(trigger);
+    private static boolean matchingAutoFill(AutoFill autoFill, String suffixedTrigger) {
+        return (autoFill.getSuffixedTrigger()).equals(suffixedTrigger);
     }
 
     /**
@@ -77,19 +77,17 @@ public class SimpleAutoFiller extends AbstractTextFilter{
     }
 
     /**
-     * Checks whether an autofill will be activated on space input.
+     * Checks whether an autofill will be activated on space (or other trigger suffix) input.
      * @param source The current source code
      * @param index The current location of the selection in the code
      * @return The autofill, or null if not existing
      */
-    public AutoFill getAutoFillReplacement(String source, int index){
+    public AutoFill getPotentialAutoFillReplacement(String source, int index){
         String sourceUntilIndex = source.substring(0, index).toLowerCase();
         for(AutoFill autoFill : autoFills){
-            if(autoFill.getTrigger().endsWith(" ")) {
-                String autoFillTrigger = autoFill.getTrigger().trim().toLowerCase();
-                if (sourceUntilIndex.endsWith(autoFillTrigger)) {
-                    return autoFill;
-                }
+            String autoFillTrigger = autoFill.getTrigger().toLowerCase();
+            if (autoFill.getTriggerSuffix() != null && sourceUntilIndex.endsWith(autoFillTrigger)) {
+                return autoFill;
             }
         }
         return null;

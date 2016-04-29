@@ -10,6 +10,8 @@ import se.chalmers.taide.model.AutoFill;
  */
 public class SimpleAutoFill implements AutoFill {
 
+    public static final String DEFAULT_TRIGGER_SUFFIX = null;
+
     private String trigger;
     private String prefix, suffix;
 
@@ -33,6 +35,12 @@ public class SimpleAutoFill implements AutoFill {
     public String getTrigger(){
         return trigger;
     }
+
+    @Override
+    public String getTriggerSuffix() { return DEFAULT_TRIGGER_SUFFIX; }
+
+    @Override
+    public String getSuffixedTrigger() { return getTrigger() + (getTriggerSuffix() == null ? "" : getTriggerSuffix()); }
 
     /**
      * Retrieves the text that should be placed before the selection marker

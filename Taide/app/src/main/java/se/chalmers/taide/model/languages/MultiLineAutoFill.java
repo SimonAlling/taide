@@ -40,6 +40,12 @@ public class MultiLineAutoFill implements AutoFill {
         return trigger;
     }
 
+    @Override
+    public String getTriggerSuffix() { return null; }
+
+    @Override
+    public String getSuffixedTrigger() { return getTrigger() + (getTriggerSuffix() == null ? "" : getTriggerSuffix()); }
+
     /**
      * Retrieves the text that should be placed before the selection marker
      * @param source The entire text that triggered this call

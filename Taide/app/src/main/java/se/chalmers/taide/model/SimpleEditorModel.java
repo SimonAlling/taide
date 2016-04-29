@@ -131,7 +131,7 @@ public class SimpleEditorModel implements EditorModel {
     public AutoFill getAutoFillReplacement(){
         if(textFilters.containsKey(FILTER_KEY_AUTOFILL) && textSource != null){
             SimpleAutoFiller autoFill = (SimpleAutoFiller)textFilters.get(FILTER_KEY_AUTOFILL);
-            return autoFill.getAutoFillReplacement(textSource.getText().toString(), textSource.getSelectionStart());
+            return autoFill.getPotentialAutoFillReplacement(textSource.getText().toString(), textSource.getSelectionStart());
         }
         return null;
     }
