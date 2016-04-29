@@ -13,12 +13,13 @@ public class StringUtil {
      * @param repetitions The number of repetitions
      * @return <code>string</code> repeated <code>repetitions</code> times.
      */
+    
     public static String repeat(String string, int repetitions) {
-        String result = "";
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < repetitions; i++) {
-            result += string;
+            builder.append(string);
         }
-        return result;
+        return builder.toString();
     }
 
     /**
