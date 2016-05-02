@@ -34,7 +34,7 @@ public abstract class SimpleLanguage implements Language {
      */
     @Override
     public String getIndentationPrefix(String source, int start, String line) {
-        //Use all white space the previous line had by default
+        // Use all white space the previous line had by default
         String prefix = "";
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) == ' ') {
@@ -73,7 +73,7 @@ public abstract class SimpleLanguage implements Language {
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         return obj != null && obj.getClass() == this.getClass() && this.getName().equals(((Language)obj).getName());
     }
 }
