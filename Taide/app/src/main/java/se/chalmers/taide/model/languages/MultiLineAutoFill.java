@@ -45,7 +45,9 @@ public class MultiLineAutoFill implements AutoFill {
     public String getTriggerSuffix() { return null; }
 
     @Override
-    public String getSuffixedTrigger() { return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix()); }
+    public String getSuffixedTrigger() {
+        return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix());
+    }
 
     /**
      * Retrieves the text that should be placed before the selection marker
@@ -99,7 +101,7 @@ public class MultiLineAutoFill implements AutoFill {
 
         StringBuffer sourceBuffer = new StringBuffer(source);
         StringBuffer b = new StringBuffer();
-        for (int i = 0; i<array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (array[i].equals(INDENT_TABS)) {
                 // Determine text
                 String currentSource = sourceBuffer.toString();
