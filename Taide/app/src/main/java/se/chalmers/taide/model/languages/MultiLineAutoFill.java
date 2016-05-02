@@ -13,6 +13,7 @@ import se.chalmers.taide.util.StringUtil;
  */
 public class MultiLineAutoFill implements AutoFill {
 
+    public static final String TRIGGER_SUFFIX = null;
     public static final String INDENT_TABS = "MultiLine:IndentTabs";
 
     private String trigger;
@@ -42,7 +43,7 @@ public class MultiLineAutoFill implements AutoFill {
     }
 
     @Override
-    public String getTriggerSuffix() { return null; }
+    public String getTriggerSuffix() { return TRIGGER_SUFFIX; }
 
     @Override
     public String getSuffixedTrigger() {

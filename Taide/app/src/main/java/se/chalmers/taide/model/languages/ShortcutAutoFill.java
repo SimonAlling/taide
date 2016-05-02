@@ -1,6 +1,7 @@
 package se.chalmers.taide.model.languages;
 
 import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.util.StringUtil;
 
 /**
  * Created by alling on 2016-04-29.
@@ -22,4 +23,9 @@ public class ShortcutAutoFill extends SimpleAutoFill {
 
     @Override
     public String getTriggerSuffix() { return TRIGGER_SUFFIX; }
+
+    @Override
+    public String getSuffixedTrigger() {
+        return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix());
+    }
 }

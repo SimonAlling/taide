@@ -13,6 +13,8 @@ import se.chalmers.taide.util.StringUtil;
  */
 public class IgnoreInputAutoFill implements AutoFill {
 
+    public static final String TRIGGER_SUFFIX = null;
+
     private String trigger;
     private IgnoreDecider decider;
     private ReplaceDecider replaceDecider;
@@ -37,9 +39,7 @@ public class IgnoreInputAutoFill implements AutoFill {
     }
 
     @Override
-    public String getTriggerSuffix() {
-        return null;
-    }
+    public String getTriggerSuffix() { return TRIGGER_SUFFIX; }
 
     public String getSuffixedTrigger() {
         return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix());

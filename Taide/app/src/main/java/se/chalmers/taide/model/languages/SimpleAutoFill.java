@@ -11,7 +11,7 @@ import se.chalmers.taide.util.StringUtil;
  */
 public class SimpleAutoFill implements AutoFill {
 
-    public static final String DEFAULT_TRIGGER_SUFFIX = null;
+    public static final String TRIGGER_SUFFIX = null;
 
     private String trigger;
     private String prefix, suffix;
@@ -38,7 +38,7 @@ public class SimpleAutoFill implements AutoFill {
     }
 
     @Override
-    public String getTriggerSuffix() { return DEFAULT_TRIGGER_SUFFIX; }
+    public String getTriggerSuffix() { return TRIGGER_SUFFIX; }
 
     @Override
     public String getSuffixedTrigger() {
