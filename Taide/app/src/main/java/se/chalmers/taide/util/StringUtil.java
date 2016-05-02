@@ -51,6 +51,15 @@ public class StringUtil {
     }
 
     /**
+     * Checks if a character is a word character.
+     * @param c The character to check
+     * @return <code>true</code> iff <code>c</code> is a word character as defined by regex \w.
+     */
+    public static boolean isWordCharacter(Character c) {
+        return c.toString().matches("\\w");
+    }
+
+    /**
      * Retrieves the next non-whitespace character from a string with an offset
      * @param source The string to use
      * @param offset The initial offset

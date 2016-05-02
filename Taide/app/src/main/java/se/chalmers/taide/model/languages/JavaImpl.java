@@ -20,11 +20,6 @@ public class JavaImpl extends SimpleLanguage {
 
     public static final String NAME = "Java";
 
-    // No guarantees; practically only a demo example:
-    private static boolean isWordCharacter(Character c) {
-        return c.toString().matches("\\w");
-    }
-
     /* Java keywords */
     // The ordering of elements in these arrays is NOT important:
     private static final String[] KEYWORDS_TYPES = new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte"};
