@@ -24,7 +24,7 @@ public class JavaImpl extends SimpleLanguage {
     }
 
     /* Java keywords */
-    private static final String[][] keyWords = {new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte", "String"},
+    private static final String[][] keyWords = {new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte"},
                                                 new String[]{"abstract", "static", "volatile", "native", "public", "private", "protected", "synchronized", "transient", "final", "strictfp"},
                                                 new String[]{"continue", "for", "switch", "default", "do", "if", "else", "break", "throw", "case", "return", "catch", "try", "finally", "while", "import", "assert"},
                                                 new String[]{"extends", "implements", "instanceof", "throws"},
