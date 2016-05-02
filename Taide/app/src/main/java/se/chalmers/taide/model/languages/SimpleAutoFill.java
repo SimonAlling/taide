@@ -41,7 +41,9 @@ public class SimpleAutoFill implements AutoFill {
     public String getTriggerSuffix() { return DEFAULT_TRIGGER_SUFFIX; }
 
     @Override
-    public String getSuffixedTrigger() { return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix()); }
+    public String getSuffixedTrigger() {
+        return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix());
+    }
 
     /**
      * Retrieves the text that should be placed before the selection marker
@@ -50,11 +52,11 @@ public class SimpleAutoFill implements AutoFill {
      * @return The text that should be placed before the selection marker
      */
     @Override
-    public String getPrefix(String source, int index){
-        if(isChainReaction(source, index)){
-            //Already replaced. Stop to prevent chain reaction.
+    public String getPrefix(String source, int index) {
+        if (isChainReaction(source, index)) {
+            // Already replaced. Stop to prevent chain reaction.
             return "";
-        }else {
+        } else {
             return prefix;
         }
     }
@@ -66,11 +68,11 @@ public class SimpleAutoFill implements AutoFill {
      * @return The text that should be placed before the selection marker
      */
     @Override
-    public String getSuffix(String source, int index){
-        if(isChainReaction(source, index)){
-            //Already replaced. Stop to prevent chain reaction.
+    public String getSuffix(String source, int index) {
+        if (isChainReaction(source, index)){
+            // Already replaced. Stop to prevent chain reaction.
             return "";
-        }else {
+        } else {
             return suffix;
         }
     }
@@ -87,8 +89,8 @@ public class SimpleAutoFill implements AutoFill {
         return 0;
     }
 
-    private boolean isChainReaction(String source, int index){
-        String concat = (prefix+suffix);
-         return index >= concat.length() && source.substring(index-concat.length(), index).equals(concat);
+    private boolean isChainReaction(String source, int index) {
+        String concat = prefix + suffix;
+        return index >= concat.length() && source.substring(index-concat.length(), index).equals(concat);
     }
 }
