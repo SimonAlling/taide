@@ -18,6 +18,8 @@ import se.chalmers.taide.util.TabUtil;
  */
 public class JavaImpl extends SimpleLanguage {
 
+    public static final String NAME = "Java";
+
     // No guarantees; practically only a demo example:
     private static boolean isWordCharacter(Character c) {
         return c.toString().matches("\\w");
@@ -41,7 +43,7 @@ public class JavaImpl extends SimpleLanguage {
      * @return The name of the language
      */
     public String getName(){
-        return "Java";
+        return NAME;
     }
 
     /**
