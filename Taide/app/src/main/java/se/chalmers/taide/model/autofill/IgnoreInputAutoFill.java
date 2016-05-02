@@ -1,4 +1,4 @@
-package se.chalmers.taide.model.languages;
+package se.chalmers.taide.model.autofill;
 
 import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.util.StringUtil;
@@ -19,11 +19,11 @@ public class IgnoreInputAutoFill implements AutoFill {
     private IgnoreDecider decider;
     private ReplaceDecider replaceDecider;
 
-    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider) {
+    public IgnoreInputAutoFill(String trigger, IgnoreDecider decider) {
         this(trigger, decider, null);
     }
 
-    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider, ReplaceDecider replaceDecider) {
+    public IgnoreInputAutoFill(String trigger, IgnoreDecider decider, ReplaceDecider replaceDecider) {
         this.trigger = trigger;
         this.decider = decider;
         this.replaceDecider = replaceDecider;

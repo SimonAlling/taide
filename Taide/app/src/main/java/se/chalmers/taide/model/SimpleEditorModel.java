@@ -14,7 +14,6 @@ import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.model.history.TextHistoryHandler;
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.model.languages.LanguageFactory;
-import se.chalmers.taide.model.languages.SimpleAutoFill;
 
 /**
  * Created by Matz on 2016-02-07.

@@ -1,6 +1,5 @@
-package se.chalmers.taide.model.languages;
+package se.chalmers.taide.model.autofill;
 
-import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.util.StringUtil;
 
 /**

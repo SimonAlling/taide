@@ -7,6 +7,9 @@ import java.util.List;
 
 import se.chalmers.taide.R;
 import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.model.autofill.IgnoreInputAutoFill;
+import se.chalmers.taide.model.autofill.ShortcutAutoFill;
+import se.chalmers.taide.model.autofill.SimpleAutoFill;
 import se.chalmers.taide.util.StringUtil;
 import se.chalmers.taide.util.TabUtil;
 

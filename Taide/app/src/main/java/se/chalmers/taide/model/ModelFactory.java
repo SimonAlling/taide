@@ -3,8 +3,7 @@ package se.chalmers.taide.model;
 import android.content.Context;
 import android.widget.EditText;
 
-import se.chalmers.taide.model.languages.LanguageFactory;
-import se.chalmers.taide.model.languages.SimpleAutoFill;
+import se.chalmers.taide.model.autofill.SimpleAutoFill;
 
 /**
  * Created by Matz on 2016-02-07.
