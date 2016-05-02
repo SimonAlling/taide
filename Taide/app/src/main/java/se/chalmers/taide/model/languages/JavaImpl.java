@@ -26,11 +26,22 @@ public class JavaImpl extends SimpleLanguage {
     }
 
     /* Java keywords */
-    private static final String[][] keyWords = {new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte"},
-                                                new String[]{"abstract", "static", "volatile", "native", "public", "private", "protected", "synchronized", "transient", "final", "strictfp"},
-                                                new String[]{"continue", "for", "switch", "default", "do", "if", "else", "break", "throw", "case", "return", "catch", "try", "finally", "while", "import", "assert"},
-                                                new String[]{"extends", "implements", "instanceof", "throws"},
-                                                new String[]{"package", "class", "interface", "this", "super", "new"}};
+    // The ordering of elements in these arrays is NOT important:
+    private static final String[] KEYWORDS_TYPES = new String[]{"boolean", "enum", "int", "double", "float", "long", "void", "char", "short", "byte"};
+    private static final String[] KEYWORDS_MODIFIERS = new String[]{"abstract", "static", "volatile", "native", "public", "private", "protected", "synchronized", "transient", "final", "strictfp"};
+    private static final String[] KEYWORDS_CONTROL_FLOW = new String[]{"continue", "for", "switch", "default", "do", "if", "else", "break", "throw", "case", "return", "catch", "try", "finally", "while", "import", "assert"};
+    private static final String[] KEYWORDS_CLASS_DECLARATION = new String[]{"extends", "implements", "instanceof", "throws"};
+    private static final String[] KEYWORDS_CLASS_RELATED = new String[]{"package", "class", "interface", "this", "super", "new"};
+
+    private static final String[][] KEYWORDS = {
+        // The order here IS important, since the syntax highlighting depends on it:
+        KEYWORDS_TYPES,
+        KEYWORDS_MODIFIERS,
+        KEYWORDS_CONTROL_FLOW,
+        KEYWORDS_CLASS_DECLARATION,
+        KEYWORDS_CLASS_RELATED
+    };
+
     private int[] colors;
 
     protected JavaImpl(Resources resources) {
@@ -90,14 +101,14 @@ public class JavaImpl extends SimpleLanguage {
             // Check for keywords. Note that they cannot happen if preceded by a letter or digit.
             if (inQuotes < 0 && inComment < 0 && (i == 0 || (!Character.isLetter(sourceCode.charAt(i - 1)) && !Character.isDigit(sourceCode.charAt(i - 1))))) {
                 keyWordCheck:
-                for (int j = 0; j < keyWords.length; j++) {
-                    for (int k = 0; k < keyWords[j].length; k++) {
+                for (int j = 0; j < KEYWORDS.length; j++) {
+                    for (int k = 0; k < KEYWORDS[j].length; k++) {
                         // Check for match and that the supposed syntactic block is not part of a longer word:
-                        if (sourceCode.startsWith(keyWords[j][k], i) && !isWordCharacter(sourceCode.charAt(i + keyWords[j][k].length()))) {
+                        if (sourceCode.startsWith(KEYWORDS[j][k], i) && !StringUtil.isWordCharacter(sourceCode.charAt(i + KEYWORDS[j][k].length()))) {
                             // Found match! Save it.
-                            res.add(new SimpleSyntaxBlock(i, i + keyWords[j][k].length(), colors[j]));
+                            res.add(new SimpleSyntaxBlock(i, i + KEYWORDS[j][k].length(), colors[j]));
                             // Ignore the chars involved in the current word (no use parsing them)
-                            i += keyWords[j][k].length();
+                            i += KEYWORDS[j][k].length();
                             break keyWordCheck;
                         }
                     }
