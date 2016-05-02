@@ -11,17 +11,17 @@ import se.chalmers.taide.util.StringUtil;
  * content of the provided deciders (IgnoreDecider and ReplaceDecider). See
  * the interfaces for more information.
  */
-public class IgnoreInputAutoFill implements AutoFill{
+public class IgnoreInputAutoFill implements AutoFill {
 
     private String trigger;
     private IgnoreDecider decider;
     private ReplaceDecider replaceDecider;
 
-    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider){
+    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider) {
         this(trigger, decider, null);
     }
 
-    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider, ReplaceDecider replaceDecider){
+    protected IgnoreInputAutoFill(String trigger, IgnoreDecider decider, ReplaceDecider replaceDecider) {
         this.trigger = trigger;
         this.decider = decider;
         this.replaceDecider = replaceDecider;
@@ -41,7 +41,9 @@ public class IgnoreInputAutoFill implements AutoFill{
         return null;
     }
 
-    public String getSuffixedTrigger() { return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix()); };
+    public String getSuffixedTrigger() {
+        return getTrigger() + StringUtil.emptyIfNull(getTriggerSuffix());
+    }
 
     /**
      * Retrieves the text that should be placed before the selection marker
@@ -50,8 +52,8 @@ public class IgnoreInputAutoFill implements AutoFill{
      * @return The text that should be placed before the selection marker
      */
     @Override
-    public String getPrefix(String source, int offset){
-        return (replaceDecider==null?trigger:replaceDecider.getReplacer(source, offset));
+    public String getPrefix(String source, int offset) {
+        return (replaceDecider == null ? trigger : replaceDecider.getReplacer(source, offset));
     }
 
     /**
@@ -74,9 +76,9 @@ public class IgnoreInputAutoFill implements AutoFill{
      */
     @Override
     public int selectionIncreaseCount(String source, int offset){
-        if(decider != null && decider.shouldIgnoreChar(source, offset)){
-            return (replaceDecider==null?trigger.length():replaceDecider.getReplacer(source, offset).length());
-        }else{
+        if (decider != null && decider.shouldIgnoreChar(source, offset)) {
+            return (replaceDecider == null ? trigger.length() : replaceDecider.getReplacer(source, offset).length());
+        } else {
             return 0;
         }
     }
@@ -85,7 +87,7 @@ public class IgnoreInputAutoFill implements AutoFill{
     /**
      * Interface for determining whether to ignore a written character or not
      */
-    public interface IgnoreDecider{
+    public interface IgnoreDecider {
         /**
          * Check if the written char should be ignored. The char that is currently
          * being inserted can be found by calling source.charAt(offset).
@@ -100,7 +102,7 @@ public class IgnoreInputAutoFill implements AutoFill{
      * Interface for allowing dynamic replacements. When a replacement should be
      * performed, the getReplacer method is called with the current state params.
      */
-    public interface ReplaceDecider{
+    public interface ReplaceDecider {
         /**
          * Retrieves the text to replace the current trigger text with.
          * @param source The current source code
