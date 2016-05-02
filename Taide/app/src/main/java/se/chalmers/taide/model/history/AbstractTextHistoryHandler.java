@@ -230,7 +230,7 @@ public abstract class AbstractTextHistoryHandler implements TextHistoryHandler, 
 
     @Override
     public int getPriority(){
-        return 8;
+        return 1;
     }
 
     protected enum Action{
