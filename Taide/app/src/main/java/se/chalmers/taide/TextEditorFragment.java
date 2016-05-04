@@ -47,11 +47,18 @@ public class TextEditorFragment extends Fragment {
         leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
+                Activity a = getActivity();
                 switch (index) {
                     case 0:
                         View v = getActivity().findViewById(R.id.markup);
                         v.setVisibility(v.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                         break;
+                    case 1:
+                        Clipboard.copyToClipboard(a, codeEditor);
+                        break;
+                    case 2:
+                        Clipboard.pasteFromClipboard(a, codeEditor);
+                    break;
                     default:
                         break;
                 }
