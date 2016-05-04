@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import se.chalmers.taide.util.XMLParser;
+
 /**
  * Created by Matz on 2016-03-22.
  */
