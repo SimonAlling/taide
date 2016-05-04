@@ -45,6 +45,24 @@
     <string name="actionmenu_right_title">{ }</string>
 
 
+
+    <!-- UNITS -->
+    <string name="unit_per">per</string>
+    <string name="unit_per_abbr">/</string>
+    <string name="unit_cm">centimeter</string>
+    <string name="unit_cm_plural">centimeters</string>
+    <string name="unit_cm_abbr">cm</string>
+    <string name="unit_inch">inch</string>
+    <string name="unit_inch_plural">inches</string>
+    <string name="unit_inch_abbr">in</string>
+    <string name="unit_char">character</string>
+    <string name="unit_char_plural">characters</string>
+    <string name="unit_char_abbr">char.</string>
+
+
+
+
+
     <!-- SETTINGS -->
     <string name="pref_group_sync_title">Sync</string>
     <!-- Sync -->
