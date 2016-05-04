@@ -64,6 +64,11 @@
 
 
     <!-- SETTINGS -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_header_shortcuts">Shortcuts</string>
+
+
     <string name="pref_group_sync_title">Sync</string>
     <!-- Sync -->
     <string name="pref_title_sync">Sync resources</string>
@@ -71,7 +76,8 @@
     <string name="pref_title_sync_formats">Customize</string>
     <string name="pref_summary_sync_formats_all">Sync all resources</string>
     <string name="pref_summary_sync_formats_some">Sync some resources</string>
-    <string name="pref_summary_sync_formats_none">Sync no resources</string>
+    <string name="pref_summary_sync_formats_none">No resource types selected</string>
+    <string name="pref_summary_sync_formats_disabled">Sync disabled</string>
     <string-array name="file_formats_entries">
         <item>Images (.jpg, .png, etc)</item>
         <item>Archives (.zip etc)</item>
@@ -94,10 +100,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact
