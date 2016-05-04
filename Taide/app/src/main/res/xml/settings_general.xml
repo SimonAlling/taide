@@ -3,30 +3,35 @@
     <PreferenceCategory
         android:title="@string/pref_group_sync_title"
         android:key="pref_key_storage_settings">
+
         <CheckBoxPreference
             android:key="pref_key_use_sync"
             android:title="@string/pref_title_sync"
             android:defaultValue="true" />
+
         <MultiSelectListPreference
             android:key="pref_key_sync_formats"
             android:dependency="pref_key_use_sync"
-            android:summary="@string/pref_summary_sync_formats_all"
             android:title="@string/pref_title_sync_formats"
             android:entryValues="@array/file_formats_values"
             android:entries="@array/file_formats_entries"
             android:defaultValue="@array/file_formats_values"/>
     </PreferenceCategory>
+
     <PreferenceCategory
         android:title="@string/pref_group_selection_title"
         android:key="pref_key_selection_settings">
+
         <net.jayschwa.android.preference.SliderPreference
             android:key="pref_key_selection_sensitivity"
             android:title="@string/pref_title_selection_sensitivity"
             android:defaultValue="0.5"/>
     </PreferenceCategory>
+
     <PreferenceCategory
         android:title="@string/pref_group_others_title"
         android:key="pref_key_others_settings">
+
         <ListPreference
             android:key="pref_key_history_handler_type"
             android:summary="@string/pref_summary_history_handler_type"

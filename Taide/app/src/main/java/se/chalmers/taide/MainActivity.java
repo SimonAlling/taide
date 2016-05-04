@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import se.chalmers.taide.settings.SettingsActivity;
+
 /**
  * Created by Matz on 2016-01-25.
  *
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Load default preferences if not set
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
         //Init view
         setContentView(R.layout.activity_main);
