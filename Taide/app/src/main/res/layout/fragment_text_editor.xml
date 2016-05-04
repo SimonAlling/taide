@@ -12,13 +12,14 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TextView
+        style = "@style/TextViewDark"
         android:id="@+id/noTextLoadedLabel"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:textSize="@dimen/big_font_size"
         android:text="@string/default_info"
-        android:textColor="@color/defaultTextColor"/>
+        />
 
     <RelativeLayout
         android:id="@+id/codeEditorWrapper"
@@ -43,6 +44,7 @@
 
 
         <se.chalmers.taide.RadialActionMenuLayout
+            style="@style/AppTheme.radialButtons"
             android:id="@+id/actionMenuLayoutLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,13 +54,13 @@
             android:layout_alignParentBottom="true" />
 
         <se.chalmers.taide.RadialActionMenuLayout
+            style="@style/AppTheme.radialButtons"
             android:id="@+id/actionMenuLayoutRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             actionmenu:menuAlignment="right"
             actionmenu:animationDuration="100"
             actionmenu:menuTitle="@string/actionmenu_right_title"
-            actionmenu:buttonColor="@color/forestGreen"
             android:layout_alignParentBottom="true" />
 
 

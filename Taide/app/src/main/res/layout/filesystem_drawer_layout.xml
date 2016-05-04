@@ -4,8 +4,9 @@
     android:layout_width="300dp"
     android:layout_height="match_parent"
     android:id="@+id/drawerPane"
-    android:background="?attr/drawerBackground"
+    style="@style/AppTheme.filesystem"
     android:layout_gravity="start">
+
 
     <RelativeLayout
         android:id="@+id/drawerContentWrapper"
@@ -18,9 +19,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            >
 
             <TextView
+                style="@style/AppTheme.filesystem"
                 android:id="@+id/projectName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,9 +31,8 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="@dimen/listview_left_margin"
                 android:textSize="@dimen/default_font_size"
-                android:textColor="?android:attr/textColorPrimary"
                 android:textStyle="bold"
-                android:text="Project Name" />
+                android:text="Project Name"/>
 
             <ListView
                 android:id="@+id/projectActionMenus"
@@ -38,14 +40,15 @@
                 android:layout_height="wrap_content"
                 android:choiceMode="none"
                 android:entries="@array/filesystem_default_menuitems"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                />
 
             <com.baoyz.swipemenulistview.SwipeMenuListView
                 android:id="@+id/fileList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/whiteText"
-                android:choiceMode="singleChoice" />
+                android:choiceMode="singleChoice"
+                android:textColor="@android:color/black"/>
 
         </LinearLayout>
     </RelativeLayout>

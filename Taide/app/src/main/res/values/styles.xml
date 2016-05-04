@@ -22,7 +22,14 @@
         <item name="actionNewFolder">@drawable/ic_create_folder_white</item>
 
         <item name="actionMenuColor">@color/lightYellow</item>
-        <item name="drawerBackground">@android:color/black</item>
+    </style>
+
+    <style name="AppTheme.filesystem">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+    <style name="AppTheme.radialButtons">
+        <item name="buttonColor">@color/colorPrimary</item>
     </style>
 
     <style name="TextViewDark" parent="android:Widget.TextView">
@@ -33,6 +40,10 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.Dialog">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
