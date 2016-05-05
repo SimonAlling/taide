@@ -29,6 +29,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
     public static final String AUTOFILL_SUFFIX = "×"; // string to display at the end of the autofill popup
     public static final int AUTOFILL_SUFFIX_SPACING = 3; // number of spaces before suffix
     public static final String MULTILINE_TRUNCATION_INDICATOR = "…"; // string to replace truncated lines with in multiline autofills
+    public static final float POPUP_ADJUSTMENT_LINE_HEIGHT_FACTOR = 0.2f; // how many line heights below the baseline the popup should sit
 
     private ListPopupWindow autofillBox;
     private String currentDisabledAutofillWord;
@@ -82,6 +83,9 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
     }
 
     private void updateAutoFillBox() {
+        // +1 because we start at the top of the line, but the factor is interpreted as starting
+        // from the bottom of it:
+        final float lineHeightAdjustment = (1 + POPUP_ADJUSTMENT_LINE_HEIGHT_FACTOR) * codeEditor.getLineHeight();
         if (codeEditor != null) {
             int pos = codeEditor.getSelectionStart();
             Layout layout = codeEditor.getLayout();
@@ -89,7 +93,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
             int baseline = layout.getLineBaseline(line);
             int ascent = layout.getLineAscent(line);
             float x = layout.getPrimaryHorizontal(pos);
-            float y = baseline + ascent;
+            float y = baseline + ascent + lineHeightAdjustment;
             View cursorAnchor = currentActivity.findViewById(R.id.cursorAnchor);
             cursorAnchor.setX(x);
             cursorAnchor.setY(y);
