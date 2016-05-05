@@ -97,6 +97,9 @@ public class TextEditorFragment extends Fragment {
             case COPY:
                 Clipboard.copyToClipboard(getActivity(), codeEditor);
                 break;
+            case YANK:
+                Clipboard.cutToClipboard(getActivity(), codeEditor);
+                break;
             case PASTE:
                 Clipboard.pasteFromClipboard(getActivity(), codeEditor);
                 break;
