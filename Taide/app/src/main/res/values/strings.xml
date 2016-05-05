@@ -15,7 +15,7 @@
 
     <!-- Action button labels -->
     <string name="action_button_copy">Copy</string>
-    <string name="action_button_cut">Cut</string>
+    <string name="action_button_yank">Yank</string>
     <string name="action_button_paste">Paste</string>
     <string name="action_button_toggle_touchpad">TP</string>
     <string name="action_button_insert_bracket">(</string>

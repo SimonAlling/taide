@@ -40,7 +40,7 @@ public class TextEditorFragment extends Fragment {
     private static final Map<Action, Integer> ACTION_BUTTON_LABELS = new EnumMap<>(Action.class);
     static {
         ACTION_BUTTON_LABELS.put(Action.COPY, R.string.action_button_copy);
-        ACTION_BUTTON_LABELS.put(Action.CUT, R.string.action_button_cut);
+        ACTION_BUTTON_LABELS.put(Action.YANK, R.string.action_button_yank);
         ACTION_BUTTON_LABELS.put(Action.PASTE, R.string.action_button_paste);
         ACTION_BUTTON_LABELS.put(Action.TOGGLE_TOUCHPAD, R.string.action_button_toggle_touchpad);
         ACTION_BUTTON_LABELS.put(Action.INSERT_BRACKET, R.string.action_button_insert_bracket);

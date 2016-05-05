@@ -5,7 +5,7 @@ package se.chalmers.taide;
  */
 public enum Action {
     // This enum describes actions that the user can perform.
-    COPY, CUT, PASTE,
+    COPY, YANK, PASTE,
     INSERT_BRACKET, INSERT_HARD_BRACKET, INSERT_CURLY_BRACKET,
     TOGGLE_TOUCHPAD
 }
