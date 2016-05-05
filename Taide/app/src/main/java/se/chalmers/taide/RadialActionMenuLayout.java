@@ -163,7 +163,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     public void setButtonTexts(String[] texts) {
         if (texts.length != buttons.length) {
-            throw new IllegalArgumentException("Invalid amount of labels, "+texts.length+" given but "+buttons.length+" required");
+            throw new IllegalArgumentException("Invalid amount of labels for "+alignment+" action button: "+texts.length+" given but "+buttons.length+" required.");
         }
 
         for (int i = 0; i < texts.length; i++) {

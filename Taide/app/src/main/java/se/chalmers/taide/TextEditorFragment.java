@@ -12,12 +12,111 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.Map;
+import java.util.EnumMap;
+
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.TextSource;
 import se.chalmers.taide.util.Clipboard;
 
 public class TextEditorFragment extends Fragment {
+
+    // These control the action button configurations (in CLOCKWISE order):
+    // LEFT action button:
+    private static final Action[] ACTIONS_LEFT = {
+            Action.TOGGLE_TOUCHPAD,
+            Action.PASTE,
+            Action.COPY
+    };
+    // RIGHT action button:
+    private static final Action[] ACTIONS_RIGHT = {
+            Action.INSERT_BRACKET,
+            Action.INSERT_HARD_BRACKET,
+            Action.INSERT_CURLY_BRACKET
+    };
+
+    // Each action should have a string reference mapped to itself:
+    private static final Map<Action, Integer> ACTION_BUTTON_LABELS = new EnumMap<>(Action.class);
+    static {
+        ACTION_BUTTON_LABELS.put(Action.COPY, R.string.action_button_copy);
+        ACTION_BUTTON_LABELS.put(Action.CUT, R.string.action_button_cut);
+        ACTION_BUTTON_LABELS.put(Action.PASTE, R.string.action_button_paste);
+        ACTION_BUTTON_LABELS.put(Action.TOGGLE_TOUCHPAD, R.string.action_button_toggle_touchpad);
+        ACTION_BUTTON_LABELS.put(Action.INSERT_BRACKET, R.string.action_button_insert_bracket);
+        ACTION_BUTTON_LABELS.put(Action.INSERT_HARD_BRACKET, R.string.action_button_insert_hard_bracket);
+        ACTION_BUTTON_LABELS.put(Action.INSERT_CURLY_BRACKET, R.string.action_button_insert_curly_bracket);
+    }
+
+    /**
+     * Returns the labels for the specified actions in the same order.
+     * @param actions The actions whose labels are desired
+     * @return A string array with labels for the specified actions
+     */
+    private String[] getActionButtonLabels(Action[] actions) throws NullPointerException {
+        String[] labels = new String[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            final Integer labelStringID = ACTION_BUTTON_LABELS.get(actions[i]);
+            if (labelStringID == null) {
+                throw new NullPointerException("Could not get label string for "+actions[i]+" because it has no string ID mapped to it.");
+            }
+            labels[i] = getString(labelStringID);
+        }
+        return labels;
+    }
+
+    /**
+     * Handles action button presses in a clever and robust way.
+     * @param actionButtonAlignment The alignment (e.g. LEFT) of the used mother action button
+     * @param index The index of the child button (in clockwise order)
+     */
+    private void actionButtonHandler(RadialActionMenuLayout.Alignment actionButtonAlignment, int index) {
+        // Right now we know the alignment (LEFT, RIGHT, or possibly something else) of the mother
+        // action button that was used, and we know the index (in clockwise order) of the child
+        // button that was pressed.
+        // From there we can find out which (if any) action should be performed.
+        Action action;
+        switch (actionButtonAlignment) {
+            case LEFT:
+                action = ACTIONS_LEFT[index];
+                break;
+            case RIGHT:
+                action = ACTIONS_RIGHT[index];
+                break;
+            default:
+                Log.w("warning", "There is no code for handling action buttons with "+actionButtonAlignment+" alignment. Doing nothing.");
+                return;
+        }
+        // The above switch statement instead of a ternary expression may seem a little odd at
+        // first, but careful thought has been put behind it: If another alignment, e.g. CENTER, is
+        // introduced later, a ternary expression would cause a very nasty logical bug. With the
+        // current structure, if no case clause for CENTER alignment is added, a press on a button
+        // with CENTER alignment will simply not trigger any action at all (except a useful log
+        // entry), which is exactly what we want.
+        switch (action) {
+            case COPY:
+                Clipboard.copyToClipboard(getActivity(), codeEditor);
+                break;
+            case PASTE:
+                Clipboard.pasteFromClipboard(getActivity(), codeEditor);
+                break;
+            case TOGGLE_TOUCHPAD:
+                toggleTouchpad();
+                break;
+            case INSERT_BRACKET:
+                insertStringToCodeEditor("(");
+                break;
+            case INSERT_HARD_BRACKET:
+                insertStringToCodeEditor("[");
+                break;
+            case INSERT_CURLY_BRACKET:
+                insertStringToCodeEditor("{");
+                break;
+            default:
+                Log.w("warning", "Nothing is specified to happen for action "+action+". It was triggered by an action button with "+actionButtonAlignment+" alignment and index "+index+".");
+        }
+    }
+
 
     private AutoFillPopupWindow autoFillWindow;
     private TextSource editorAsTextSource;
@@ -33,53 +132,31 @@ public class TextEditorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_text_editor, container, false);
+        final View view = inflater.inflate(R.layout.fragment_text_editor, container, false);
 
         // Retrieve the code editor text field
-        codeEditor = (EditText)view.findViewById(R.id.editText);
+        codeEditor = (EditText) view.findViewById(R.id.editText);
 
         // Bind code editor to the model.
         initModel();
 
         //Bind action menus
-        RadialActionMenuLayout leftMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutLeft);
-        leftMenu.setButtonTexts(new String[]{"0", "1", "2"});
+        final RadialActionMenuLayout leftMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutLeft);
+        leftMenu.setButtonTexts(getActionButtonLabels(ACTIONS_LEFT));
         leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
-                Activity a = getActivity();
-                switch (index) {
-                    case 0:
-                        View v = getActivity().findViewById(R.id.markup);
-                        v.setVisibility(v.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-                        break;
-                    case 1:
-                        Clipboard.copyToClipboard(a, codeEditor);
-                        break;
-                    case 2:
-                        Clipboard.pasteFromClipboard(a, codeEditor);
-                    break;
-                    default:
-                        break;
-                }
+                // This will be called whenever the LEFT action menu is used:
+                actionButtonHandler(RadialActionMenuLayout.Alignment.LEFT, index);
             }
         });
-        RadialActionMenuLayout rightMenu = (RadialActionMenuLayout)view.findViewById(R.id.actionMenuLayoutRight);
-        rightMenu.setButtonTexts(new String[]{"[]", "()", "{}"});
+        final RadialActionMenuLayout rightMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutRight);
+        rightMenu.setButtonTexts(getActionButtonLabels(ACTIONS_RIGHT));
         rightMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
-                switch (index) {
-                    case 0:
-                        insertStringToCodeEditor("[");
-                        break;
-                    case 1:
-                        insertStringToCodeEditor("(");
-                        break;
-                    case 2:
-                        insertStringToCodeEditor("{");
-                        break;
-                }
+                // This will be called whenever the RIGHT action menu is used:
+                actionButtonHandler(RadialActionMenuLayout.Alignment.RIGHT, index);
             }
         });
 
@@ -172,5 +249,9 @@ public class TextEditorFragment extends Fragment {
         codeEditor.getText().replace(start, end, insertString, 0, insertString.length());
     }
 
+    private void toggleTouchpad() {
+        final View touchpad = getActivity().findViewById(R.id.markup);
+        touchpad.setVisibility(touchpad.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+    }
 
 }
