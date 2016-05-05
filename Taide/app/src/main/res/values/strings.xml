@@ -13,6 +13,8 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <string name="clipboard_label">Taide code</string>
+
     <!-- Action button labels -->
     <string name="action_button_copy">Copy</string>
     <string name="action_button_yank">Yank</string>

@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.widget.EditText;
 
+import se.chalmers.taide.R;
+
 /**
  * Created by Matz on 2016-02-15.
  *
@@ -15,6 +17,8 @@ import android.widget.EditText;
  */
 public class Clipboard {
 
+    public static final String DEFAULT_LABEL = "Taide code";
+
     /**
      * Copies the selected text to the clipboard
      * @param context The current application context
@@ -22,11 +26,16 @@ public class Clipboard {
      */
     public static void copyToClipboard(Context context, EditText input) {
         if (context != null) {
-            ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
-            int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
-            String text = input.getText().subSequence(start, end).toString();
-            manager.setPrimaryClip(ClipData.newPlainText("Taide code", text));
+            final ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            final int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
+            final int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
+            final String selectedText = input.getText().subSequence(start, end).toString();
+            // No need to replace clipboard content with the empty string, so let's first check if
+            // there was any selected text:
+            if (selectedText.length() > 0) {
+                final String label = context.getString(R.string.clipboard_label, DEFAULT_LABEL);
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(label, selectedText));
+            }
         }
     }
 
