@@ -77,6 +77,9 @@ public class MarkupFragment extends Fragment {
                         area = getPointerArea(pointer.x, pointer.y);
                         startPos = TEXT_AREA.getSelectionStart();
 
+                        KEEP_SELECTION = new Handler();
+                        KEEP_SELECTION.postDelayed(twoPointTouchDelay, 100);
+
                         startRunnables(area);
 
                         break;
@@ -90,8 +93,6 @@ public class MarkupFragment extends Fragment {
                         Pointer point = ACTIVE_POINTERS.get(event.getActionIndex());
                         area = getPointerArea(point.x, point.y);
 
-                        KEEP_SELECTION = new Handler();
-                        KEEP_SELECTION.postDelayed(twoPointTouchDelay, 100);
                         startRunnables(area);
 
                         break;
@@ -284,7 +285,12 @@ public class MarkupFragment extends Fragment {
             }
         }
         if(ACTIVE_POINTERS.size() > 1) {
-            TEXT_AREA.setSelection(startPos, endPos);
+            if(startPos < endPos) {
+                TEXT_AREA.setSelection(startPos, endPos);
+            } else {
+                TEXT_AREA.setSelection(startPos);
+                endPos = startPos;
+            }
             if(startPos != endPos) {
                 marked = true;
             } else {
@@ -463,6 +469,7 @@ public class MarkupFragment extends Fragment {
         public void run() {
             if(!keepSelecion) {
                 keepSelecion = true;
+                KEEP_SELECTION.postDelayed(this, 100);
             } else {
                 keepSelecion = false;
                 KEEP_SELECTION.removeCallbacks(this);
