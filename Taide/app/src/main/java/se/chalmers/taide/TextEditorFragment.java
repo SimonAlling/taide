@@ -26,8 +26,8 @@ public class TextEditorFragment extends Fragment {
     // LEFT action button:
     private static final Action[] ACTIONS_LEFT = {
             Action.TOGGLE_TOUCHPAD,
-            Action.PASTE,
-            Action.COPY
+            Action.COPY,
+            Action.PASTE
     };
     // RIGHT action button:
     private static final Action[] ACTIONS_RIGHT = {
@@ -121,6 +121,7 @@ public class TextEditorFragment extends Fragment {
                 break;
             default:
                 Log.w("warning", "Nothing is specified to happen for action "+action+".");
+                break;
         }
     }
 
