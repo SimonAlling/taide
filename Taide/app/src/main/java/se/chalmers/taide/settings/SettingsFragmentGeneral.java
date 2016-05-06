@@ -41,24 +41,27 @@ public class SettingsFragmentGeneral extends SettingsFragment {
         addPreferencesFromResource(R.xml.preferences_general);
     }
 
+    @Override
+    protected void updateGUI() {
+        updateGUI_sync(sharedPreferences);
+    }
+
     // Update Sync related GUI elements:
     private void updateGUI_sync(SharedPreferences preferences) {
-        if (preferences != null) {
-            // We'll start out with the assumption that no resource types are selected:
-            int stringID = R.string.pref_summary_sync_formats_none;
-            final int numberOfSelectedSyncFormats = preferences.getStringSet(KEY_SYNC_FORMATS, Collections.EMPTY_SET).size();
-            if (numberOfSelectedSyncFormats == getResources().getStringArray(R.array.file_formats_values).length) {
-                // All resource types are selected.
-                stringID = R.string.pref_summary_sync_formats_all;
-            } else if (numberOfSelectedSyncFormats > 0) {
-                // Some, but not all, resource types are selected.
-                stringID = R.string.pref_summary_sync_formats_some;
-            }
-            // Finally, we will consider the state of the Sync checkbox:
-            final boolean syncEnabled = preferences.getBoolean(KEY_SYNC, true);
-            if (!syncEnabled) { stringID = R.string.pref_summary_sync_formats_disabled; }
-            findPreference(KEY_SYNC_FORMATS).setSummary(getString(stringID));
+        // We'll start out with the assumption that no resource types are selected:
+        int stringID = R.string.pref_summary_sync_formats_none;
+        final int numberOfSelectedSyncFormats = preferences.getStringSet(KEY_SYNC_FORMATS, Collections.EMPTY_SET).size();
+        if (numberOfSelectedSyncFormats == getResources().getStringArray(R.array.file_formats_values).length) {
+            // All resource types are selected.
+            stringID = R.string.pref_summary_sync_formats_all;
+        } else if (numberOfSelectedSyncFormats > 0) {
+            // Some, but not all, resource types are selected.
+            stringID = R.string.pref_summary_sync_formats_some;
         }
+        // Finally, we will consider the state of the Sync checkbox:
+        final boolean syncEnabled = preferences.getBoolean(KEY_SYNC, true);
+        if (!syncEnabled) { stringID = R.string.pref_summary_sync_formats_disabled; }
+        findPreference(KEY_SYNC_FORMATS).setSummary(getString(stringID));
     }
 
     private void updateGUI_history(SharedPreferences preferences) {

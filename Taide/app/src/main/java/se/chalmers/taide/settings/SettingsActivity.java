@@ -1,8 +1,8 @@
 package se.chalmers.taide.settings;
 
-
-import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.taide.R;
@@ -20,33 +20,22 @@ import se.chalmers.taide.R;
  */
 public class SettingsActivity extends PreferenceActivity {
 
-    // All Fragments that are used in the settings menu MUST be included here:
-    private static final Class[] VALID_FRAGMENTS = {
-        SettingsFragmentGeneral.class,
-        SettingsFragmentShortcuts.class
-    };
-
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    // This will hold all the fragment types that we recognize and allow:
+    private static List<String> validFragments = new ArrayList<>();
 
     @Override
     public void onBuildHeaders(List<Header> target) {
         super.onBuildHeaders(target);
         loadHeadersFromResource(R.xml.preferences, target);
+        // Put all fragments from the XML in our list of valid fragments:
+        for (Header header : target) {
+            validFragments.add(header.fragment);
+        }
     }
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        for (Class c : VALID_FRAGMENTS) {
-            if (c.getName().equals(fragmentName)) {
-                return true;
-            }
-        }
-        throw new RuntimeException(fragmentName + " cannot be used in the settings menu because it is not explicitly included in the list of valid fragments in " + getClass().getName() + ".");
+        return validFragments.contains(fragmentName);
     }
 
 }
