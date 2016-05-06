@@ -93,6 +93,10 @@ public class TextEditorFragment extends Fragment {
         // current structure, if no case clause for CENTER alignment is added, a press on a button
         // with CENTER alignment will simply not trigger any action at all (except a useful log
         // entry), which is exactly what we want.
+        actionHandler(action);
+    }
+
+    private void actionHandler(Action action) {
         switch (action) {
             case COPY:
                 Clipboard.copyToClipboard(getActivity(), codeEditor);
@@ -116,7 +120,7 @@ public class TextEditorFragment extends Fragment {
                 insertStringToCodeEditor("{");
                 break;
             default:
-                Log.w("warning", "Nothing is specified to happen for action "+action+". It was triggered by an action button with "+actionButtonAlignment+" alignment and index "+index+".");
+                Log.w("warning", "Nothing is specified to happen for action "+action+".");
         }
     }
 
