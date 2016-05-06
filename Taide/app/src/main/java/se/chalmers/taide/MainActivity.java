@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Load default preferences if not set
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         //Init view
         setContentView(R.layout.activity_main);

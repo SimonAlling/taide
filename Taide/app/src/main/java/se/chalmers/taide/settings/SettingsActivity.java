@@ -36,7 +36,7 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     public void onBuildHeaders(List<Header> target) {
         super.onBuildHeaders(target);
-        loadHeadersFromResource(R.xml.settings, target);
+        loadHeadersFromResource(R.xml.preferences, target);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings_general);
+        addPreferencesFromResource(R.xml.preferences_general);
     }
 
     // Update Sync related GUI elements:

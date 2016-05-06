@@ -12,6 +12,6 @@ public class SettingsFragmentShortcuts extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.settings_shortcuts);
+        addPreferencesFromResource(R.xml.preferences_shortcuts);
     }
 }
