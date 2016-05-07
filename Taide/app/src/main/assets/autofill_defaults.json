@@ -1,0 +1,43 @@
+{
+  "defaults":[
+    {
+      "language":"Java",
+      "data":[
+        {
+          "trigger":"(",
+          "pre":"(",
+          "post":")",
+          "shortcut":"false"
+        },
+        {
+          "trigger":"{",
+          "pre":"{",
+          "post":"}",
+          "shortcut":"false"
+        },
+        {
+          "trigger":"[",
+          "pre":"[",
+          "post":"]",
+          "shortcut":"false"
+        },
+        {
+          "trigger":"\"",
+          "pre":"\"",
+          "post":"\"",
+          "shortcut":"false"
+        },
+        {
+          "trigger":"syso",
+          "pre":"System.out.println(",
+          "post":");"
+        },
+        {
+          "trigger":"for",
+          "pre":"for (int i = 0; i <",
+          "post":"; i++) {\n"
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.chalmers.taide.model.autofill.AutoFill;
+import se.chalmers.taide.model.autofill.AutoFillFactory;
+import se.chalmers.taide.model.autofill.SimpleAutoFiller;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.FileSystemFactory;
@@ -47,6 +50,8 @@ public class SimpleEditorModel implements EditorModel {
         this.context = context;
         this.textFilters = new HashMap<>();
         this.fileSystem = FileSystemFactory.getFileSystem(context);
+        //Init the default autofills from files.
+        AutoFillFactory.resetToDefaultAutofills(context, null, false);
 
         // Setup text view and apply highlight immediately
         setTextSource(text);
@@ -56,7 +61,7 @@ public class SimpleEditorModel implements EditorModel {
 
     private void setupFilters(){
         addFilter(FILTER_KEY_INDENTATION, new SimpleAutoIndenter(this.language));
-        addFilter(FILTER_KEY_AUTOFILL, new SimpleAutoFiller(this.language));
+        addFilter(FILTER_KEY_AUTOFILL, new SimpleAutoFiller(context, this.language));
         addFilter(FILTER_KEY_HIGHLIGHT, new SimpleHighlighter(this.language));
         manuallyTriggerFilter(FILTER_KEY_HIGHLIGHT);
     }

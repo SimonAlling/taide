@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.model.autofill.AutoFill;
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.TextSource;
 import se.chalmers.taide.util.StringUtil;

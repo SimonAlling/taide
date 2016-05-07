@@ -1,11 +1,14 @@
-package se.chalmers.taide.model;
+package se.chalmers.taide.model.autofill;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import se.chalmers.taide.model.AbstractTextFilter;
+import se.chalmers.taide.model.TextSource;
 import se.chalmers.taide.model.languages.Language;
 
 /**
@@ -14,24 +17,66 @@ import se.chalmers.taide.model.languages.Language;
  * Basically applies auto fills (connects to text view and handles the
  * communication with the auto fill objects).
  */
-public class SimpleAutoFiller extends AbstractTextFilter{
+public class SimpleAutoFiller extends AbstractTextFilter {
 
     private List<AutoFill> autoFills;
     private List<AutoFill> disabledAutoFills;
+    private Context context;
 
     /**
      * Init the filter with a language
      * @param lang The language to use.
      */
-    protected SimpleAutoFiller(Language lang){
-        this(lang == null ? Collections.<AutoFill>emptyList() : lang.getAutoFills());
+    public SimpleAutoFiller(Context context, Language lang){
+        this(context, lang == null ? Collections.<AutoFill>emptyList() : lang.getAutoFills());
+        setLanguage(lang);
     }
 
     /**
      * Init the filter with a list of auto fills immediately.
      * @param autoFills The auto fills to use
      */
-    protected SimpleAutoFiller(List<AutoFill> autoFills) {
+    protected SimpleAutoFiller(Context context, List<AutoFill> autoFills) {
+        this.context = context;
+        setAutoFills(autoFills);
+        AutoFillFactory.registerAutofillChangeListener(new AutoFillFactory.AutoFillDataChangeListener() {
+            @Override
+            public void autoFillAdded(String category, AutoFill a) {
+                Language lang = getLanguage();
+                if (lang != null && lang.getName().equalsIgnoreCase(category)) {
+                    SimpleAutoFiller.this.autoFills.add(a);
+                    setAutoFills(SimpleAutoFiller.this.autoFills);
+                }
+            }
+
+            @Override
+            public void autoFillRemoved(String category, AutoFill a) {
+                Language lang = getLanguage();
+                if (lang != null && lang.getName().equalsIgnoreCase(category)) {
+                    SimpleAutoFiller.this.autoFills.remove(a);
+                    setAutoFills(SimpleAutoFiller.this.autoFills);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setLanguage(final Language lang){
+        super.setLanguage(lang);
+        if(lang != null) {
+            AutoFillFactory.getAutofillsByCategory(context, lang.getName(), new AutoFillFactory.OnAutoFillsLoadedListener() {
+                @Override
+                public void onAutoFillsLoaded(List<AutoFill> autofills) {
+                    if(autofills != null) {
+                        autofills.addAll(lang.getAutoFills());
+                        setAutoFills(autofills);
+                    }
+                }
+            });
+        }
+    }
+
+    protected void setAutoFills(List<AutoFill> autoFills){
         this.disabledAutoFills = new ArrayList<>();
 
         this.autoFills = autoFills;

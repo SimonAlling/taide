@@ -3,7 +3,8 @@ package se.chalmers.taide.model;
 import android.content.Context;
 import android.widget.EditText;
 
-import se.chalmers.taide.model.autofill.SimpleAutoFill;
+import se.chalmers.taide.model.autofill.AutoFill;
+import se.chalmers.taide.model.autofill.ShortcutAutoFill;
 
 /**
  * Created by Matz on 2016-02-07.
@@ -41,7 +42,7 @@ public class ModelFactory {
      * @return A valid auto fill object with the given properties.
      */
     public static AutoFill createAutoFill(String trigger, String prefix, String suffix) {
-        return new SimpleAutoFill(trigger, prefix, suffix);
+        return new ShortcutAutoFill(trigger, prefix, suffix);
     }
 
     public static TextSource editTextToTextSource(EditText editText) {

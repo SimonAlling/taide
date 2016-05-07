@@ -2,7 +2,7 @@ package se.chalmers.taide.model.languages;
 
 import java.util.List;
 
-import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.model.autofill.AutoFill;
 
 /**
  * Created by Matz on 2016-02-07.

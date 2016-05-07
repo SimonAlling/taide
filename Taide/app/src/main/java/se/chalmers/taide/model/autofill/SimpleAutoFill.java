@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.autofill;
 
-import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.util.StringUtil;
 
 /**
@@ -9,11 +8,10 @@ import se.chalmers.taide.util.StringUtil;
  * The most basic implementation of an auto fill with static trigger, prefix
  * and suffix. The SimpleAutoFill objects are immutable.
  */
-public class SimpleAutoFill implements AutoFill {
+public class SimpleAutoFill extends AbstractAutoFill {
 
     public static final String TRIGGER_SUFFIX = null;
 
-    private String trigger;
     private String prefix, suffix;
 
     /**
@@ -23,18 +21,9 @@ public class SimpleAutoFill implements AutoFill {
      * @param suffix The suffix (this cannot be changed)
      */
     public SimpleAutoFill(String trigger, String prefix, String suffix) {
-        this.trigger = trigger;
+        super(trigger);
         this.prefix = prefix;
         this.suffix = suffix;
-    }
-
-    /**
-     * Retrieves the trigger to which this auto fill should react
-     * @return The trigger text that should fire an event
-     */
-    @Override
-    public String getTrigger(){
-        return trigger;
     }
 
     @Override

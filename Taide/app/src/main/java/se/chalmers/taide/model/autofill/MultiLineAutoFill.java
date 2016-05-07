@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.autofill;
 
-import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.model.languages.Language;
 import se.chalmers.taide.util.StringUtil;
 
@@ -12,12 +11,11 @@ import se.chalmers.taide.util.StringUtil;
  * in some extent.
  * It also has support for ignoring the auto fill functionality in comments.
  */
-public class MultiLineAutoFill implements AutoFill {
+public class MultiLineAutoFill extends AbstractAutoFill {
 
     public static final String TRIGGER_SUFFIX = null;
     public static final String INDENT_TABS = "MultiLine:IndentTabs";
 
-    private String trigger;
     private String[] prefix, suffix;
     private Language lang;
     private boolean applyInComments;
@@ -29,18 +27,9 @@ public class MultiLineAutoFill implements AutoFill {
      * @param applyInComments If the auto fill should be used for comments as well.
      */
     public MultiLineAutoFill(Language lang, String trigger, boolean applyInComments) {
+        super(trigger);
         this.lang = lang;
-        this.trigger = trigger;
         this.applyInComments = applyInComments;
-    }
-
-    /**
-     * Retrieves the trigger to which this auto fill should react
-     * @return The trigger text that should fire an event
-     */
-    @Override
-    public String getTrigger() {
-        return trigger;
     }
 
     @Override
@@ -99,6 +88,12 @@ public class MultiLineAutoFill implements AutoFill {
     private String getStringFromPartArray(String source, int index, String[] array) {
         if (!applyInComments && lang.isInComment(source, index)) {
             return "";
+        }else if(source == null){
+            for(int i = 0; i<array.length; i++){
+                if(!array[i].equalsIgnoreCase(INDENT_TABS)){
+                    return array[i]+(i<array.length-1?"...":"");
+                }
+            }
         }
 
         StringBuffer sourceBuffer = new StringBuffer(source);

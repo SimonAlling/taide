@@ -6,10 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import se.chalmers.taide.R;
-import se.chalmers.taide.model.AutoFill;
+import se.chalmers.taide.model.autofill.AutoFill;
 import se.chalmers.taide.model.autofill.IgnoreInputAutoFill;
-import se.chalmers.taide.model.autofill.ShortcutAutoFill;
-import se.chalmers.taide.model.autofill.SimpleAutoFill;
 import se.chalmers.taide.util.StringUtil;
 import se.chalmers.taide.util.TabUtil;
 
@@ -196,6 +194,10 @@ public class JavaImpl extends SimpleLanguage {
      */
     @Override
     public boolean isInComment(String source, int index){
+        if(source == null || index<0){
+            return false;
+        }
+
         int lineStart = Math.max(0, source.lastIndexOf("\n", index)+1);
         int lineEnd = source.indexOf("\n", lineStart);
         String line = source.substring(lineStart, (lineEnd < 0 ? source.length() : lineEnd));
@@ -214,29 +216,26 @@ public class JavaImpl extends SimpleLanguage {
     @Override
     public List<AutoFill> getAutoFills() {
         List<AutoFill> autoFills = new LinkedList<>();
-        autoFills.add(new SimpleAutoFill("(", "(", ")"));
-        autoFills.add(new SimpleAutoFill("\"", "\"", "\""));
-        autoFills.add(new ShortcutAutoFill("syso","System.out.println(",");"));
-        autoFills.add(new SimpleAutoFill("{", "{", "}"));
-        autoFills.add(new SimpleAutoFill("[", "[", "]"));
-        autoFills.add(new ShortcutAutoFill("for", "for (int i = 0; i < ", "; i++) {\n"));
         autoFills.add(new IgnoreInputAutoFill(")", new IgnoreInputAutoFill.IgnoreDecider() {
             @Override
             public boolean shouldIgnoreChar(String source, int offset) {
                 //Ignore one ')' since the one is written now, might be overridden
-                return source.length() > offset && source.charAt(offset) == ')' && countOccurrences(source, ")")-1 == countOccurrences(source, "(");
-            }
-        }, new IgnoreInputAutoFill.ReplaceDecider(){
-            @Override
-            public String getReplacer(String source, int offset) {
-                return (source.length()>offset+1 && source.charAt(offset+1) == ';'? ");" : ")");
+                if(source != null) {
+                    return source.length() > offset && source.charAt(offset) == ')' && countOccurrences(source, ")") - 1 == countOccurrences(source, "(");
+                }else{
+                    return false;
+                }
             }
         }));
         autoFills.add(new IgnoreInputAutoFill("}", new IgnoreInputAutoFill.IgnoreDecider() {
             @Override
             public boolean shouldIgnoreChar(String source, int offset) {
                 //Ignore one '}' since the one is written now, might be overridden
-                return source.length() > offset && source.charAt(offset) == '}' && countOccurrences(source, "}")-1 == countOccurrences(source, "{");
+                if(source != null) {
+                    return source.length() > offset && source.charAt(offset) == '}' && countOccurrences(source, "}") - 1 == countOccurrences(source, "{");
+                }else{
+                    return false;
+                }
             }
         }));
         return autoFills;

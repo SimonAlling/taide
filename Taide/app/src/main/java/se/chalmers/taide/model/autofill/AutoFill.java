@@ -1,4 +1,4 @@
-package se.chalmers.taide.model;
+package se.chalmers.taide.model.autofill;
 
 /**
  * Created by Matz on 2016-02-29.
@@ -30,12 +30,24 @@ public interface AutoFill {
     String getSuffixedTrigger();
 
     /**
+     * Retrieves the pure savedata for the prefix. Do not use this for realtime autofilling.
+     * @return The pure prefix data
+     */
+    String getPrefixData();
+
+    /**
      * Retrieves the text that should be placed before the selection marker
      * @param source The entire text that triggered this call
      * @param index The index of the selection marker
      * @return The text that should be placed before the selection marker
      */
     String getPrefix(String source, int index);
+
+    /**
+     * Retrieves the pure savedata for the suffix. Do not use this for realtime autofilling.
+     * @return The pure suffix data
+     */
+    String getSuffixData();
 
     /**
      * Retrieves the text that should be placed after the selection marker

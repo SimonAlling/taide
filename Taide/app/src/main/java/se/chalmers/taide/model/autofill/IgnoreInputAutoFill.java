@@ -1,6 +1,5 @@
 package se.chalmers.taide.model.autofill;
 
-import se.chalmers.taide.model.AutoFill;
 import se.chalmers.taide.util.StringUtil;
 
 /**
@@ -11,11 +10,10 @@ import se.chalmers.taide.util.StringUtil;
  * content of the provided deciders (IgnoreDecider and ReplaceDecider). See
  * the interfaces for more information.
  */
-public class IgnoreInputAutoFill implements AutoFill {
+public class IgnoreInputAutoFill extends AbstractAutoFill {
 
     public static final String TRIGGER_SUFFIX = null;
 
-    private String trigger;
     private IgnoreDecider decider;
     private ReplaceDecider replaceDecider;
 
@@ -24,18 +22,9 @@ public class IgnoreInputAutoFill implements AutoFill {
     }
 
     public IgnoreInputAutoFill(String trigger, IgnoreDecider decider, ReplaceDecider replaceDecider) {
-        this.trigger = trigger;
+        super(trigger);
         this.decider = decider;
         this.replaceDecider = replaceDecider;
-    }
-
-    /**
-     * Retrieves the trigger to which this auto fill should react
-     * @return The trigger text that should fire an event
-     */
-    @Override
-    public String getTrigger(){
-        return trigger;
     }
 
     @Override
@@ -53,7 +42,7 @@ public class IgnoreInputAutoFill implements AutoFill {
      */
     @Override
     public String getPrefix(String source, int offset) {
-        return (replaceDecider == null ? trigger : replaceDecider.getReplacer(source, offset));
+        return (replaceDecider == null ? getTrigger() : replaceDecider.getReplacer(source, offset));
     }
 
     /**
@@ -77,7 +66,7 @@ public class IgnoreInputAutoFill implements AutoFill {
     @Override
     public int selectionIncreaseCount(String source, int offset){
         if (decider != null && decider.shouldIgnoreChar(source, offset)) {
-            return (replaceDecider == null ? trigger.length() : replaceDecider.getReplacer(source, offset).length());
+            return (replaceDecider == null ? getTrigger().length() : replaceDecider.getReplacer(source, offset).length());
         } else {
             return 0;
         }
