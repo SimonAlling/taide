@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
  */
 public class RadialActionMenuLayout extends RelativeLayout{
 
-    private static final int DEFAULT_NBR_OF_BUTTONS = 3;
     private static final int DEFAULT_ANIMATION_DURATION = 100;
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200;
     private static final String DEFAULT_MAIN_BUTTON_TEXT = "";
@@ -67,7 +66,6 @@ public class RadialActionMenuLayout extends RelativeLayout{
             buttonColor = tv.data;
         }
         alignment = Alignment.getAlignment(attributeData.getInt(R.styleable.RadialActionMenuLayout_menuAlignment, 1));
-        generateButtons(attributeData.getInt(R.styleable.RadialActionMenuLayout_buttonCount, DEFAULT_NBR_OF_BUTTONS));
         animationDuration = attributeData.getInt(R.styleable.RadialActionMenuLayout_animationDuration, DEFAULT_ANIMATION_DURATION);
         selectionAnimationDuration = attributeData.getInt(R.styleable.RadialActionMenuLayout_selectionAnimationDuration, DEFAULT_SELECTION_ANIMATION_DURATION);
         String mainButtonText = attributeData.getString(R.styleable.RadialActionMenuLayout_menuTitle);
@@ -104,12 +102,6 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     public Alignment getAlignment(){
         return alignment;
-    }
-
-    public void setButtonCount(int buttonCount) {
-        generateButtons(buttonCount);
-        invalidate();
-        requestLayout();
     }
 
     public int getButtonCount(){
@@ -153,21 +145,23 @@ public class RadialActionMenuLayout extends RelativeLayout{
         return mainButton.getText().toString();
     }
 
-    public void setButtonText(int buttonIndex, String text) {
+    public void setButtonLabel(int buttonIndex, String label) {
         if (buttonIndex >= 0 && buttonIndex < buttons.length) {
-            ((Button) buttons[buttonIndex].findViewById(R.id.radialButton)).setText(text);
+            ((Button) buttons[buttonIndex].findViewById(R.id.radialButton)).setText(label);
             invalidate();
             requestLayout();
         }
     }
 
-    public void setButtonTexts(String[] texts) {
-        if (texts.length != buttons.length) {
-            throw new IllegalArgumentException("Invalid amount of labels for "+alignment+" action button: "+texts.length+" given but "+buttons.length+" required.");
-        }
-
-        for (int i = 0; i < texts.length; i++) {
-            ((Button) buttons[i].findViewById(R.id.radialButton)).setText(texts[i]);
+    /**
+     * Takes an array of strings and creates buttons with those labels.
+     * There will be NO BUTTONS until this is called.
+     * @param labels The desired labels of the buttons in clockwise order
+     */
+    public void setButtons(String[] labels) {
+        generateButtons(labels.length);
+        for (int i = 0; i < labels.length; i++) {
+            ((Button) buttons[i].findViewById(R.id.radialButton)).setText(labels[i]);
         }
         invalidate();
         requestLayout();
@@ -232,7 +226,9 @@ public class RadialActionMenuLayout extends RelativeLayout{
                           ?  LEFT_UPPERMOST_BUTTON_ANGLE -  LEFT_LOWERMOST_BUTTON_ANGLE
                           : RIGHT_UPPERMOST_BUTTON_ANGLE - RIGHT_LOWERMOST_BUTTON_ANGLE;
         // The angle between two adjacent buttons:
-        final double angleChange = totalAngle / (buttons.length-1);
+        // The special case for buttons.length == 1 is there because otherwise angleChange will be
+        // NaN, and then we cannot support exactly one button.
+        final double angleChange = buttons.length > 1 ? totalAngle / (buttons.length-1) : 0;
         // The angle of the first button in clockwise order:
         // Note that 0 deg is an angle pointing to the right and angles increase CLOCKWISE!
         final double startAngle = alignment == Alignment.LEFT ? 0 - LEFT_UPPERMOST_BUTTON_ANGLE : 180 + RIGHT_LOWERMOST_BUTTON_ANGLE;

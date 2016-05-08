@@ -22,7 +22,10 @@ import se.chalmers.taide.util.Clipboard;
 
 public class TextEditorFragment extends Fragment {
 
+    private static final String ACTION_BUTTON_FALLBACK_LABEL = "?";
+
     // These control the action button configurations (in CLOCKWISE order):
+    // Any number of actions can be specified here; the number of buttons will follow.
     // LEFT action button:
     private static final Action[] ACTIONS_LEFT = {
             Action.TOGGLE_TOUCHPAD,
@@ -53,14 +56,14 @@ public class TextEditorFragment extends Fragment {
      * @param actions The actions whose labels are desired
      * @return A string array with labels for the specified actions
      */
-    private String[] getActionButtonLabels(Action[] actions) throws NullPointerException {
+    private String[] getActionButtonLabels(Action[] actions) {
         String[] labels = new String[actions.length];
         for (int i = 0; i < actions.length; i++) {
             final Integer labelStringID = ACTION_BUTTON_LABELS.get(actions[i]);
-            if (labelStringID == null) {
-                throw new NullPointerException("Could not get label string for "+actions[i]+" because it has no string ID mapped to it.");
-            }
-            labels[i] = getString(labelStringID);
+            // If there's no label mapped to the action, we will use a fallback dummy label.
+            // We could have used actions[i].toString(), but this is better since it makes it
+            // obvious that we have failed to map a label properly:
+            labels[i] = labelStringID == null ? ACTION_BUTTON_FALLBACK_LABEL : getString(labelStringID);
         }
         return labels;
     }
@@ -150,7 +153,7 @@ public class TextEditorFragment extends Fragment {
 
         //Bind action menus
         final RadialActionMenuLayout leftMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutLeft);
-        leftMenu.setButtonTexts(getActionButtonLabels(ACTIONS_LEFT));
+        leftMenu.setButtons(getActionButtonLabels(ACTIONS_LEFT));
         leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
@@ -159,7 +162,7 @@ public class TextEditorFragment extends Fragment {
             }
         });
         final RadialActionMenuLayout rightMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutRight);
-        rightMenu.setButtonTexts(getActionButtonLabels(ACTIONS_RIGHT));
+        rightMenu.setButtons(getActionButtonLabels(ACTIONS_RIGHT));
         rightMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
