@@ -19,6 +19,7 @@
         <attr name="iconFile" format="reference" />
         <attr name="iconFolder" format="reference" />
         <attr name="iconUpOneFileLevel" format="reference" />
+        <attr name="iconDropbox" format="reference" />
 
         <attr name="actionNewProject" format="reference" />
         <attr name="actionLoadProject" format="reference" />
