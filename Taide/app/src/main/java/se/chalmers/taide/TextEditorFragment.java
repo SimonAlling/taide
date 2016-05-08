@@ -51,6 +51,9 @@ public class TextEditorFragment extends Fragment {
         ACTION_BUTTON_LABELS.put(Action.INSERT_CURLY_BRACKET, R.string.action_button_insert_curly_bracket);
     }
 
+    private RadialActionMenuLayout leftActionMenu;
+    private RadialActionMenuLayout rightActionMenu;
+
     /**
      * Returns the labels for the specified actions in the same order.
      * @param actions The actions whose labels are desired
@@ -152,18 +155,18 @@ public class TextEditorFragment extends Fragment {
         initModel();
 
         //Bind action menus
-        final RadialActionMenuLayout leftMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutLeft);
-        leftMenu.setButtons(getActionButtonLabels(ACTIONS_LEFT));
-        leftMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
+        leftActionMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutLeft);
+        leftActionMenu.setButtons(getActionButtonLabels(ACTIONS_LEFT));
+        leftActionMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
                 // This will be called whenever the LEFT action menu is used:
                 actionButtonHandler(RadialActionMenuLayout.Alignment.LEFT, index);
             }
         });
-        final RadialActionMenuLayout rightMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutRight);
-        rightMenu.setButtons(getActionButtonLabels(ACTIONS_RIGHT));
-        rightMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
+        rightActionMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutRight);
+        rightActionMenu.setButtons(getActionButtonLabels(ACTIONS_RIGHT));
+        rightActionMenu.setActionForAll(new RadialActionMenuLayout.OnActionButtonTriggeredListener() {
             @Override
             public void actionButtonTriggered(int index) {
                 // This will be called whenever the RIGHT action menu is used:
@@ -172,6 +175,24 @@ public class TextEditorFragment extends Fragment {
         });
 
         return view;
+    }
+
+    /**
+     * Replaces the specified action buttons with buttons for the specified actions.
+     * @param alignment The alignment of the buttons to replace (LEFT, RIGHT, or something else)
+     * @param actions The actions to create and insert action buttons for
+     */
+    public void setActionButtons(RadialActionMenuLayout.Alignment alignment, Action[] actions) {
+        switch (alignment) {
+            case LEFT:
+                leftActionMenu.setButtons(getActionButtonLabels(actions));
+                break;
+            case RIGHT:
+                rightActionMenu.setButtons(getActionButtonLabels(actions));
+                break;
+            default:
+                Log.w("warning", "Nothing is specified to happen when replacing action buttons with "+alignment+" alignment.");
+        }
     }
 
     @Override
