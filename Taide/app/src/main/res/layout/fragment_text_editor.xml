@@ -44,7 +44,6 @@
 
 
         <se.chalmers.taide.RadialActionMenuLayout
-            style="@style/AppTheme.radialButtons"
             android:id="@+id/actionMenuLayoutLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,7 +53,6 @@
             android:layout_alignParentBottom="true" />
 
         <se.chalmers.taide.RadialActionMenuLayout
-            style="@style/AppTheme.radialButtons"
             android:id="@+id/actionMenuLayoutRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

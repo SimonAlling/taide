@@ -3,5 +3,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval"
     android:visible="true">
-    <solid android:color="?attr/actionMenuColor" />
+    <solid android:color="?attr/buttonColor" />
 </shape>
