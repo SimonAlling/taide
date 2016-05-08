@@ -34,6 +34,19 @@ public class RadialActionMenuLayout extends RelativeLayout{
     private static final int RIGHT_LOWERMOST_BUTTON_ANGLE = -5;
     private static final int RIGHT_UPPERMOST_BUTTON_ANGLE = 95;
 
+    // Configure the symmetry angle:
+    // Interpret the value as described above.
+    private static final int SYMMETRY_ANGLE = 45; // degrees
+
+    // Configure how close to each other the buttons will be:
+    private static final float ANGLE_BETWEEN_ADJACENT_BUTTONS = 50; // degrees
+
+    // If true, the buttons will be placed symmetrically around the symmetry angle defined above,
+    // with a spacing defined by ANGLE_BETWEEN_ADJACENT_BUTTONS.
+    // Otherwise, X_LOWERMOST_BUTTON_ANGLE and X_UPPERMOST_BUTTON_ANGLE will decide the button placement.
+    private static final boolean USE_SYMMETRY = true;
+
+
     private View mainView;
     private Button mainButton;
 
@@ -220,18 +233,29 @@ public class RadialActionMenuLayout extends RelativeLayout{
     }
 
     private void show() {
-        final double childButtonDistance = mainButton.getWidth()/2 * CHILD_BUTTON_DISTANCE_FACTOR; // divide by 2 to get mother button radius
+        final double childButtonDistance = mainButton.getWidth()/2 * CHILD_BUTTON_DISTANCE_FACTOR; // division by 2 to get mother button radius
+        final int steps = buttons.length - 1;
         // The angle between the lowermost and the uppermost button:
-        final double totalAngle = alignment == Alignment.LEFT
-                          ?  LEFT_UPPERMOST_BUTTON_ANGLE -  LEFT_LOWERMOST_BUTTON_ANGLE
-                          : RIGHT_UPPERMOST_BUTTON_ANGLE - RIGHT_LOWERMOST_BUTTON_ANGLE;
+        final double totalAngle_symmetry = steps * ANGLE_BETWEEN_ADJACENT_BUTTONS;
+        final double totalAngle_distribution = alignment == Alignment.LEFT
+                                             ?  LEFT_UPPERMOST_BUTTON_ANGLE -  LEFT_LOWERMOST_BUTTON_ANGLE
+                                             : RIGHT_UPPERMOST_BUTTON_ANGLE - RIGHT_LOWERMOST_BUTTON_ANGLE;
+        final double totalAngle = USE_SYMMETRY ? totalAngle_symmetry : totalAngle_distribution;
         // The angle between two adjacent buttons:
         // The special case for buttons.length == 1 is there because otherwise angleChange will be
-        // NaN, and then we cannot support exactly one button.
-        final double angleChange = buttons.length > 1 ? totalAngle / (buttons.length-1) : 0;
+        // NaN if symmetry is not used, and then we cannot support exactly one button.
+        final double angleChange_symmetry = ANGLE_BETWEEN_ADJACENT_BUTTONS;
+        final double angleChange_distribution = steps > 0 ? totalAngle / steps : 0;
+        final double angleChange = USE_SYMMETRY ? angleChange_symmetry : angleChange_distribution;
         // The angle of the first button in clockwise order:
         // Note that 0 deg is an angle pointing to the right and angles increase CLOCKWISE!
-        final double startAngle = alignment == Alignment.LEFT ? 0 - LEFT_UPPERMOST_BUTTON_ANGLE : 180 + RIGHT_LOWERMOST_BUTTON_ANGLE;
+        final double startAngle_symmetry = alignment == Alignment.LEFT
+                                         ?   0 - SYMMETRY_ANGLE - (totalAngle/2)
+                                         : 180 + SYMMETRY_ANGLE - (totalAngle/2);
+        final double startAngle_distribution = alignment == Alignment.LEFT
+                                             ?   0 -  LEFT_UPPERMOST_BUTTON_ANGLE
+                                             : 180 + RIGHT_LOWERMOST_BUTTON_ANGLE;
+        final double startAngle = USE_SYMMETRY ? startAngle_symmetry : startAngle_distribution;
         for (int i = 0; i < buttons.length; i++) {
             double angle = startAngle + i*angleChange;
             double radians = Math.toRadians(angle);
