@@ -12,7 +12,8 @@ public class LanguageFactory {
 
     public static final String JAVA = "java";
     public static final String XML = "xml";
-    public static final String DEFAULT_LANGUAGE = JAVA;
+    public static final String TEXT = "text";
+    public static final String DEFAULT_LANGUAGE = TEXT;
 
     /**
      * Instantiate a language object of default type (see DEFAULT_LANGUAGE)
@@ -39,6 +40,7 @@ public class LanguageFactory {
         switch (name.toLowerCase()) {
             case JAVA:  return new JavaImpl(resources);
             case XML:   return new XMLImpl(resources);
+            case TEXT:  return new SimpleLanguage();
             default:    throw new IllegalArgumentException("No language with name '"+name+"' found.");
         }
     }
