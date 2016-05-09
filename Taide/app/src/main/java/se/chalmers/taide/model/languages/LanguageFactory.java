@@ -10,10 +10,9 @@ import android.util.Log;
  */
 public class LanguageFactory {
 
-    public static final String JAVA = "java";
-    public static final String XML = "xml";
-    public static final String TEXT = "text";
-    public static final String DEFAULT_LANGUAGE = TEXT;
+    public static final String JAVA = JavaImpl.NAME;
+    public static final String XML = XMLImpl.NAME;
+    public static final String TEXT = SimpleLanguage.NAME;
 
     /**
      * Instantiate a language object of default type (see DEFAULT_LANGUAGE)
@@ -32,16 +31,13 @@ public class LanguageFactory {
      * @throws IllegalArgumentException If the given name is invalid (does not exist)
      */
     public static Language getLanguage(String name, Resources resources) throws IllegalArgumentException {
-        if (name == null) {
-            Log.d("LanguageFactory", "No language provided, defaulting to Java");
-            name = DEFAULT_LANGUAGE;
-        }
-
-        switch (name.toLowerCase()) {
-            case JAVA:  return new JavaImpl(resources);
-            case XML:   return new XMLImpl(resources);
-            case TEXT:  return new SimpleLanguage();
-            default:    throw new IllegalArgumentException("No language with name '"+name+"' found.");
+        switch (name) {
+            case JAVA: return new JavaImpl(resources);
+            case XML: return new XMLImpl(resources);
+            case TEXT: return new SimpleLanguage();
+            default:
+                Log.d(LanguageFactory.class.getSimpleName(), name + " is not a recognized language. Defaulting to "+TEXT+".");
+                return new SimpleLanguage();
         }
     }
 

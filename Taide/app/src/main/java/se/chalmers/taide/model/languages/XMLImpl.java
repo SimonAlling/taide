@@ -17,14 +17,14 @@ import se.chalmers.taide.util.TabUtil;
  */
 public class XMLImpl extends SimpleLanguage {
 
-    private static final String NAME = "XML";
-    private static final String[] FILENAME_EXTENSIONS = {"xml"};
-    private static final String[] HIGHLIGHTING_TRIGGERS = {" ", "\n", "<", ">", "\""};
+    public static final String NAME = "XML";
+    public static final String[] FILENAME_EXTENSIONS = {"xml"};
+    public static final String[] SYNTAX_HIGHLIGHTING_TRIGGERS = {" ", "\n", "<", ">", "\""};
 
     private int[] colors;
 
     protected XMLImpl(Resources resources) {
-        super(NAME, FILENAME_EXTENSIONS, HIGHLIGHTING_TRIGGERS);
+        super(NAME, FILENAME_EXTENSIONS, SYNTAX_HIGHLIGHTING_TRIGGERS);
         //Init syntax highlightning colors.
         colors = resources.getIntArray(R.array.xml_syntax_default_colors);
     }
