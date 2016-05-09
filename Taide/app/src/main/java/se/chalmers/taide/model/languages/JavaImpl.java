@@ -255,7 +255,7 @@ public class JavaImpl extends SimpleLanguage {
     public String getDefaultContent(String filename){
         // Remove everything from the first period and forward in the filename:
         final String className = filename.replaceFirst("\\..*$", "");
-        return "public class "+className+"{\n"+TabUtil.getTabs(1)+"\n}";
+        return "public class "+className+" {\n"+TabUtil.getTabs(1)+"\n}";
     }
 
     /**
