@@ -20,8 +20,20 @@ public class SimpleHighlighter extends AbstractTextFilter {
      * @param lang The language to use
      */
     protected SimpleHighlighter(Language lang) {
-        super(generateTriggerStrings(" ", "\n", "(", ")", "\""));
+        super(generateTriggerStrings(lang==null?new String[0]:lang.getHighlightTriggers()));
         this.setLanguage(lang);
+    }
+
+    /**
+     * Sets the language to use
+     * @param lang The language to use
+     */
+    @Override
+    public void setLanguage(Language lang){
+        super.setLanguage(lang);
+        if(lang != null) {
+            this.setTriggerText(generateTriggerStrings(lang.getHighlightTriggers()));
+        }
     }
 
     /**

@@ -28,6 +28,13 @@ public interface Language {
     List<SyntaxBlock> getSyntaxBlocks(String sourceCode);
 
     /**
+     * Retrieves an array of all the string which should trigger a highlight filter. If "" is
+     * returned as any of the indexes, the highlight will trigger on all input.
+     * @return The triggers that should trigger a highlight filter.
+     */
+    String[] getHighlightTriggers();
+
+    /**
      * Retrieves the indentation text to insert on a newline character. This text will
      * be positioned before the input marker.
      * @param source The entire source code

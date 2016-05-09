@@ -20,6 +20,7 @@ import se.chalmers.taide.util.TabUtil;
 public class JavaImpl extends SimpleLanguage {
 
     public static final String NAME = "Java";
+    public static final String[] HIGHLIGHT_TRIGGERS = {" ", "\n", "(", ")", "\"", "t"};
 
     /* Java keywords */
     // The ordering of elements in these arrays is NOT important:
@@ -51,6 +52,16 @@ public class JavaImpl extends SimpleLanguage {
      */
     public String getName(){
         return NAME;
+    }
+
+    /**
+     * Retrieves an array of all the string which should trigger a highlight filter. If "" is
+     * returned as any of the indexes, the highlight will trigger on all input.
+     * @return The triggers that should trigger a highlight filter.
+     */
+    @Override
+    public String[] getHighlightTriggers(){
+        return HIGHLIGHT_TRIGGERS;
     }
 
     /**
