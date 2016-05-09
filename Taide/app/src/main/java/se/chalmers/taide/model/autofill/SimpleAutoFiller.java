@@ -1,7 +1,6 @@
 package se.chalmers.taide.model.autofill;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +93,7 @@ public class SimpleAutoFiller extends AbstractTextFilter {
      * @return <code>true</code> if it was a match
      */
     private static boolean matchingAutoFill(AutoFill autoFill, String suffixedTrigger) {
-        return (autoFill.getSuffixedTrigger()).equals(suffixedTrigger);
+        return (autoFill.getSuffixedTrigger()).equals(suffixedTrigger.toLowerCase());
     }
 
     /**
@@ -130,11 +129,11 @@ public class SimpleAutoFiller extends AbstractTextFilter {
      * @param index The current location of the selection in the code
      * @return The autofill, or null if not existing
      */
-    public AutoFill getPotentialAutoFillReplacement(String source, int index){
-        String sourceUntilIndex = source.substring(0, index).toLowerCase();
-        for(AutoFill autoFill : autoFills){
-            String autoFillTrigger = autoFill.getTrigger().toLowerCase();
-            if (autoFill.getTriggerSuffix() != null && sourceUntilIndex.endsWith(autoFillTrigger)) {
+    public AutoFill getPotentialAutoFillReplacement(String source, int index) {
+        final String sourceUntilIndex_lowercase = source.substring(0, index).toLowerCase();
+        for (AutoFill autoFill : autoFills){
+            final String autoFillTrigger_lowercase = autoFill.getTrigger().toLowerCase();
+            if (autoFill.getTriggerSuffix() != null && sourceUntilIndex_lowercase.endsWith(autoFillTrigger_lowercase)) {
                 return autoFill;
             }
         }

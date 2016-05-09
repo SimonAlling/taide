@@ -123,17 +123,21 @@ public abstract class AbstractTextFilter implements TextFilter, TextSource.TextS
     @Override
     public boolean onTextChanged(String textFieldContent, int start, int before, int count) {
         // Update filter if correct input received
-        String input = textFieldContent.substring(0, start+count);
-        String prevInput = (previousInput==null?"":previousInput.substring(0, Math.min(start+before, previousInput.length())));
+        final String input = textFieldContent.substring(0, start+count);
+        final String input_lowercase = input.toLowerCase();
+        final String prevInput = previousInput == null
+                               ? ""
+                               : previousInput.substring(0, Math.min(start+before, previousInput.length()));
+        final String prevInput_lowercase = prevInput.toLowerCase();
         for (TriggerString triggerText : triggerTexts) {
             if((count>=before && triggerText.isOnAdd())) {
-                if (input.endsWith(triggerText.getTrigger())) {
+                if (input_lowercase.endsWith(triggerText.getTrigger())) {
                     if(applyFilterEffect(triggerText.getTrigger(), triggerText.isOnAdd())){
                         return true;
                     }
                 }
             }else if((count<before && !triggerText.isOnAdd())){
-                if(prevInput.endsWith(triggerText.getTrigger())){
+                if(prevInput_lowercase.endsWith(triggerText.getTrigger())){
                     if(applyFilterEffect(triggerText.getTrigger(), triggerText.isOnAdd())){
                         return true;
                     }
