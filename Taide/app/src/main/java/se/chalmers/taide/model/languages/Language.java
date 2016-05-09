@@ -21,6 +21,21 @@ public interface Language {
     String getName();
 
     /**
+     * Checks if this language uses the specified filename extension.
+     * @param extension The extension to check against
+     * @return <code>true</code> iff <code>extension</code> is used for files of this type
+     */
+    boolean usesFilenameExtension(String extension);
+
+    /**
+     * Checks if the given filename has an extension that is commonly used for this language.
+     * @param filename The filename to check against
+     * @return <code>true</code> iff <code>filename</code> ends with any one of the extensions
+     * associated with this language
+     */
+    boolean matchesFilename(String filename);
+
+    /**
      * Retrieves all syntax highlighting blocks for the particular language.
      * @param sourceCode The source code to parse
      * @return A list of SyntaxBlock where each block represents a highlight region

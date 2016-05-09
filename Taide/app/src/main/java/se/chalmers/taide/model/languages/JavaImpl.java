@@ -20,6 +20,7 @@ import se.chalmers.taide.util.TabUtil;
 public class JavaImpl extends SimpleLanguage {
 
     public static final String NAME = "Java";
+    public static final String[] FILENAME_EXTENSIONS = { "java" };
     public static final String[] HIGHLIGHT_TRIGGERS = {" ", "\n", "(", ")", "\"", "t"};
 
     /* Java keywords */
@@ -42,16 +43,9 @@ public class JavaImpl extends SimpleLanguage {
     private int[] colors;
 
     protected JavaImpl(Resources resources) {
+        super(NAME, FILENAME_EXTENSIONS);
         //Init syntax highlightning colors.
         colors = resources.getIntArray(R.array.java_syntax_default_colors);
-    }
-
-    /**
-     * Returns the name of the language
-     * @return The name of the language
-     */
-    public String getName(){
-        return NAME;
     }
 
     /**
@@ -259,12 +253,9 @@ public class JavaImpl extends SimpleLanguage {
      */
     @Override
     public String getDefaultContent(String filename){
-        if(filename.endsWith(".java")){
-            String name = filename.substring(0, filename.indexOf("."));
-            return "public class "+name+"{\n"+TabUtil.getTabs(1)+"\n}";
-        }else{
-            return "";
-        }
+        // Remove everything from the first period and forward in the filename:
+        final String className = filename.replaceFirst("\\..*$", "");
+        return "public class "+className+"{\n"+TabUtil.getTabs(1)+"\n}";
     }
 
     /**
