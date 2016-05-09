@@ -8,13 +8,15 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusableInTouchMode="true"
-	android:fitsSystemWindows="true" 
-	tools:context="se.chalmers.taide.MainActivity" >
+	android:fitsSystemWindows="true"
+	tools:context="se.chalmers.taide.MainActivity">
 	
 	<RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent" >
+		android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:windowSoftInputMode="adjustNothing">
 
 		<include layout="@layout/toolbar_main"
 			android:id="@+id/toolbarParent"/>
