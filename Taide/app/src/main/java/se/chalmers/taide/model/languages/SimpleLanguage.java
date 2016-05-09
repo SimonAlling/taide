@@ -14,20 +14,30 @@ import se.chalmers.taide.model.autofill.AutoFill;
  */
 public class SimpleLanguage implements Language {
 
+    public static final String NAME = "plain text";
+    public static final String[] FILENAME_EXTENSIONS = new String[0];
+    public static final String[] SYNTAX_HIGHLIGHTING_TRIGGERS = new String[0];
+
     private String name;
     private String[] filenameExtensions;
+    private String[] syntaxHighlightingTriggers;
 
-    protected SimpleLanguage(String name, String[] filenameExtensions) {
+    protected SimpleLanguage() {
+        this(NAME, FILENAME_EXTENSIONS, SYNTAX_HIGHLIGHTING_TRIGGERS);
+    }
+
+    protected SimpleLanguage(String name, String[] filenameExtensions, String[] syntaxHighlightingTriggers) {
         this.name = name;
         this.filenameExtensions = filenameExtensions;
+        this.syntaxHighlightingTriggers = syntaxHighlightingTriggers;
     }
 
     public String getName() {
         return name;
     }
 
-    public String[] getHighlightTriggers() {
-        return new String[0];
+    public String[] getSyntaxHighlightingTriggers() {
+        return syntaxHighlightingTriggers;
     }
 
     public boolean isInComment(String source, int index) {

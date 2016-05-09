@@ -47,7 +47,7 @@ public interface Language {
      * returned as any of the indexes, the highlight will trigger on all input.
      * @return The triggers that should trigger a highlight filter.
      */
-    String[] getHighlightTriggers();
+    String[] getSyntaxHighlightingTriggers();
 
     /**
      * Retrieves the indentation text to insert on a newline character. This text will

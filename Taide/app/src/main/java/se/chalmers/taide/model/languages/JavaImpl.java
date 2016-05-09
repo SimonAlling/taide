@@ -21,7 +21,7 @@ public class JavaImpl extends SimpleLanguage {
 
     public static final String NAME = "Java";
     public static final String[] FILENAME_EXTENSIONS = { "java" };
-    public static final String[] HIGHLIGHT_TRIGGERS = {" ", "\n", "(", ")", "\"", "t"};
+    public static final String[] SYNTAX_HIGHLIGHTING_TRIGGERS = {" ", "\n", "(", ")", "\"", "t"};
 
     /* Java keywords */
     // The ordering of elements in these arrays is NOT important:
@@ -43,19 +43,9 @@ public class JavaImpl extends SimpleLanguage {
     private int[] colors;
 
     protected JavaImpl(Resources resources) {
-        super(NAME, FILENAME_EXTENSIONS);
+        super(NAME, FILENAME_EXTENSIONS, SYNTAX_HIGHLIGHTING_TRIGGERS);
         //Init syntax highlightning colors.
         colors = resources.getIntArray(R.array.java_syntax_default_colors);
-    }
-
-    /**
-     * Retrieves an array of all the string which should trigger a highlight filter. If "" is
-     * returned as any of the indexes, the highlight will trigger on all input.
-     * @return The triggers that should trigger a highlight filter.
-     */
-    @Override
-    public String[] getHighlightTriggers(){
-        return HIGHLIGHT_TRIGGERS;
     }
 
     /**
