@@ -11,6 +11,7 @@ import android.util.Log;
 public class LanguageFactory {
 
     public static final String JAVA = "java";
+    public static final String XML = "xml";
     public static final String DEFAULT_LANGUAGE = JAVA;
 
     /**
@@ -36,8 +37,9 @@ public class LanguageFactory {
         }
 
         switch (name.toLowerCase()) {
-            case JAVA: return new JavaImpl(resources);
-            default:   throw new IllegalArgumentException("No language with name '"+name+"' found.");
+            case JAVA:  return new JavaImpl(resources);
+            case XML:   return new XMLImpl(resources);
+            default:    throw new IllegalArgumentException("No language with name '"+name+"' found.");
         }
     }
 
@@ -51,6 +53,7 @@ public class LanguageFactory {
         String concreteName = null;
         switch(fileformat){
             case "java":    concreteName = JAVA;break;
+            case "xml":     concreteName = XML;break;
         }
 
         return getLanguage(concreteName, resources);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="xml_syntax_default_colors">
+        <item>@color/rosePink</item>
+        <item>@color/sandYellow</item>
+        <item>@color/vomitGreen</item>
+    </array>
+</resources>
