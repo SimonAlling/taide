@@ -34,8 +34,38 @@
         },
         {
           "trigger":"for",
-          "pre":"for (int i = 0; i <",
+          "pre":"for (int i = 0; i < ",
           "post":"; i++) {\n"
+        },
+        {
+          "trigger":"while",
+          "pre":"while (",
+          "post":") {\n"
+        },
+        {
+          "trigger":"foreach",
+          "pre":"for (",
+          "post":" : ) {\n"
+        },
+        {
+          "trigger":"psf",
+          "pre":"public static final ",
+          "post":";"
+        },
+        {
+          "trigger":"psfi",
+          "pre":"public static final int ",
+          "post":";"
+        },
+        {
+          "trigger":"psfs",
+          "pre":"public static final String ",
+          "post":";"
+        },
+        {
+          "trigger":"psvm",
+          "pre":"public static void main(String[] args) {",
+          "post":"}"
         }
       ]
     }
