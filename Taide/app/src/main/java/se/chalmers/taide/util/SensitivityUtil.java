@@ -41,4 +41,16 @@ public abstract class SensitivityUtil {
     public static double charactersPerCentimeter(double sliderValue) {
         return SLIDER_IS_EXPONENTIAL ? charactersPerCentimeter_exponential(sliderValue) : charactersPerCentimeter_linear(sliderValue);
     }
+
+    /**
+     * Calculates the number of characters that the caret should move when the user moves their
+     * finger the specified number of dp with the specified sensitivity preference.
+     * @param dp The number of dp that the user moved their finger
+     * @param sliderValue The value of the sensitivity preference slider, usually between 0 and 1
+     * @return The number of characters that the specified distance in dp corresponds to
+     */
+    public static int dpToCharacters(double dp, double sliderValue) {
+        // Note that we floor() the computed value here! Another option would be to round().
+        return (int) Math.floor(charactersPerCentimeter(sliderValue) * Units.dpToCentimeters(dp));
+    }
 }
