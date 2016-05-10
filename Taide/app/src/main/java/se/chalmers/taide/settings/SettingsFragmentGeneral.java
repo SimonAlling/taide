@@ -3,8 +3,6 @@ package se.chalmers.taide.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import net.jayschwa.android.preference.SliderPreference;
-
 import java.util.Collections;
 
 import se.chalmers.taide.R;
@@ -34,19 +32,38 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private static final String FALLBACK_STRING_UNIT_LENGTH = "centimeter";
     private static final String FALLBACK_STRING_UNIT_PER = "per";
 
-    public String sensitivityDescription(double sensitivity) {
-        return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS) + " " + getString(UNIT_CHAR_PLURAL) + " " + getString(UNIT_PER) + " " + getString(UNIT_LENGTH);
+    public String sensitivityDescription(double sliderValue) {
+        return MathUtil.round(SensitivityUtil.charactersPerCentimeter(sliderValue), SENSITIVITY_DECIMALS)
+             + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
+             + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
+             + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
     }
 
     public String sensitivityAbbreviation(double sensitivity) {
-        return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS) + " " + getString(UNIT_CHAR_ABBR) + getString(UNIT_PER_ABBR) + getString(UNIT_LENGTH_ABBR);
+        return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS)
+             + " " + getString(UNIT_CHAR_ABBR)
+             + getString(UNIT_PER_ABBR)
+             + getString(UNIT_LENGTH_ABBR);
     }
+
+    private final DynamicSliderPreference.SliderValueStringifier sensitivityStringifier = new DynamicSliderPreference.SliderValueStringifier() {
+        @Override
+        public String stringify(double sliderValue) {
+            return sensitivityDescription(sliderValue);
+        }
+    };
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_general);
+    }
+
+    @Override
+    protected void initGUI() {
+        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
+        sensPreference.setStringifier(sensitivityStringifier);
     }
 
     @Override
@@ -57,14 +74,9 @@ public class SettingsFragmentGeneral extends SettingsFragment {
 
     // Update Touchpad sensitivity related GUI elements:
     private void updateGUI_sensitivity(SharedPreferences preferences) {
-        final SliderPreference sensPreference = (SliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
         final double sliderValue = preferences.getFloat(KEY_TOUCHPAD_SENSITIVITY, 0.5f);
-        final double charPerCm = SensitivityUtil.charactersPerCentimeter(sliderValue);
-        final String sensSummary = MathUtil.round(charPerCm, 1)
-                                 + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
-                                 + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
-                                 + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
-        sensPreference.setSummary(sensSummary);
+        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
+        sensPreference.setSummary(sensitivityDescription(sliderValue));
     }
 
     // Update Sync related GUI elements:

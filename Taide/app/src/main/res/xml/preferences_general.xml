@@ -22,7 +22,7 @@
         android:title="@string/pref_group_selection_title"
         android:key="pref_key_selection_settings">
 
-        <net.jayschwa.android.preference.SliderPreference
+        <se.chalmers.taide.settings.DynamicSliderPreference
             android:key="pref_key_touchpad_sensitivity"
             android:title="@string/pref_title_touchpad_sensitivity"
             android:defaultValue="0.5"/>
