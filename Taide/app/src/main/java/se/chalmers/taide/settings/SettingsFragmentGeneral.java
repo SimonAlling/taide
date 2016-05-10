@@ -3,11 +3,14 @@ package se.chalmers.taide.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import net.jayschwa.android.preference.SliderPreference;
+
 import java.util.Collections;
 
 import se.chalmers.taide.R;
 import se.chalmers.taide.model.history.HistoryHandlerFactory;
 import se.chalmers.taide.util.MathUtil;
+import se.chalmers.taide.util.SensitivityUtil;
 
 /**
  * Created by alling on 2016-05-02.
@@ -17,6 +20,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     public static final String KEY_SYNC = "pref_key_use_sync";
     public static final String KEY_SYNC_FORMATS = "pref_key_sync_formats";
     public static final String KEY_HISTORY_HANDLER_TYPE = "pref_key_history_handler_type";
+    public static final String KEY_TOUCHPAD_SENSITIVITY = "pref_key_touchpad_sensitivity";
 
     private static final int UNIT_CHAR_PLURAL = R.string.unit_char_plural;
     private static final int UNIT_CHAR_ABBR = R.string.unit_char_abbr;
@@ -25,6 +29,10 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private static final int UNIT_PER = R.string.unit_per;
     private static final int UNIT_PER_ABBR = R.string.unit_per_abbr;
     private static final int SENSITIVITY_DECIMALS = 1;
+
+    private static final String FALLBACK_STRING_UNIT_CHAR_PLURAL = "characters";
+    private static final String FALLBACK_STRING_UNIT_LENGTH = "centimeter";
+    private static final String FALLBACK_STRING_UNIT_PER = "per";
 
     public String sensitivityDescription(double sensitivity) {
         return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS) + " " + getString(UNIT_CHAR_PLURAL) + " " + getString(UNIT_PER) + " " + getString(UNIT_LENGTH);
@@ -44,6 +52,19 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     @Override
     protected void updateGUI() {
         updateGUI_sync(sharedPreferences);
+        updateGUI_sensitivity(sharedPreferences);
+    }
+
+    // Update Touchpad sensitivity related GUI elements:
+    private void updateGUI_sensitivity(SharedPreferences preferences) {
+        final SliderPreference sensPreference = (SliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
+        final double sliderValue = preferences.getFloat(KEY_TOUCHPAD_SENSITIVITY, 0.5f);
+        final double charPerCm = SensitivityUtil.charactersPerCentimeter(sliderValue);
+        final String sensSummary = MathUtil.round(charPerCm, 1)
+                                 + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
+                                 + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
+                                 + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
+        sensPreference.setSummary(sensSummary);
     }
 
     // Update Sync related GUI elements:

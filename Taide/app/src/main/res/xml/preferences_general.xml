@@ -23,8 +23,8 @@
         android:key="pref_key_selection_settings">
 
         <net.jayschwa.android.preference.SliderPreference
-            android:key="pref_key_selection_sensitivity"
-            android:title="@string/pref_title_selection_sensitivity"
+            android:key="pref_key_touchpad_sensitivity"
+            android:title="@string/pref_title_touchpad_sensitivity"
             android:defaultValue="0.5"/>
     </PreferenceCategory>
 
