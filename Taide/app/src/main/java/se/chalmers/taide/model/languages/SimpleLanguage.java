@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.taide.model.autofill.AutoFill;
+import se.chalmers.taide.util.TabUtil;
 
 /**
  * Created by Matz on 2016-02-15.
@@ -24,6 +25,8 @@ public class SimpleLanguage implements Language {
 
     protected SimpleLanguage() {
         this(NAME, FILENAME_EXTENSIONS, SYNTAX_HIGHLIGHTING_TRIGGERS);
+        //Do not use any tabs at all for this simple language.
+        TabUtil.setTabSettingForLanguage(this, false, 1);
     }
 
     protected SimpleLanguage(String name, String[] filenameExtensions, String[] syntaxHighlightingTriggers) {

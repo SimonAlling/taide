@@ -51,20 +51,20 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
                 codeView.getText().replace(start, start, prefix + suffix);
                 codeView.setSelection(start + prefix.length());
             } else if (start > 0 && source.charAt(start-1)==' ') {
-                if(!TabUtil.usesTabs()) {
+                if(!TabUtil.usesTabs(getLanguage())) {
                     int lineStartIndex = source.lastIndexOf('\n', start - 1) + 1;
-                    if (isOnlyTabs(source.substring(lineStartIndex, start - 1))) {
-                        codeView.getText().replace(start - 1, start, TabUtil.getTabs(1));
+                    if (isOnlyTabs(source.substring(lineStartIndex, start - 1), getLanguage())) {
+                        codeView.getText().replace(start - 1, start, TabUtil.getTabs(1, getLanguage()));
                         return true;        //Consume event
                     }
                 }
             }
         }else{
             if(trigger.equals(" ")){
-                if(!TabUtil.usesTabs()) {
+                if(!TabUtil.usesTabs(getLanguage())) {
                     int lineStartIndex = (start>0?source.lastIndexOf('\n', start-1) + 1:0);
-                    if (isOnlyTabs(source.substring(lineStartIndex, start) + " ")) {
-                        int tabLength = TabUtil.getTabs(1).length();
+                    if (isOnlyTabs(source.substring(lineStartIndex, start) + " ", getLanguage())) {
+                        int tabLength = TabUtil.getTabs(1, getLanguage()).length();
                         codeView.getText().replace(start-tabLength+1, start, "");
                         return true;
                     }
@@ -75,8 +75,8 @@ public class SimpleAutoIndenter extends AbstractTextFilter {
         return false;
     }
 
-    private static boolean isOnlyTabs(String str){
-        String tab = TabUtil.getTabs(1);
+    private static boolean isOnlyTabs(String str, Language lang){
+        String tab = TabUtil.getTabs(1, lang);
         int tabLength = tab.length();
         if(str.length()%tabLength == 0){
             boolean isOnlyTabs = true;

@@ -38,7 +38,7 @@ public class XMLImpl extends SimpleLanguage {
     public String getIndentationPrefix(String source, int start, String line) {
         String basePrefix = super.getIndentationPrefix(source, start, line);
         if(shouldIndentExtra(source, start)){
-            basePrefix += TabUtil.getTabs(1);
+            basePrefix += TabUtil.getTabs(1, this);
         }
 
         return basePrefix;
