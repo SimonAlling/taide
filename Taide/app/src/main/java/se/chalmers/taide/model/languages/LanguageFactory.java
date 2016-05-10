@@ -31,13 +31,20 @@ public class LanguageFactory {
      * @throws IllegalArgumentException If the given name is invalid (does not exist)
      */
     public static Language getLanguage(String name, Resources resources) throws IllegalArgumentException {
-        switch (name) {
-            case JAVA: return new JavaImpl(resources);
-            case XML: return new XMLImpl(resources);
-            case TEXT: return new SimpleLanguage();
-            default:
-                Log.d(LanguageFactory.class.getSimpleName(), name + " is not a recognized language. Defaulting to "+TEXT+".");
-                return new SimpleLanguage();
+        if(name != null) {
+            switch (name) {
+                case JAVA:
+                    return new JavaImpl(resources);
+                case XML:
+                    return new XMLImpl(resources);
+                case TEXT:
+                    return new SimpleLanguage();
+                default:
+                    Log.d(LanguageFactory.class.getSimpleName(), name + " is not a recognized language. Defaulting to " + TEXT + ".");
+                    return new SimpleLanguage();
+            }
+        }else{
+            return new SimpleLanguage();
         }
     }
 
