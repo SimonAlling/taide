@@ -106,16 +106,18 @@ public class SimpleAutoFiller extends AbstractTextFilter {
         TextSource textView = getTextView();
         int caretPosition = textView.getSelectionStart();
         int triggerStartPosition = caretPosition - trigger.length();
-        for (AutoFill autoFill : autoFills) {
-            // If it was this autofill that was triggered, apply it:
-            if (matchingAutoFill(autoFill, trigger)) {
-                if(!disabledAutoFills.contains(autoFill)) {
-                    String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
-                    String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
-                    int triggerEndPosition = caretPosition + autoFill.selectionIncreaseCount(textView.getText().toString(), caretPosition);
+        if(caretPosition != 0) {        //Don't trigger on file load
+            for (AutoFill autoFill : autoFills) {
+                // If it was this autofill that was triggered, apply it:
+                if (matchingAutoFill(autoFill, trigger)) {
+                    if (!disabledAutoFills.contains(autoFill)) {
+                        String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
+                        String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
+                        int triggerEndPosition = caretPosition + autoFill.selectionIncreaseCount(textView.getText().toString(), caretPosition);
 
-                    textView.getText().replace(triggerStartPosition, triggerEndPosition, prefix + suffix);
-                    textView.setSelection(caretPosition + prefix.length() - trigger.length());
+                        textView.getText().replace(triggerStartPosition, triggerEndPosition, prefix + suffix);
+                        textView.setSelection(caretPosition + prefix.length() - trigger.length());
+                    }
                 }
             }
         }
