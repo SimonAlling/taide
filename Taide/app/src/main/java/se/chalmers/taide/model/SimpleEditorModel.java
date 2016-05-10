@@ -234,15 +234,33 @@ public class SimpleEditorModel implements EditorModel {
     }
 
     /**
-     * Saves the current file to storage
-     * @param file The file to save
+     * Saves the given file to storage. If null is given, the current opened file is saved instead.
+     * @param file The file to save, or null to save the current file
      */
     @Override
     public void saveFile(CodeFile file){
+        if(file == null){
+            file = currentFile;
+        }
+
         if(file != null && textSource != null){
             Log.d("EditorModel", "Saving file [" + file.getName() + ", "+file.getClass().getSimpleName()+"] :: " + textSource.getText().length() + " chars");
             fileSystem.saveFile(file, textSource.getText().toString());
         }
+    }
+
+    /**
+     * Checks whether any changes has been made to the current file
+     * @return <code>true</code> if a current file is open and has been changed, <code>false</code> otherwise
+     */
+    @Override
+    public boolean hasChangedCurrentFile(){
+        if(currentFile != null){
+            String contents = currentFile.getContents();
+            return contents == null || !contents.equals(textSource.getText().toString());
+        }
+
+        return false;
     }
 
     /**

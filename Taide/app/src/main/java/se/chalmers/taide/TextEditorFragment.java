@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.EnumMap;
 
@@ -53,6 +54,13 @@ public class TextEditorFragment extends Fragment {
 
     private RadialActionMenuLayout leftActionMenu;
     private RadialActionMenuLayout rightActionMenu;
+
+    private AutoFillPopupWindow autoFillWindow;
+    private TextSource editorAsTextSource;
+    private EditText codeEditor;
+    private EditorModel model;
+
+    private HashMap<Integer, Boolean> currentEnabledData;
 
     /**
      * Returns the labels for the specified actions in the same order.
@@ -130,12 +138,6 @@ public class TextEditorFragment extends Fragment {
                 break;
         }
     }
-
-
-    private AutoFillPopupWindow autoFillWindow;
-    private TextSource editorAsTextSource;
-    private EditText codeEditor;
-    private EditorModel model;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -225,6 +227,10 @@ public class TextEditorFragment extends Fragment {
                 case R.id.action_paste:
                     Clipboard.pasteFromClipboard(a, codeEditor);
                     break;
+                case R.id.action_save:
+                    model.saveFile(null);
+                    a.invalidateOptionsMenu();
+                    break;
                 case R.id.action_undo:
                     model.undo();
                     a.invalidateOptionsMenu();
@@ -243,9 +249,21 @@ public class TextEditorFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_paste).setEnabled(Clipboard.hasPasteContent(getActivity()));
-        menu.findItem(R.id.action_undo).setEnabled(model.peekUndo() != null);
-        menu.findItem(R.id.action_redo).setEnabled(model.peekRedo() != null);
+        HashMap<Integer, Boolean> enabledData = calculateMenuItemEnabled();
+        //Set all values
+        for(Map.Entry<Integer, Boolean> entry : enabledData.entrySet()){
+            menu.findItem(entry.getKey()).setEnabled(entry.getValue());
+        }
+        this.currentEnabledData = enabledData;
+    }
+
+    private HashMap<Integer, Boolean> calculateMenuItemEnabled(){
+        HashMap<Integer, Boolean> data = new HashMap<>();
+        data.put(R.id.action_paste, Clipboard.hasPasteContent(getActivity()));
+        data.put(R.id.action_save, model.hasChangedCurrentFile());
+        data.put(R.id.action_undo, model.peekUndo() != null);
+        data.put(R.id.action_redo, model.peekRedo() != null);
+        return data;
     }
 
     private void initModel(){
@@ -269,6 +287,27 @@ public class TextEditorFragment extends Fragment {
                 model.setTextSource(editorAsTextSource);
                 Log.d("TextEditor", "Fetched existing model and setup editor.");
             }
+
+            //Fix updates of menu
+            editorAsTextSource.addListener(new TextSource.TextSourceListener() {
+                @Override
+                public boolean onTextChanged(String s, int start, int before, int count) {
+                    if(currentEnabledData != null){
+                        HashMap<Integer, Boolean> enabledData = calculateMenuItemEnabled();
+                        if(!enabledData.equals(currentEnabledData)){
+                            if(getActivity() != null) {
+                                getActivity().invalidateOptionsMenu();
+                            }
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public int getPriority() {
+                    return 0;
+                }
+            }, true);
 
             //Add new auto fill window
             autoFillWindow = new AutoFillPopupWindow(getActivity(), model, codeEditor);

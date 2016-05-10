@@ -96,10 +96,16 @@ public interface EditorModel {
     void openFile(CodeFile file);
 
     /**
-     * Saves the current file to storage
-     * @param file The file to save
+     * Saves the given file to storage. If null is given, the current opened file is saved instead.
+     * @param file The file to save, or null to save the current file
      */
     void saveFile(CodeFile file);
+
+    /**
+     * Checks whether any changes has been made to the current file
+     * @return <code>true</code> if a current file is open and has been changed, <code>false</code> otherwise
+     */
+    boolean hasChangedCurrentFile();
 
     /**
      * Creates a file in the current folder

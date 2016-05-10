@@ -17,9 +17,13 @@ import java.util.Scanner;
 public class SimpleCodeFile implements CodeFile {
 
     private static List<String> deniedFileFormats = Arrays.asList(new String[]{"jpg", "jpeg", "png", "gif", "psd", "zip", "gz", "tar"});
+    private static final int REQUESTS_UNTIL_NEW_FILE_READ = 10;
 
     private File source;
     private String initialPath;
+
+    private String bufferedContents;
+    private int requestsSinceLastFileRead = 0;
 
     protected SimpleCodeFile(File source, String initialPath){
         this.source = source;
@@ -64,15 +68,30 @@ public class SimpleCodeFile implements CodeFile {
 
     @Override
     public String getContents() {
+        if(bufferedContents != null){
+            if(requestsSinceLastFileRead < REQUESTS_UNTIL_NEW_FILE_READ){
+                //Return buffered value
+                requestsSinceLastFileRead++;
+                return bufferedContents;
+            }else{
+                //Reset counter and read the file to get a new value
+                requestsSinceLastFileRead = 0;
+            }
+        }
+
         try {
             Scanner sc = new Scanner(source);
             StringBuffer b = new StringBuffer();
             while (sc.hasNextLine()) {
-                b.append(sc.nextLine()).append("\n");
+                b.append(sc.nextLine());
+                if(sc.hasNextLine()){
+                    b.append("\n");
+                }
             }
             sc.close();
 
-            return b.toString();
+            bufferedContents = b.toString();
+            return bufferedContents;
         }catch(IOException ioe){
             Log.d("CodeFile", "Could not read file: " + ioe.getMessage());
             return "";
@@ -87,6 +106,7 @@ public class SimpleCodeFile implements CodeFile {
                 out.write(contents.getBytes());
                 out.flush();
                 out.close();
+                bufferedContents = contents;
                 return true;
             } catch (IOException ioe) {
                 return false;
