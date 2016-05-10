@@ -36,6 +36,8 @@ public class SimpleLanguage implements Language {
         return name;
     }
 
+    public String[] getFilenameExtensions() { return filenameExtensions; }
+
     public String[] getSyntaxHighlightingTriggers() {
         return syntaxHighlightingTriggers;
     }
