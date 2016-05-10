@@ -40,6 +40,7 @@ public abstract class SettingsFragment extends PreferenceFragment {
     @Override
     public void onStart() {
         super.onStart();
+        initGUI();
         updateGUI();
     }
 
@@ -53,6 +54,10 @@ public abstract class SettingsFragment extends PreferenceFragment {
     public void onPause() {
         super.onPause();
         getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(changeListener);
+    }
+
+    protected void initGUI() {
+        // Override in subclasses if needed.
     }
 
     protected void updateGUI() {
