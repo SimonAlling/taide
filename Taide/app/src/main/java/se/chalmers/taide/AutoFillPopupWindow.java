@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.ListPopupWindow;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -56,7 +57,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
 
     @Override
     public boolean onTextChanged(String s, int start, int before, int count) {
-        updateAutoFillBox();
+        updateAutoFillBox(before != 0 || count != 1);
         return false;
     }
     @Override
@@ -72,17 +73,21 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
         autofillBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AutoFill currentAutofill = (model==null?null:model.getAutoFillReplacement());
-                if (currentAutofill != null) {
-                    currentDisabledAutofillWord = currentAutofill.getTrigger();
-                    model.setAutofillWordEnabled(currentDisabledAutofillWord, false);
-                    autofillBox.dismiss();
-                }
+                temporaryDenyCurrentAutofill();
+                autofillBox.dismiss();
             }
         });
     }
 
-    private void updateAutoFillBox() {
+    private void temporaryDenyCurrentAutofill(){
+        AutoFill currentAutofill = (model==null?null:model.getAutoFillReplacement());
+        if (currentAutofill != null) {
+            currentDisabledAutofillWord = currentAutofill.getTrigger();
+            model.setAutofillWordEnabled(currentDisabledAutofillWord, false);
+        }
+    }
+
+    private void updateAutoFillBox(boolean suppressAllAutofills) {
         // +1 because we start at the top of the line, but the factor is interpreted as starting
         // from the bottom of it:
         final float lineHeightAdjustment = (1 + POPUP_ADJUSTMENT_LINE_HEIGHT_FACTOR) * codeEditor.getLineHeight();
@@ -100,31 +105,34 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
             cursorAnchor.setVisibility(View.VISIBLE);
 
             // Update UI:
-            updateAutoFillWindowState(cursorAnchor);
+            updateAutoFillWindowState(cursorAnchor, suppressAllAutofills);
 
             // Reset disabled word:
             if (currentDisabledAutofillWord != null) {
                 model.setAutofillWordEnabled(currentDisabledAutofillWord, true);
                 currentDisabledAutofillWord = null;
             }
+
+            if(suppressAllAutofills){
+                temporaryDenyCurrentAutofill();
+            }
         }
     }
 
-    private void updateAutoFillWindowState(View anchorView) {
-        List<String> values = getProcessedAutoFillValues();
+    private void updateAutoFillWindowState(View anchorView, boolean suppressAllAutofills) {
+        List<String> values = suppressAllAutofills ? Collections.EMPTY_LIST : getProcessedAutoFillValues();
         if (values != null) {
             ListAdapter adapter = new ArrayAdapter<>(currentActivity.getApplicationContext(), android.R.layout.simple_list_item_1, values);
             autofillBox.setAdapter(adapter);
             autofillBox.setContentWidth(measureContentWidth(adapter));
             if (!autofillBox.isShowing()) {
+                // Set anchor:
+                autofillBox.setAnchorView(anchorView);
                 autofillBox.show();
             }
         } else if (autofillBox.isShowing()) {
             autofillBox.dismiss();
         }
-
-        // Set anchor:
-        autofillBox.setAnchorView(anchorView);
     }
 
     private ArrayList<String> getAutoFillValues() {
