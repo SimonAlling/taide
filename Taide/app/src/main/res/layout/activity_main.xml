@@ -26,7 +26,7 @@
             android:layout_height="400dp"
             android:layout_width="match_parent"
             android:layout_alignParentBottom="true"
-            class="se.chalmers.taide.MarkupFragment"/>
+            class="se.chalmers.taide.TouchpadFragment"/>
 
         <fragment
             android:id="@+id/textField"

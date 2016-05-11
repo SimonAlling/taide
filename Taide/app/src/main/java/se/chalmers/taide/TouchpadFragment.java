@@ -16,7 +16,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkupFragment extends Fragment {
+public class TouchpadFragment extends Fragment {
 
     /** Start constants */
     private final int DELAY = 200; //TODO: Replace with settings for sensitivity
