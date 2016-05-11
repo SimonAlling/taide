@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -16,9 +17,14 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.taide.util.SensitivityUtil;
+import se.chalmers.taide.util.Units;
+
 public class TouchpadFragment extends Fragment {
 
     /** Start constants */
+    private final String PREF_KEY_TOUCHPAD_SENSITIVITY = "pref_key_touchpad_sensitivity";
+    private final float FALLBACK_SENSITIVITY_SLIDER_VALUE = 0.5f;
     private final int DELAY = 200; //TODO: Replace with settings for sensitivity
     private EditText TEXT_AREA;
     private final double BORDER_PERCENTAGE = 0.10;
@@ -29,11 +35,13 @@ public class TouchpadFragment extends Fragment {
     private Handler BOTTOM_SCROLL_HANDLER = null;
     private Handler KEEP_SELECTION = null;
     private final List<Pointer> ACTIVE_POINTERS = new ArrayList<>();
-    private final int X_SENSITIVITY = 75;
-    private final int Y_SENSITIVITY = 5;
+    private int xSensitivityColumns = 75; // the number of columns that the touchpad is divided into
+    private final int Y_SENSITIVITY =  5;
     /** End constants */
 
     /** Start private variables */
+    // fragmentWidth is dangerous because it is set to the screen width (in physical pixels), so it
+    // works only in the special case where the touchpad takes up the entire screen width.
     private int startPos = 0, endPos = 0, fragmentHeight = 0, fragmentWidth = 0, leftMostPointer = 0;
     private boolean marked = false, yChanged = false, runnable = false, keepSelecion = false;
     private Handler testHandler;
@@ -46,7 +54,6 @@ public class TouchpadFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_markup, container, false);
-
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -55,17 +62,12 @@ public class TouchpadFragment extends Fragment {
                 }
             }
         });
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        fragmentWidth = size.x;
-
         view.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 TEXT_AREA = (EditText) getActivity().findViewById(R.id.editText);
-                DrawerLayout drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
+                DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
                 Area area;
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
@@ -76,7 +78,7 @@ public class TouchpadFragment extends Fragment {
                         area = getPointerArea(pointer.x, pointer.y);
                         startPos = TEXT_AREA.getSelectionStart();
 
-                        if(marked) {
+                        if (marked) {
                             keepSelecion = true;
                             KEEP_SELECTION = new Handler();
                             KEEP_SELECTION.postDelayed(twoPointTouchDelay, 200);
@@ -87,7 +89,7 @@ public class TouchpadFragment extends Fragment {
                         break;
 
                     case MotionEvent.ACTION_POINTER_DOWN:
-                        if(!keepSelecion) {
+                        if (!keepSelecion) {
                             endPos = startPos;
                         }
                         ACTIVE_POINTERS.add(event.getActionIndex(), new Pointer(event.getX(event.getActionIndex()), event.getY(event.getActionIndex())));
@@ -100,7 +102,7 @@ public class TouchpadFragment extends Fragment {
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        for(int i = 0; i < ACTIVE_POINTERS.size(); i++) {
+                        for (int i = 0; i < ACTIVE_POINTERS.size(); i++) {
                             ACTIVE_POINTERS.get(i).x = event.getX(i);
                             ACTIVE_POINTERS.get(i).y = event.getY(i);
                         }
@@ -125,12 +127,30 @@ public class TouchpadFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        final Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size); // This modifies size!
+        fragmentWidth = size.x; // physical pixels
+        updateXSensitivity();
+    }
+
+    // Reads and applies the sensitivity setting from the SharedPreferences.
+    private void updateXSensitivity() {
+        final float sensitivitySliderValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(PREF_KEY_TOUCHPAD_SENSITIVITY, FALLBACK_SENSITIVITY_SLIDER_VALUE);
+        final double sensitivity = SensitivityUtil.charactersPerCentimeter(sensitivitySliderValue);
+        final double fragmentWidthInCentimeters = Units.pixelsToCentimeters_device(fragmentWidth);
+        xSensitivityColumns = (int) Math.round(sensitivity * fragmentWidthInCentimeters);
+    }
+
     public int getXMovement(int pointerIndex) {
         float x = ACTIVE_POINTERS.get(pointerIndex).x;
         float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
 
-        if (Math.abs(x - dX) >= fragmentWidth / X_SENSITIVITY) {
-            return (int) (x - dX) / (fragmentWidth / X_SENSITIVITY);
+        if (Math.abs(x - dX) >= fragmentWidth / xSensitivityColumns) {
+            return (int) Math.round((x - dX) / (fragmentWidth / xSensitivityColumns));
         }
         return 0;
     }
