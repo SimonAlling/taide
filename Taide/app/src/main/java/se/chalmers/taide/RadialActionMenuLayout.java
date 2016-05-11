@@ -2,6 +2,7 @@ package se.chalmers.taide;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,10 +23,15 @@ import se.chalmers.taide.util.MathUtil;
  * several other button. These buttons can be linked to action, making this ui element
  * appropriate for fast access tools etc.
  *
- * NOTE: Be sure to call setButtons(String[] labels) to make the action menu visible.
+ * NOTE: Be sure to call setButtons(Action[] actions) to make the action menu visible.
  */
 public class RadialActionMenuLayout extends RelativeLayout{
 
+    // The size of a button. This is not a good solution but
+    // it was hard to load during runtime.
+    private static final int BUTTON_HEIGHT = 90;
+
+    // Default settable properties
     private static final int DEFAULT_ANIMATION_DURATION = 100; // ms
     private static final int DEFAULT_SELECTION_ANIMATION_DURATION = 200; // ms
     private static final String DEFAULT_MAIN_BUTTON_TEXT = "";
@@ -66,7 +72,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     private Alignment alignment;
     private View[] buttons;
-    private OnActionButtonTriggeredListener[] buttonListeners;
+    private Action[] buttonActions;
     private int animationDuration;
     private int selectionAnimationDuration;
     private int buttonColor;
@@ -134,13 +140,13 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     private void generateButtons(int buttonCount) {
         View[] newButtons = new View[buttonCount];
-        OnActionButtonTriggeredListener[] newButtonListeners = new OnActionButtonTriggeredListener[buttonCount];
+        Action[] newButtonActions = new Action[buttonCount];
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout parent = (RelativeLayout) mainView;
         for (int i = 0; i < buttonCount; i++) {
             if (this.buttons != null && i < this.buttons.length){
                 newButtons[i] = this.buttons[i];
-                newButtonListeners[i] = this.buttonListeners[i];
+                newButtonActions[i] = this.buttonActions[i];
 
                 // Update color:
                 Button b = (Button)newButtons[i].findViewById(R.id.radialButton);
@@ -155,7 +161,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
         }
 
         this.buttons = newButtons;
-        this.buttonListeners = newButtonListeners;
+        this.buttonActions = newButtonActions;
     }
 
     private View getCircleButton(LayoutInflater inflater, ViewGroup parent, String text) {
@@ -224,9 +230,9 @@ public class RadialActionMenuLayout extends RelativeLayout{
                 }
             }).start();
 
-            //Notify listeners
-            if (buttonListeners[index] != null) {
-                buttonListeners[index].actionButtonTriggered(index);
+            //Perform action
+            if (buttonActions[index] != null) {
+                buttonActions[index].perform();
             }
         } else{
             Log.w("RadialActionMenuLayout", "Tried to activate a non-existant button!");
@@ -288,27 +294,24 @@ public class RadialActionMenuLayout extends RelativeLayout{
     /**
      * Takes an array of strings and creates buttons with those labels.
      * There will be NO BUTTONS until this is called.
-     * @param labels The desired labels of the buttons in clockwise order
+     * @param actions The desired actions of the buttons in clockwise order
      */
-    public void setButtons(String[] labels) {
-        generateButtons(labels.length);
-        for (int i = 0; i < labels.length; i++) {
-            ((Button) buttons[i].findViewById(R.id.radialButton)).setText(labels[i]);
+    public void setButtons(Action[] actions) {
+        generateButtons(actions.length);
+        for (int i = 0; i < actions.length; i++) {
+            Button b = (Button) buttons[i].findViewById(R.id.radialButton);
+            if(actions[i].getIcon() > 0) {      //Check if icon exists
+                Drawable icon = getResources().getDrawable(actions[i].getIcon());
+                b.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
+                int padding = (BUTTON_HEIGHT-icon.getBounds().height())/2;
+                b.setPadding(0, padding, 0, 0);
+            } else{
+                b.setText(actions[i].getName());
+            }
         }
+        this.buttonActions = actions;
         invalidate();
         requestLayout();
-    }
-
-    public void setActionForAll(OnActionButtonTriggeredListener listener) {
-        for (int i = 0; i < buttonListeners.length; i++) {
-            buttonListeners[i] = listener;
-        }
-    }
-
-    public void setAction(int buttonIndex, OnActionButtonTriggeredListener listener) {
-        if (buttonIndex >= 0 && buttonIndex < buttonListeners.length) {
-            buttonListeners[buttonIndex] = listener;
-        }
     }
 
     public void setAlignment(Alignment alignment) {
@@ -362,18 +365,6 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     public String getMenuTitle(){
         return mainButton.getText().toString();
-    }
-
-    public void setButtonLabel(int buttonIndex, String label) {
-        if (buttonIndex >= 0 && buttonIndex < buttons.length) {
-            ((Button) buttons[buttonIndex].findViewById(R.id.radialButton)).setText(label);
-            invalidate();
-            requestLayout();
-        }
-    }
-
-    public interface OnActionButtonTriggeredListener {
-        void actionButtonTriggered(int index);
     }
 
     public enum Alignment {
