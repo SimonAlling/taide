@@ -12,11 +12,9 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -34,6 +32,7 @@ import se.chalmers.taide.model.ProjectType;
 import se.chalmers.taide.model.filesystem.CodeFile;
 import se.chalmers.taide.model.filesystem.FileSystem;
 import se.chalmers.taide.model.filesystem.dropbox.DropboxFactory;
+import se.chalmers.taide.util.ViewUtil;
 
 /**
  * Created by Matz on 2016-04-11.
@@ -120,14 +119,12 @@ public class FileNavigatorDrawer {
         ((DrawerLayout) parentActivity.findViewById(R.id.drawer_layout)).setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
-                InputMethodManager inputMethodManager = (InputMethodManager) parentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(parentActivity.getCurrentFocus().getWindowToken(), 0);
+                ViewUtil.hideSoftKeyboardTemporary(parentActivity);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                InputMethodManager inputMethodManager = (InputMethodManager) parentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(input, 0);
+                ViewUtil.showSoftKeyboard(parentActivity, input);
             }
 
             @Override

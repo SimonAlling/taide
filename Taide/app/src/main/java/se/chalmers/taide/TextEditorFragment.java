@@ -20,6 +20,7 @@ import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.ModelFactory;
 import se.chalmers.taide.model.TextSource;
 import se.chalmers.taide.util.Clipboard;
+import se.chalmers.taide.util.ViewUtil;
 
 public class TextEditorFragment extends Fragment {
 
@@ -322,7 +323,13 @@ public class TextEditorFragment extends Fragment {
 
     private void toggleTouchpad() {
         final View touchpad = getActivity().findViewById(R.id.markup);
-        touchpad.setVisibility(touchpad.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        final boolean wasVisisble = touchpad.getVisibility() == View.VISIBLE;
+        touchpad.setVisibility(wasVisisble ? View.GONE : View.VISIBLE);
+        if(wasVisisble){
+            ViewUtil.showSoftKeyboard(getActivity(), null);
+        } else{
+            ViewUtil.hideSoftKeyboardTemporary(getActivity());
+        }
     }
 
 }
