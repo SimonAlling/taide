@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/pref_group_sync_title"
-        android:key="pref_key_storage_settings">
+        android:title="@string/pref_group_sync_title">
 
         <CheckBoxPreference
-            android:key="pref_key_use_sync"
+            android:key="@string/pref_key_use_sync"
             android:title="@string/pref_title_sync"
             android:defaultValue="true" />
 
         <MultiSelectListPreference
-            android:key="pref_key_sync_formats"
-            android:dependency="pref_key_use_sync"
+            android:key="@string/pref_key_sync_formats"
+            android:dependency="@string/pref_key_use_sync"
             android:title="@string/pref_title_sync_formats"
             android:entryValues="@array/file_formats_values"
             android:entries="@array/file_formats_entries"
@@ -19,21 +18,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_group_selection_title"
-        android:key="pref_key_selection_settings">
+        android:title="@string/pref_group_selection_title">
 
         <se.chalmers.taide.settings.DynamicSliderPreference
-            android:key="pref_key_touchpad_sensitivity"
+            android:key="@string/pref_key_touchpad_sensitivity"
             android:title="@string/pref_title_touchpad_sensitivity"
             android:defaultValue="0.5"/>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_group_others_title"
-        android:key="pref_key_others_settings">
+        android:title="@string/pref_group_others_title">
 
         <ListPreference
-            android:key="pref_key_history_handler_type"
+            android:key="@string/pref_key_undo_mode"
             android:summary="@string/pref_summary_history_handler_type"
             android:title="@string/pref_title_history_handler_type"
             android:entryValues="@array/history_handlers_values"

@@ -26,7 +26,7 @@ import se.chalmers.taide.util.Units;
 public class TouchpadFragment extends Fragment {
 
     /** Start constants */
-    private final String PREF_KEY_TOUCHPAD_SENSITIVITY = "pref_key_touchpad_sensitivity";
+    private final int ID_KEY_TOUCHPAD_SENSITIVITY = R.string.pref_key_touchpad_sensitivity;
     private final float FALLBACK_SENSITIVITY_SLIDER_VALUE = 0.5f;
     private final int DELAY = 200; //TODO: Replace with settings for sensitivity
     private EditText TEXT_AREA;
@@ -143,7 +143,7 @@ public class TouchpadFragment extends Fragment {
 
     // Reads and applies the sensitivity setting from the SharedPreferences.
     private void updateXSensitivity() {
-        final float sensitivitySliderValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(PREF_KEY_TOUCHPAD_SENSITIVITY, FALLBACK_SENSITIVITY_SLIDER_VALUE);
+        final float sensitivitySliderValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY), FALLBACK_SENSITIVITY_SLIDER_VALUE);
         final double sensitivity = SensitivityUtil.charactersPerCentimeter(sensitivitySliderValue);
         final double fragmentWidthInCentimeters = Units.pixelsToCentimeters_device(fragmentWidth);
         xSensitivityColumns = (int) Math.round(sensitivity * fragmentWidthInCentimeters);

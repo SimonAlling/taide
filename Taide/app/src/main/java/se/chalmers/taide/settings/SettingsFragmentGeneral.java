@@ -15,10 +15,10 @@ import se.chalmers.taide.util.SensitivityUtil;
  */
 public class SettingsFragmentGeneral extends SettingsFragment {
 
-    public static final String KEY_SYNC = "pref_key_use_sync";
-    public static final String KEY_SYNC_FORMATS = "pref_key_sync_formats";
-    public static final String KEY_HISTORY_HANDLER_TYPE = "pref_key_history_handler_type";
-    public static final String KEY_TOUCHPAD_SENSITIVITY = "pref_key_touchpad_sensitivity";
+    private static final int ID_KEY_USE_SYNC = R.string.pref_key_use_sync;
+    private static final int ID_KEY_SYNC_FORMATS = R.string.pref_key_sync_formats;
+    private static final int ID_KEY_UNDO_MODE = R.string.pref_key_undo_mode;
+    private static final int ID_KEY_TOUCHPAD_SENSITIVITY = R.string.pref_key_touchpad_sensitivity;
 
     private static final int UNIT_CHAR_PLURAL = R.string.unit_char_plural;
     private static final int UNIT_CHAR_ABBR = R.string.unit_char_abbr;
@@ -62,7 +62,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
 
     @Override
     protected void initGUI() {
-        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
+        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
         sensPreference.setStringifier(sensitivityStringifier);
     }
 
@@ -74,8 +74,8 @@ public class SettingsFragmentGeneral extends SettingsFragment {
 
     // Update Touchpad sensitivity related GUI elements:
     private void updateGUI_sensitivity(SharedPreferences preferences) {
-        final double sliderValue = preferences.getFloat(KEY_TOUCHPAD_SENSITIVITY, 0.5f);
-        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(KEY_TOUCHPAD_SENSITIVITY);
+        final double sliderValue = preferences.getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY), 0.5f);
+        final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
         sensPreference.setSummary(sensitivityDescription(sliderValue));
     }
 
@@ -83,7 +83,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private void updateGUI_sync(SharedPreferences preferences) {
         // We'll start out with the assumption that no resource types are selected:
         int stringID = R.string.pref_summary_sync_formats_none;
-        final int numberOfSelectedSyncFormats = preferences.getStringSet(KEY_SYNC_FORMATS, Collections.EMPTY_SET).size();
+        final int numberOfSelectedSyncFormats = preferences.getStringSet(getString(ID_KEY_SYNC_FORMATS), Collections.EMPTY_SET).size();
         if (numberOfSelectedSyncFormats == getResources().getStringArray(R.array.file_formats_values).length) {
             // All resource types are selected.
             stringID = R.string.pref_summary_sync_formats_all;
@@ -92,21 +92,21 @@ public class SettingsFragmentGeneral extends SettingsFragment {
             stringID = R.string.pref_summary_sync_formats_some;
         }
         // Finally, we will consider the state of the Sync checkbox:
-        final boolean syncEnabled = preferences.getBoolean(KEY_SYNC, true);
+        final boolean syncEnabled = preferences.getBoolean(getString(ID_KEY_USE_SYNC), true);
         if (!syncEnabled) { stringID = R.string.pref_summary_sync_formats_disabled; }
-        findPreference(KEY_SYNC_FORMATS).setSummary(getString(stringID));
+        findPreference(getString(ID_KEY_SYNC_FORMATS)).setSummary(getString(stringID));
     }
 
     private void updateGUI_history(SharedPreferences preferences) {
         if (preferences != null) {
-            String type = preferences.getString(KEY_HISTORY_HANDLER_TYPE, "time");
+            String type = preferences.getString(getString(ID_KEY_UNDO_MODE), "time");
             switch (type) {
                 case "word":
                     HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.WORD); break;
                 case "time": default:
                     HistoryHandlerFactory.setHistoryHandlerType(HistoryHandlerFactory.HistoryHandlerType.TIME); break;
             }
-            findPreference(KEY_HISTORY_HANDLER_TYPE).setSummary("Current mode is " + type);
+            findPreference(getString(ID_KEY_UNDO_MODE)).setSummary("Current mode is " + type);
         }
     }
 }

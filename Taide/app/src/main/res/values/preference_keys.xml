@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- All preference keys should be declared here. -->
+
+    <!-- GENERAL -->
+    <string name="pref_key_storage_settings">storage_settings</string>
+    <string name="pref_key_use_sync">use_sync</string>
+    <string name="pref_key_sync_formats">sync_formats</string>
+
+    <string name="pref_key_touchpad_sensitivity">touchpad_sensitivity</string>
+
+    <string name="pref_key_undo_mode">undo_mode</string>
+</resources>
