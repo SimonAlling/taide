@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -72,7 +73,6 @@ public class RadialActionMenuLayout extends RelativeLayout{
 
     private int selectedButton = -1;
 
-
     public RadialActionMenuLayout(final Context context){
         this(context, null);
     }
@@ -118,6 +118,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
                     selectedButton = -1;
                     hide();
                 } else if (event.getAction() == MotionEvent.ACTION_MOVE){
+                    //Create a hover effect with opacity.
                     int buttonSelection = getSelectedButton(event.getRawX(), event.getRawY());
                     if(buttonSelection != RadialActionMenuLayout.this.selectedButton) {
                         for (int i = 0; i<buttons.length; i++) {
@@ -182,10 +183,9 @@ public class RadialActionMenuLayout extends RelativeLayout{
         location[1] += mainButton.getHeight()/2;
 
         //Calculate the angle towards the event
-        int steps = buttons.length-1;
         double angle = MathUtil.getAngle(location[0], location[1], x, y);
-        double startAngle = MathUtil.convertAngleIntoNormalRange(getStartAngle(alignment, steps));
-        double angleChange = getAngleChange(alignment, steps);
+        double startAngle = MathUtil.convertAngleIntoNormalRange(getStartAngle(alignment, buttons.length));
+        double angleChange = getAngleChange(alignment, buttons.length);
 
         //If the range (startAngle to (startAngle+angleChange*steps)) passes the rightmost of the
         //x-axis, the angle might be translated -360 degrees. Therefore we have to translate it back.
@@ -194,7 +194,7 @@ public class RadialActionMenuLayout extends RelativeLayout{
         }
 
         //Check that it is in the correct interval
-        if(angle >= startAngle && angle <= startAngle+angleChange*(steps+1)){
+        if(angle >= startAngle && angle <= startAngle+angleChange*buttons.length){
             int index = (int)((angle-startAngle)/angleChange);
             //Check that it is far/close enough.
             if(index<buttons.length && MathUtil.distanceIsGreaterThan(mainButton.getWidth() * MIN_DISTANCE_DETECTION_FACTOR, location[0], location[1], x, y) &&
@@ -207,25 +207,29 @@ public class RadialActionMenuLayout extends RelativeLayout{
     }
 
     private void activateButton(int index){
-        //Calculate values
-        final View activeButton = buttons[index];
-        final float scaleDiff = 1.2f;
-        final float translateX = ((float) activeButton.getWidth())*(scaleDiff-1.0f)/2.0f;
-        final float translateY = ((float) activeButton.getHeight())*(scaleDiff-1.0f)/2.0f;
+        if(index<buttons.length && index>=0) {
+            //Calculate values
+            final View activeButton = buttons[index];
+            final float scaleDiff = 1.2f;
+            final float translateX = ((float) activeButton.getWidth()) * (scaleDiff - 1.0f) / 2.0f;
+            final float translateY = ((float) activeButton.getHeight()) * (scaleDiff - 1.0f) / 2.0f;
 
-        //Perform the animation
-        activeButton.animate().setDuration(selectionAnimationDuration).scaleX(scaleDiff).scaleY(scaleDiff).
-                translationX(activeButton.getTranslationX() - translateX).translationY(activeButton.getTranslationY()-translateY*2).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                activeButton.animate().setDuration(0).scaleX(1f).scaleY(1f).translationX(0).translationY(0).start();
-                hide();
+            //Perform the animation
+            activeButton.animate().setDuration(selectionAnimationDuration).scaleX(scaleDiff).scaleY(scaleDiff).
+                    translationX(activeButton.getTranslationX() - translateX).translationY(activeButton.getTranslationY() - translateY * 2).withEndAction(new Runnable() {
+                @Override
+                public void run() {
+                    activeButton.animate().setDuration(0).scaleX(1f).scaleY(1f).translationX(0).translationY(0).start();
+                    hide();
+                }
+            }).start();
+
+            //Notify listeners
+            if (buttonListeners[index] != null) {
+                buttonListeners[index].actionButtonTriggered(index);
             }
-        }).start();
-
-        //Notify listeners
-        if (buttonListeners[index] != null) {
-            buttonListeners[index].actionButtonTriggered(index);
+        } else{
+            Log.w("RadialActionMenuLayout", "Tried to activate a non-existant button!");
         }
     }
 
