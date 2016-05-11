@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -73,7 +74,35 @@ public class TextEditorFragment extends Fragment {
         rightActionMenu = (RadialActionMenuLayout) view.findViewById(R.id.actionMenuLayoutRight);
         rightActionMenu.setButtons(getActionsRight());
 
+        //Handle touchpad visibility
+        setupTouchpadVisibility();
+
         return view;
+    }
+
+    /**
+     * Sets up listeners to make sure that the soft keyboard for the codeeditor and the
+     * touchpad is never used at the same time.
+     */
+    private void setupTouchpadVisibility(){
+        codeEditor.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Hide touchpad if visible
+                new Action.ToggleTouchPad(getActivity(), Action.ToggleTouchPad.HIDE_ONLY).perform();
+                return false;
+            }
+        });
+        codeEditor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus){
+                    // Hide touchpad if visible
+                    int flags = Action.ToggleTouchPad.HIDE_ONLY | Action.ToggleTouchPad.DO_NOT_TOGGLE_KEYBOARD;
+                    new Action.ToggleTouchPad(getActivity(), flags).perform();
+                }
+            }
+        });
     }
 
     /**

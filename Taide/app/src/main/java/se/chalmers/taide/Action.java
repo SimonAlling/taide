@@ -88,19 +88,32 @@ public interface Action {
 
     /* -------------------------- TOUCHPAD --------------------------- */
     class ToggleTouchPad extends AbstractAction{
+        public static final int HIDE_ONLY = 0x01;
+        public static final int DO_NOT_TOGGLE_KEYBOARD = 0x02;
         private Activity activity;
+        private int flags;
         public ToggleTouchPad(Activity activity){
+            this(activity, 0);
+        }
+        public ToggleTouchPad(Activity activity, int flags){
             super(activity.getResources().getString(R.string.action_button_toggle_touchpad));
             this.activity = activity;
+            this.flags = flags;
         }
         public void perform(){
             final View touchpad = activity.findViewById(R.id.markup);
-            final boolean wasVisisble = touchpad.getVisibility() == View.VISIBLE;
-            touchpad.setVisibility(wasVisisble ? View.GONE : View.VISIBLE);
-            if(wasVisisble){
-                ViewUtil.showSoftKeyboard(activity, null);
+            if(touchpad.getVisibility() == View.VISIBLE){
+                touchpad.setVisibility(View.GONE);
+                if((flags & DO_NOT_TOGGLE_KEYBOARD) == 0) {
+                    ViewUtil.showSoftKeyboard(activity, null);
+                }
             } else{
-                ViewUtil.hideSoftKeyboardTemporary(activity);
+                if((flags & HIDE_ONLY) == 0) {
+                    touchpad.setVisibility(View.VISIBLE);
+                    if((flags & DO_NOT_TOGGLE_KEYBOARD) == 0) {
+                        ViewUtil.hideSoftKeyboardTemporary(activity);
+                    }
+                }
             }
         }
     }
