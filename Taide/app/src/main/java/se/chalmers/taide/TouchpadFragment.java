@@ -130,7 +130,7 @@ public class TouchpadFragment extends Fragment {
         float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
 
         if (Math.abs(x - dX) >= fragmentWidth / X_SENSITIVITY) {
-            return (int) (x - dX) / X_SENSITIVITY;
+            return (int) (x - dX) / (fragmentWidth / X_SENSITIVITY);
         }
         return 0;
     }
