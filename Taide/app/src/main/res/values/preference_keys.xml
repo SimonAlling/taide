@@ -8,6 +8,7 @@
     <string name="pref_key_sync_formats">sync_formats</string>
 
     <string name="pref_key_touchpad_sensitivity">touchpad_sensitivity</string>
+    <string name="pref_key_touchpad_sensitivity_vertical">touchpad_sensitivity_vertical</string>
 
     <string name="pref_key_undo_mode">undo_mode</string>
 </resources>

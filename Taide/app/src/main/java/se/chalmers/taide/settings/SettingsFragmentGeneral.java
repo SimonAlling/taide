@@ -19,8 +19,10 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private static final int ID_KEY_SYNC_FORMATS = R.string.pref_key_sync_formats;
     private static final int ID_KEY_UNDO_MODE = R.string.pref_key_undo_mode;
     private static final int ID_KEY_TOUCHPAD_SENSITIVITY = R.string.pref_key_touchpad_sensitivity;
+    private static final int ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL = R.string.pref_key_touchpad_sensitivity_vertical;
 
     private static final int UNIT_CHAR_PLURAL = R.string.unit_char_plural;
+    private static final int UNIT_LINE_PLURAL = R.string.unit_line_plural;
     private static final int UNIT_CHAR_ABBR = R.string.unit_char_abbr;
     private static final int UNIT_LENGTH = R.string.unit_cm;
     private static final int UNIT_LENGTH_ABBR = R.string.unit_cm_abbr;
@@ -29,14 +31,22 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private static final int SENSITIVITY_DECIMALS = 1;
 
     private static final String FALLBACK_STRING_UNIT_CHAR_PLURAL = "characters";
+    private static final String FALLBACK_STRING_UNIT_LINE_PLURAL = "rows";
     private static final String FALLBACK_STRING_UNIT_LENGTH = "centimeter";
     private static final String FALLBACK_STRING_UNIT_PER = "per";
 
     public String sensitivityDescription(double sensitivity) {
         return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS)
-             + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
-             + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
-             + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
+                + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
+                + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
+                + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
+    }
+
+    public String sensitivityDescription_vertical(double sensitivity) {
+        return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS)
+                + " " + getString(UNIT_LINE_PLURAL, FALLBACK_STRING_UNIT_LINE_PLURAL)
+                + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
+                + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
     }
 
     public String sensitivityAbbreviation(double sensitivity) {
@@ -57,6 +67,17 @@ public class SettingsFragmentGeneral extends SettingsFragment {
         }
     };
 
+    private final DynamicSliderPreference.SliderValueInterpreter sensitivityInterpreter_vertical = new DynamicSliderPreference.SliderValueInterpreter() {
+        @Override
+        public String stringify(double sliderValue) {
+            return sensitivityDescription_vertical(interpret(sliderValue));
+        }
+        @Override
+        public double interpret(double sliderValue) {
+            return SensitivityUtil.linesPerCentimeter(sliderValue);
+        }
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +88,9 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     @Override
     protected void initGUI() {
         final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
+        final DynamicSliderPreference sensPreference_vertical = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL));
         sensPreference.setInterpreter(sensitivityInterpreter);
+        sensPreference_vertical.setInterpreter(sensitivityInterpreter_vertical);
     }
 
     @Override
@@ -81,6 +104,9 @@ public class SettingsFragmentGeneral extends SettingsFragment {
         final double sliderValue = preferences.getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY), 0.5f);
         final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
         sensPreference.setSummary(sensitivityInterpreter.stringify(sliderValue));
+        final double sliderValue_vertical = preferences.getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL), 0.5f);
+        final DynamicSliderPreference sensPreference_vertical = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL));
+        sensPreference_vertical.setSummary(sensitivityInterpreter_vertical.stringify(sliderValue_vertical));
     }
 
     // Update Sync related GUI elements:

@@ -27,6 +27,7 @@ public class TouchpadFragment extends Fragment {
 
     /** Start constants */
     private final int ID_KEY_TOUCHPAD_SENSITIVITY = R.string.pref_key_touchpad_sensitivity;
+    private final int ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL = R.string.pref_key_touchpad_sensitivity_vertical;
     private final float FALLBACK_SENSITIVITY_SLIDER_VALUE = 0.5f;
     private final int DELAY = 200; //TODO: Replace with settings for sensitivity
     private EditText TEXT_AREA;
@@ -39,8 +40,8 @@ public class TouchpadFragment extends Fragment {
     private Handler BOTTOM_SCROLL_HANDLER = null;
     private Handler KEEP_SELECTION = null;
     private final List<Pointer> ACTIVE_POINTERS = new ArrayList<>();
-    private int xSensitivityColumns = 75; // the number of columns that the touchpad is divided into
-    private final int Y_SENSITIVITY =  5;
+    private int sensitivityColumns = 75; // the number of columns that the touchpad is divided into
+    private int sensitivityRows =  5;
     /** End constants */
 
     /** Start private variables */
@@ -139,6 +140,7 @@ public class TouchpadFragment extends Fragment {
         display.getSize(size); // This modifies size!
         fragmentWidth = size.x; // physical pixels
         updateXSensitivity();
+        updateYSensitivity();
     }
 
     // Reads and applies the sensitivity setting from the SharedPreferences.
@@ -146,15 +148,22 @@ public class TouchpadFragment extends Fragment {
         final float sensitivitySliderValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY), FALLBACK_SENSITIVITY_SLIDER_VALUE);
         final double sensitivity = SensitivityUtil.charactersPerCentimeter(sensitivitySliderValue);
         final double fragmentWidthInCentimeters = Units.pixelsToCentimeters_device(fragmentWidth);
-        xSensitivityColumns = (int) Math.round(sensitivity * fragmentWidthInCentimeters);
+        sensitivityColumns = (int) Math.round(sensitivity * fragmentWidthInCentimeters);
+    }
+
+    private void updateYSensitivity() {
+        final float sensitivitySliderValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY_VERTICAL), FALLBACK_SENSITIVITY_SLIDER_VALUE);
+        final double sensitivity = SensitivityUtil.linesPerCentimeter(sensitivitySliderValue);
+        final double fragmentHeightInCentimeters = Units.pixelsToCentimeters_device(fragmentHeight);
+        sensitivityRows = (int) Math.round(sensitivity * fragmentHeightInCentimeters);
     }
 
     public int getXMovement(int pointerIndex) {
         float x = ACTIVE_POINTERS.get(pointerIndex).x;
         float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
 
-        if (Math.abs(x - dX) >= fragmentWidth / xSensitivityColumns) {
-            return (int) Math.round((x - dX) / (fragmentWidth / xSensitivityColumns));
+        if (Math.abs(x - dX) >= fragmentWidth / sensitivityColumns) {
+            return (int) Math.round((x - dX) / (fragmentWidth / sensitivityColumns));
         }
         return 0;
     }
@@ -166,7 +175,7 @@ public class TouchpadFragment extends Fragment {
         Area area = getPointerArea(point.x, point.y);
         String text = TEXT_AREA.getText().toString();
 
-        if (Math.abs(y - dY) >= fragmentHeight / Y_SENSITIVITY
+        if (Math.abs(y - dY) >= fragmentHeight / sensitivityRows
                 || (area != Area.CENTER && area != Area.RIGHT && area != Area.LEFT)) {
             if (y - dY > 0 || area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
                 int nextEnter = text.indexOf('\n', pointer);

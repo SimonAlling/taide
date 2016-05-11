@@ -18,11 +18,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_group_selection_title">
+        android:title="@string/pref_group_touchpad_title">
 
         <se.chalmers.taide.settings.DynamicSliderPreference
             android:key="@string/pref_key_touchpad_sensitivity"
             android:title="@string/pref_title_touchpad_sensitivity"
+            android:defaultValue="0.5"/>
+
+        <se.chalmers.taide.settings.DynamicSliderPreference
+            android:key="@string/pref_key_touchpad_sensitivity_vertical"
+            android:title="@string/pref_title_touchpad_sensitivity_vertical"
             android:defaultValue="0.5"/>
     </PreferenceCategory>
 

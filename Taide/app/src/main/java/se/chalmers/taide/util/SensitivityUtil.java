@@ -8,6 +8,8 @@ public abstract class SensitivityUtil {
     // The number of CHARACTERS PER CM for the min and max sensitivity slider values, respectively:
     public static final double MIN_SENS_CHARS_PER_CM = 1;
     public static final double MAX_SENS_CHARS_PER_CM = 16;
+    public static final double MIN_SENS_LINES_PER_CM = 0.5;
+    public static final double MAX_SENS_LINES_PER_CM = 4;
 
     // This controls whether the sensitivity slider is linear or exponential:
     // (Note that "exponential" here has nothing to do with acceleration. It is only the sensitivity
@@ -40,6 +42,20 @@ public abstract class SensitivityUtil {
      */
     public static double charactersPerCentimeter(double sliderValue) {
         return SLIDER_IS_EXPONENTIAL ? charactersPerCentimeter_exponential(sliderValue) : charactersPerCentimeter_linear(sliderValue);
+    }
+
+    private static double linesPerCentimeter_linear(double sliderValue) {
+        final double sensitivityInterval = MAX_SENS_LINES_PER_CM - MIN_SENS_LINES_PER_CM;
+        return MIN_SENS_LINES_PER_CM + sliderValue * sensitivityInterval;
+    }
+
+    private static double linesPerCentimeter_exponential(double sliderValue) {
+        final double k = Math.log(MAX_SENS_LINES_PER_CM / MIN_SENS_LINES_PER_CM); // k = ln (max / min)
+        return MIN_SENS_LINES_PER_CM * Math.pow(Math.E, k * sliderValue);
+    }
+
+    public static double linesPerCentimeter(double sliderValue) {
+        return SLIDER_IS_EXPONENTIAL ? linesPerCentimeter_exponential(sliderValue) : linesPerCentimeter_linear(sliderValue);
     }
 
     /**

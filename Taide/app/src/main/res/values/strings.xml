@@ -70,6 +70,9 @@
     <string name="unit_char">character</string>
     <string name="unit_char_plural">characters</string>
     <string name="unit_char_abbr">char.</string>
+    <string name="unit_line">line</string>
+    <string name="unit_line_plural">lines</string>
+    <string name="unit_line_abbr">ln.</string>
 
 
 
@@ -97,8 +100,9 @@
         <item>Compiled Java files (.class)</item>
     </string-array>
     <!-- Selection -->
-    <string name="pref_group_selection_title">Text selection</string>
-    <string name="pref_title_touchpad_sensitivity">Touchpad sensitivity</string>
+    <string name="pref_group_touchpad_title">Touchpad</string>
+    <string name="pref_title_touchpad_sensitivity">Horizontal sensitivity</string>
+    <string name="pref_title_touchpad_sensitivity_vertical">Vertical sensitivity</string>
     <!-- Other stuff (settings) -->
     <string name="pref_group_others_title">Other</string>
     <string name="pref_title_history_handler_type">Undo/redo management</string>
