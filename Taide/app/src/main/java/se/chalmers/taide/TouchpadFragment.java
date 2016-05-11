@@ -20,6 +20,9 @@ import java.util.List;
 import se.chalmers.taide.util.SensitivityUtil;
 import se.chalmers.taide.util.Units;
 
+
+
+
 public class TouchpadFragment extends Fragment {
 
     /** Start constants */
@@ -27,7 +30,8 @@ public class TouchpadFragment extends Fragment {
     private final float FALLBACK_SENSITIVITY_SLIDER_VALUE = 0.5f;
     private final int DELAY = 200; //TODO: Replace with settings for sensitivity
     private EditText TEXT_AREA;
-    private final double BORDER_PERCENTAGE = 0.10;
+    private final double MARGIN_FRACTION_WIDTH = 0.1;
+    private final double MARGIN_FRACTION_HEIGHT = 0.1;
     private final double DRAWER_MARGIN = 0.01;
     private Handler LEFT_SCROLL_HANDLER = null;
     private Handler RIGHT_SCROLL_HANDLER = null;
@@ -225,28 +229,28 @@ public class TouchpadFragment extends Fragment {
 
     public Area getPointerArea (float inX, float inY) {
         float x = inX, y = inY;
-        if(x < fragmentWidth * BORDER_PERCENTAGE) {
-            if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+        if(x < fragmentWidth * MARGIN_FRACTION_WIDTH) {
+            if (y > fragmentHeight * (1 - MARGIN_FRACTION_HEIGHT)) {
                 return Area.BOTTOM_LEFT;
-            } else if(y < fragmentHeight * BORDER_PERCENTAGE) {
+            } else if(y < fragmentHeight * MARGIN_FRACTION_HEIGHT) {
                 return Area.TOP_LEFT;
             } else {
                 return Area.LEFT;
             }
 
-        } else if(x > fragmentWidth - fragmentWidth * BORDER_PERCENTAGE) {
-            if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+        } else if(x > fragmentWidth * (1 - MARGIN_FRACTION_WIDTH)) {
+            if (y > fragmentHeight * (1 - MARGIN_FRACTION_HEIGHT)) {
                 return Area.BOTTOM_RIGHT;
-            } else if(y < fragmentHeight * BORDER_PERCENTAGE) {
+            } else if(y < fragmentHeight * MARGIN_FRACTION_HEIGHT) {
                 return Area.TOP_RIGHT;
             } else {
                 return Area.RIGHT;
             }
 
-        } else if (y < fragmentHeight * BORDER_PERCENTAGE) {
+        } else if (y < fragmentHeight * MARGIN_FRACTION_HEIGHT) {
             return Area.TOP;
 
-        } else if (y > fragmentHeight - fragmentHeight * BORDER_PERCENTAGE) {
+        } else if (y > fragmentHeight * (1 - MARGIN_FRACTION_HEIGHT)) {
             return Area.BOTTOM;
 
         } else {
