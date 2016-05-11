@@ -21,9 +21,10 @@
 		<include layout="@layout/toolbar_main"
 			android:id="@+id/toolbarParent"/>
 
+        <!-- 347dp just happens to be the height of the Google keyboard on our Z4 Tablet. -->
         <fragment
             android:id="@+id/markup"
-            android:layout_height="400dp"
+            android:layout_height="347dp"
             android:layout_width="match_parent"
             android:layout_alignParentBottom="true"
             class="se.chalmers.taide.TouchpadFragment"/>
