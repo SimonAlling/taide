@@ -17,9 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import se.chalmers.taide.model.autofill.AutoFill;
 import se.chalmers.taide.model.EditorModel;
 import se.chalmers.taide.model.TextSource;
+import se.chalmers.taide.model.autofill.AutoFill;
 import se.chalmers.taide.util.StringUtil;
 
 /**
@@ -91,7 +91,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
         // +1 because we start at the top of the line, but the factor is interpreted as starting
         // from the bottom of it:
         final float lineHeightAdjustment = (1 + POPUP_ADJUSTMENT_LINE_HEIGHT_FACTOR) * codeEditor.getLineHeight();
-        if (codeEditor != null) {
+        if (codeEditor != null && codeEditor.getLayout() != null) {
             int pos = codeEditor.getSelectionStart();
             Layout layout = codeEditor.getLayout();
             int line = layout.getLineForOffset(pos);

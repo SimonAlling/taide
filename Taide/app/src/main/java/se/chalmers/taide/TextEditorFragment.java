@@ -258,6 +258,16 @@ public class TextEditorFragment extends Fragment {
         this.currentEnabledData = enabledData;
     }
 
+    @Override
+    public void onDetach(){
+        super.onDetach();
+
+        //Detach autofill visual functionality
+        if(autoFillWindow != null){
+            autoFillWindow.detach();
+        }
+    }
+
     private HashMap<Integer, Boolean> calculateMenuItemEnabled(){
         HashMap<Integer, Boolean> data = new HashMap<>();
         data.put(R.id.action_paste, Clipboard.hasPasteContent(getActivity()));
@@ -269,11 +279,6 @@ public class TextEditorFragment extends Fragment {
 
     private void initModel(){
         if(model == null) {
-            //Detach autofill visual functionality
-            if(autoFillWindow != null){
-                autoFillWindow.detach();
-            }
-
             //Update references
             model = ModelFactory.getCurrentEditorModel();
             editorAsTextSource = ModelFactory.editTextToTextSource(codeEditor);
