@@ -13,20 +13,25 @@ import net.jayschwa.android.preference.SliderPreference;
  */
 public class DynamicSliderPreference extends SliderPreference {
     private TextView messageView;
-    // stringifier is used to convert the slider value (a double between 0 and 1) into a readable
-    // string (depending on what preference the slider represents etc). The default stringifier just
+    // interpret() converts the slider value (a double between 0 and 1) into the actual value of the
+    // preference. This means one can use any linear, exponential or other interpretation.
+    //
+    // stringify() creates a readable string to display above the slider (depending on what
+    // preference the slider represents etc). The default version declared here intentionally
     // returns the empty string, meaning the slider value will not be shown:
-    private SliderValueStringifier stringifier = new SliderValueStringifier() {
+    private SliderValueInterpreter interpreter = new SliderValueInterpreter() {
         @Override
         public String stringify(double sliderValue) { return ""; }
+        @Override
+        public double interpret(double sliderValue) { return sliderValue; }
     };
 
     public DynamicSliderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void setStringifier(SliderValueStringifier s) {
-        stringifier = s;
+    public void setInterpreter(SliderValueInterpreter svi) {
+        interpreter = svi;
     }
 
     @Override
@@ -57,7 +62,7 @@ public class DynamicSliderPreference extends SliderPreference {
     }
 
     protected void updateDialogMessage(int progress) {
-        final String message = stringifier.stringify(progressToSliderValue(progress));
+        final String message = interpreter.stringify(progressToSliderValue(progress));
         messageView.setText(message);
         ((View) messageView.getParent()).invalidate();
     }
@@ -72,7 +77,8 @@ public class DynamicSliderPreference extends SliderPreference {
         return (double) progress / (double) SEEKBAR_RESOLUTION;
     }
 
-    public interface SliderValueStringifier {
+    public interface SliderValueInterpreter {
         String stringify(double sliderValue);
+        double interpret(double sliderValue);
     }
 }

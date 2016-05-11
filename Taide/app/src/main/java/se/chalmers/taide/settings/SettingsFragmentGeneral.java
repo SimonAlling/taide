@@ -32,8 +32,8 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private static final String FALLBACK_STRING_UNIT_LENGTH = "centimeter";
     private static final String FALLBACK_STRING_UNIT_PER = "per";
 
-    public String sensitivityDescription(double sliderValue) {
-        return MathUtil.round(SensitivityUtil.charactersPerCentimeter(sliderValue), SENSITIVITY_DECIMALS)
+    public String sensitivityDescription(double sensitivity) {
+        return MathUtil.round(sensitivity, SENSITIVITY_DECIMALS)
              + " " + getString(UNIT_CHAR_PLURAL, FALLBACK_STRING_UNIT_CHAR_PLURAL)
              + " " + getString(UNIT_PER, FALLBACK_STRING_UNIT_PER)
              + " " + getString(UNIT_LENGTH, FALLBACK_STRING_UNIT_LENGTH);
@@ -46,10 +46,14 @@ public class SettingsFragmentGeneral extends SettingsFragment {
              + getString(UNIT_LENGTH_ABBR);
     }
 
-    private final DynamicSliderPreference.SliderValueStringifier sensitivityStringifier = new DynamicSliderPreference.SliderValueStringifier() {
+    private final DynamicSliderPreference.SliderValueInterpreter sensitivityInterpreter = new DynamicSliderPreference.SliderValueInterpreter() {
         @Override
         public String stringify(double sliderValue) {
-            return sensitivityDescription(sliderValue);
+            return sensitivityDescription(interpret(sliderValue));
+        }
+        @Override
+        public double interpret(double sliderValue) {
+            return SensitivityUtil.charactersPerCentimeter(sliderValue);
         }
     };
 
@@ -63,7 +67,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     @Override
     protected void initGUI() {
         final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
-        sensPreference.setStringifier(sensitivityStringifier);
+        sensPreference.setInterpreter(sensitivityInterpreter);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class SettingsFragmentGeneral extends SettingsFragment {
     private void updateGUI_sensitivity(SharedPreferences preferences) {
         final double sliderValue = preferences.getFloat(getString(ID_KEY_TOUCHPAD_SENSITIVITY), 0.5f);
         final DynamicSliderPreference sensPreference = (DynamicSliderPreference) findPreference(getString(ID_KEY_TOUCHPAD_SENSITIVITY));
-        sensPreference.setSummary(sensitivityDescription(sliderValue));
+        sensPreference.setSummary(sensitivityInterpreter.stringify(sliderValue));
     }
 
     // Update Sync related GUI elements:
