@@ -57,7 +57,7 @@ public class AutoFillPopupWindow implements TextSource.TextSourceListener {
 
     @Override
     public boolean onTextChanged(String s, int start, int before, int count) {
-        updateAutoFillBox(before != 0 || count != 1);
+        updateAutoFillBox(false);
         return false;
     }
     @Override

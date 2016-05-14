@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -40,8 +41,8 @@ public class TouchpadFragment extends Fragment {
     private Handler BOTTOM_SCROLL_HANDLER = null;
     private Handler KEEP_SELECTION = null;
     private final List<Pointer> ACTIVE_POINTERS = new ArrayList<>();
-    private int sensitivityColumns = 75; // the number of columns that the touchpad is divided into
-    private int sensitivityRows =  5;
+    private int sensitivityColumns = 0; // the number of columns that the touchpad is divided into
+    private int sensitivityRows =  0;
     /** End constants */
 
     /** Start private variables */
@@ -64,6 +65,9 @@ public class TouchpadFragment extends Fragment {
             public void onGlobalLayout() {
                 if (fragmentHeight == 0) {
                     fragmentHeight = getActivity().findViewById(R.id.markup).getLayoutParams().height;
+                }
+                if(sensitivityRows == 0) {
+                    updateYSensitivity();
                 }
             }
         });
@@ -162,8 +166,8 @@ public class TouchpadFragment extends Fragment {
         float x = ACTIVE_POINTERS.get(pointerIndex).x;
         float dX = ACTIVE_POINTERS.get(pointerIndex).dX;
 
-        if (Math.abs(x - dX) >= fragmentWidth / sensitivityColumns) {
-            return (int) Math.round((x - dX) / (fragmentWidth / sensitivityColumns));
+        if (Math.abs(x - dX) >= fragmentWidth / (sensitivityColumns == 0 ? 1 : sensitivityColumns)) {
+            return (int) Math.round((x - dX) / (fragmentWidth / (sensitivityColumns == 0 ? 1 : sensitivityColumns)));
         }
         return 0;
     }
@@ -175,7 +179,7 @@ public class TouchpadFragment extends Fragment {
         Area area = getPointerArea(point.x, point.y);
         String text = TEXT_AREA.getText().toString();
 
-        if (Math.abs(y - dY) >= fragmentHeight / sensitivityRows
+        if (Math.abs(y - dY) >= fragmentHeight / (sensitivityRows == 0 ? 1: sensitivityRows)
                 || (area != Area.CENTER && area != Area.RIGHT && area != Area.LEFT)) {
             if (y - dY > 0 || area == Area.BOTTOM || area == Area.BOTTOM_LEFT || area == Area.BOTTOM_RIGHT) {
                 int nextEnter = text.indexOf('\n', pointer);
@@ -283,10 +287,6 @@ public class TouchpadFragment extends Fragment {
         return index;
     }
 
-    /**
-     * Move the selection handle associated to a pointer
-     * @param pointerIndex index of the pointer
-     */
     private void moveHandle() {
         for(int i = 0; i < ACTIVE_POINTERS.size(); i++) {
             Pointer pointer = ACTIVE_POINTERS.get(i);
