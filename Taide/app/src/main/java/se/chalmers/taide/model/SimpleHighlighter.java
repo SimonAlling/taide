@@ -53,7 +53,9 @@ public class SimpleHighlighter extends AbstractTextFilter {
             int start = codeView.getSelectionStart();
             SpannableString code = new SpannableString(codeView.getText().toString());
             for (SyntaxBlock sb : language.getSyntaxBlocks(codeView.getText().toString())) {
-                code.setSpan(new ForegroundColorSpan(sb.getMarkupColor()), sb.getStartIndex(), sb.getEndIndex(), 0);
+                if(sb.getStartIndex()>=0 && sb.getEndIndex()<code.length() && sb.getStartIndex() < sb.getEndIndex()) {
+                    code.setSpan(new ForegroundColorSpan(sb.getMarkupColor()), sb.getStartIndex(), sb.getEndIndex(), 0);
+                }
                 if (sb.isBold()) {
                     code.setSpan(new StyleSpan(Typeface.BOLD), sb.getStartIndex(), sb.getEndIndex(), 0);
                 }
