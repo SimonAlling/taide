@@ -37,9 +37,13 @@ public class TextEditorFragment extends Fragment {
 
     private Action[] getActionsRight(){
         return new Action[]{
-                new Action.Insert(getActivity(), codeEditor, "(", "()"),
-                new Action.Insert(getActivity(), codeEditor, "[", "[]"),
-                new Action.Insert(getActivity(), codeEditor, "{", "{}")
+                new Action.Insert(getActivity(), codeEditor, "(", "("),
+                new Action.Insert(getActivity(), codeEditor, "[", "["),
+                new Action.Insert(getActivity(), codeEditor, "{", "{"),
+                new Action.Insert(getActivity(), codeEditor, ")", "("),
+                new Action.Insert(getActivity(), codeEditor, "]", "]"),
+                new Action.Insert(getActivity(), codeEditor, "}", "}"),
+                new Action.Insert(getActivity(), codeEditor, "\"", "\" \"")
         };
     }
 
