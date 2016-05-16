@@ -23,7 +23,8 @@
         <item name="actionNewFolder">@drawable/ic_create_folder_white</item>
 
         <item name="buttonColor">@color/colorPrimary</item>
-        <item name="actionMenuColor">@color/lightYellow</item>
+        <item name="scrollButtonColor">@color/sandYellow</item>
+        <item name="actionMenuColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.filesystem">

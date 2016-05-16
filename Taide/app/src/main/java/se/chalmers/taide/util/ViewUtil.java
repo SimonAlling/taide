@@ -35,4 +35,26 @@ public class ViewUtil {
             inputMethodManager.showSoftInput(focusView!=null ? focusView : previousFocus, 0);
         }
     }
+
+    public static Position getPositionOnScreen(View view){
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        return new Position(location[0], location[1]);
+    }
+
+
+    public static class Position{
+        private int x;
+        private int y;
+        public Position(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+        public int getX(){
+            return x;
+        }
+        public int getY(){
+            return y;
+        }
+    }
 }

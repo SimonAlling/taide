@@ -9,6 +9,7 @@
         <attr name="animationDuration" format="integer" />
         <attr name="selectionAnimationDuration" format="integer" />
         <attr name="buttonColor" format="reference" />
+        <attr name="scrollButtonColor" format="reference" />
         <attr name="menuTitle" format="string" />
     </declare-styleable>
 
