@@ -6,12 +6,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +43,8 @@ public class FileNavigatorDrawer {
 
     public static final int DBX_CHOOSER_REQUEST = 0;
     private static final String DEFAULT_PROJECT_NAME = "DefaultProject";
-    private static final String CURRENT_FILE_KEYNAME = "currentOpenedFile";
+    private static final String PROJECT_STATE_KEY = "currentOpenedProject";
+    private static final String FILE_STATE_KEY = "currentOpenedFile";
     private static final int RENAME_BUTTON_BACKGROUND_COLOR = Color.parseColor("#C9C9CE");
     private static final int RENAME_BUTTON_TEXT_COLOR = Color.BLACK;
     private static final int RENAME_BUTTON_FONT_SIZE = 14;
@@ -64,16 +67,6 @@ public class FileNavigatorDrawer {
             this.model = ModelFactory.createEditorModel(parent, ModelFactory.editTextToTextSource(input));
         }
         setTextInput(input);
-
-        if (model.getActiveProject() == null) {
-            createProject(DEFAULT_PROJECT_NAME);
-        }
-    }
-
-    public void saveInstanceState(Bundle saveInstanceState) {
-        if (currentFile != null) {
-            saveInstanceState.putCharSequence(CURRENT_FILE_KEYNAME, currentFile.getUniqueName());
-        }
     }
 
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
@@ -86,7 +79,7 @@ public class FileNavigatorDrawer {
         return false;
     }
 
-    public void onActivityResume(Bundle savedInstanceState) {
+    public void onActivityResume() {
         if (authenticatingDropbox) {
             DropboxFactory.authenticationDone(parentActivity);
             if (DropboxFactory.isAuthenticated()) {
@@ -94,11 +87,35 @@ public class FileNavigatorDrawer {
             }
         } else {
             //Reload handle to previously opened file.
-            if (savedInstanceState != null && currentFile == null && savedInstanceState.get(CURRENT_FILE_KEYNAME) != null) {
-                currentFile = model.findFileByName(savedInstanceState.getString(CURRENT_FILE_KEYNAME));
-            }
-
-            if (currentFile != null) {
+            if (currentFile == null) {
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(parentActivity);
+                if(model.getActiveProject() == null){
+                    final String project = prefs.getString(PROJECT_STATE_KEY, null);
+                    final String fileName = prefs.getString(FILE_STATE_KEY, null);
+                    if(project != null){
+                        setProject(project, new FileSystem.OnProjectLoadListener() {
+                            @Override
+                            public void projectLoaded(boolean success) {
+                                if(success){
+                                    currentFile = model.findFileByName(fileName);
+                                    if(currentFile != null){
+                                        openFile(currentFile);
+                                    }
+                                }else{
+                                    Log.w("warning", "The project failed to load");
+                                }
+                            }
+                        });
+                    }else{
+                        createProject(DEFAULT_PROJECT_NAME);
+                    }
+                }else{
+                    currentFile = model.findFileByName(prefs.getString(FILE_STATE_KEY, null));
+                    if(currentFile != null){
+                        openFile(currentFile);
+                    }
+                }
+            } else {
                 openFile(currentFile);
             }
         }
@@ -168,7 +185,6 @@ public class FileNavigatorDrawer {
                     case 0: showTextDialog(R.string.add_new_project_description, new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            showLoadingDialog(R.string.load_project_loading);
                             createProject(textInput);
                         }
                     });
@@ -176,19 +192,7 @@ public class FileNavigatorDrawer {
                     case 1: showChoiceDialog(R.string.load_project_description, model.getAvailableProjects(), new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            showLoadingDialog(R.string.load_project_loading);
-                            model.setProject(textInput, new FileSystem.OnProjectLoadListener() {
-                                @Override
-                                public void projectLoaded(boolean success) {
-                                    parentActivity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            updateDrawer();
-                                            hideLoadingDialog();
-                                        }
-                                    });
-                                }
-                            });
+                            setProject(textInput, null);
                         }
                     });
                         break;
@@ -196,7 +200,7 @@ public class FileNavigatorDrawer {
                     case 3: showTextDialog(R.string.add_new_file_description, new OnDialogActivation() {
                         @Override
                         public void onActivation(String textInput) {
-                            openFile(model.createFile(textInput, false));
+                            createFile(textInput);
                             updateDrawer();
                             closeDrawer();
                         }
@@ -293,6 +297,7 @@ public class FileNavigatorDrawer {
     }
 
     private void createProject(String name) {
+        showLoadingDialog(R.string.load_project_loading);
         model.createProject(name, ProjectType.LOCAL_SYSTEM, new FileSystem.OnProjectLoadListener() {
             @Override
             public void projectLoaded(boolean success) {
@@ -305,6 +310,31 @@ public class FileNavigatorDrawer {
                 });
             }
         });
+        updateOpenedFile(name, null);
+    }
+
+    private void setProject(String name, final FileSystem.OnProjectLoadListener listener) {
+        showLoadingDialog(R.string.load_project_loading);
+        model.setProject(name, new FileSystem.OnProjectLoadListener() {
+            @Override
+            public void projectLoaded(final boolean success) {
+                parentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateDrawer();
+                        hideLoadingDialog();
+                        if(listener != null){
+                            listener.projectLoaded(success);
+                        }
+                    }
+                });
+            }
+        });
+        updateOpenedFile(name, null);
+    }
+
+    private void createFile(String name){
+        openFile(model.createFile(name, false));
     }
 
     private void openFile(CodeFile file) {
@@ -312,6 +342,19 @@ public class FileNavigatorDrawer {
         parentActivity.findViewById(R.id.noTextLoadedLabel).setVisibility(View.GONE);
         model.openFile(file);
         this.currentFile = file;
+        updateOpenedFile(null, file.getUniqueName());
+    }
+
+    private void updateOpenedFile(String projectName, String fileName){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(parentActivity);
+        SharedPreferences.Editor editor = pref.edit();
+        if(projectName != null) {
+            editor.putString(PROJECT_STATE_KEY, projectName);
+            editor.putString(FILE_STATE_KEY, fileName);
+        } else if(fileName != null) {
+            editor.putString(FILE_STATE_KEY, fileName);
+        }
+        editor.apply();
     }
 
     private void showDropboxChooser() {

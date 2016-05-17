@@ -20,7 +20,6 @@ import se.chalmers.taide.settings.SettingsActivity;
 public class MainActivity extends AppCompatActivity {
 
     private FileNavigatorDrawer fileNavigator;
-    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(getResources().getColor(R.color.colorSecondaryText));
         setSupportActionBar(toolbar);
 
-        this.savedInstanceState = savedInstanceState;
         findViewById(R.id.markup).setVisibility(View.GONE);
     }
 
@@ -52,16 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        updateFileNavigator(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle saveInstanceState){
-        super.onSaveInstanceState(saveInstanceState);
-        if(fileNavigator != null) {
-            fileNavigator.saveInstanceState(saveInstanceState);
-        }
-        this.savedInstanceState = saveInstanceState;
+        updateFileNavigator();
     }
 
     @Override
@@ -90,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFileNavigator(Bundle instanceState) {
+    private void updateFileNavigator() {
         View v = findViewById(R.id.editText);
         if (v != null) {
             if (fileNavigator == null) {
@@ -99,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 fileNavigator.setTextInput((EditText) v);
             }
-            fileNavigator.onActivityResume(instanceState);
+            fileNavigator.onActivityResume();
         }
     }
 }
