@@ -104,12 +104,13 @@ public class SimpleAutoFiller extends AbstractTextFilter {
     @Override
     protected boolean applyFilterEffect(String trigger, boolean isOnAdd) {
         TextSource textView = getTextView();
+        String text = textView.getText().toString();
         int caretPosition = textView.getSelectionStart();
         int triggerStartPosition = caretPosition - trigger.length();
         if(caretPosition != 0) {        //Don't trigger on file load
             for (AutoFill autoFill : autoFills) {
                 // If it was this autofill that was triggered, apply it:
-                if (matchingAutoFill(autoFill, trigger)) {
+                if (matchingAutoFill(autoFill, trigger) && autoFill.allowTrigger(text, caretPosition, false)) {
                     if (!disabledAutoFills.contains(autoFill)) {
                         String prefix = autoFill.getPrefix(textView.getText().toString(), caretPosition);
                         String suffix = autoFill.getSuffix(textView.getText().toString(), caretPosition);
@@ -132,10 +133,10 @@ public class SimpleAutoFiller extends AbstractTextFilter {
      * @return The autofill, or null if not existing
      */
     public AutoFill getPotentialAutoFillReplacement(String source, int index) {
-        final String sourceUntilIndex_lowercase = source.substring(0, index).toLowerCase();
+        final String sourceUntilIndex = source.substring(0, index).toLowerCase();
         for (AutoFill autoFill : autoFills){
-            final String autoFillTrigger_lowercase = autoFill.getTrigger().toLowerCase();
-            if (autoFill.getTriggerSuffix() != null && sourceUntilIndex_lowercase.endsWith(autoFillTrigger_lowercase)) {
+            final String trigger = autoFill.getTrigger().toLowerCase();
+            if (sourceUntilIndex.endsWith(trigger) && autoFill.allowTrigger(source, index, true)) {
                 return autoFill;
             }
         }

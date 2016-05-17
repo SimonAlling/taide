@@ -30,6 +30,15 @@ public interface AutoFill {
     String getSuffixedTrigger();
 
     /**
+     * Determines whether the autofill should trigger on this input.
+     * @param text The current text
+     * @param pos The position of the cursor in the text
+     * @param preview If this is a preview (non-activatable) or the real trigger
+     * @return <code>true</code> if the autofill should be triggered.
+     */
+    boolean allowTrigger(String text, int pos, boolean preview);
+
+    /**
      * Retrieves the pure savedata for the prefix. Do not use this for realtime autofilling.
      * @return The pure prefix data
      */
